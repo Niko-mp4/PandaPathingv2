@@ -1,4 +1,4 @@
-package pedroPathing.examples;
+package pandaPathing.examples;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -13,8 +13,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import pedroPathing.constants.FConstants;
-import pedroPathing.constants.LConstants;
+import pandaPathing.constants.FConstants;
+import pandaPathing.constants.LConstants;
 
 
 /**

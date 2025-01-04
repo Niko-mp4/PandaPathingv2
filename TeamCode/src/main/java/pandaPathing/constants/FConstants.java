@@ -1,4 +1,4 @@
-package pedroPathing.constants;
+package pandaPathing.constants;
 
 import com.pedropathing.localization.Localizers;
 import com.pedropathing.follower.FollowerConstants;
@@ -8,37 +8,37 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class FConstants {
     static {
-        FollowerConstants.localizers = Localizers.THREE_WHEEL;
+        FollowerConstants.localizers = Localizers.PINPOINT;
 
-        FollowerConstants.leftFrontMotorName = "leftFront";
-        FollowerConstants.leftRearMotorName = "leftRear";
-        FollowerConstants.rightFrontMotorName = "rightFront";
-        FollowerConstants.rightRearMotorName = "rightRear";
+        FollowerConstants.leftFrontMotorName = "em3";
+        FollowerConstants.leftRearMotorName = "cm2";
+        FollowerConstants.rightFrontMotorName = "em2";
+        FollowerConstants.rightRearMotorName = "cm3";
 
         FollowerConstants.leftFrontMotorDirection = DcMotorSimple.Direction.REVERSE;
         FollowerConstants.leftRearMotorDirection = DcMotorSimple.Direction.REVERSE;
         FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
         FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.FORWARD;
 
-        FollowerConstants.mass = 13;
+        FollowerConstants.mass = 13.9;
 
-        FollowerConstants.xMovement = 57.8741;
-        FollowerConstants.yMovement = 52.295;
+        FollowerConstants.xMovement = 72.6541;
+        FollowerConstants.yMovement = 60.696;
 
-        FollowerConstants.forwardZeroPowerAcceleration = -41.278;
-        FollowerConstants.lateralZeroPowerAcceleration = -59.7819;
+        FollowerConstants.forwardZeroPowerAcceleration = -27.0836;
+        FollowerConstants.lateralZeroPowerAcceleration = -63.2158;
 
         FollowerConstants.translationalPIDFCoefficients = new CustomPIDFCoefficients(0.1,0,0.01,0);
-        FollowerConstants.useSecondaryTranslationalPID = false;
+        FollowerConstants.useSecondaryTranslationalPID = true;
         FollowerConstants.secondaryTranslationalPIDFCoefficients = new CustomPIDFCoefficients(0.1,0,0.01,0); // Not being used, @see useSecondaryTranslationalPID
 
         FollowerConstants.headingPIDFCoefficients = new CustomPIDFCoefficients(2,0,0.1,0);
-        FollowerConstants.useSecondaryHeadingPID = false;
+        FollowerConstants.useSecondaryHeadingPID = true;
         FollowerConstants.secondaryHeadingPIDFCoefficients = new CustomPIDFCoefficients(2,0,0.1,0); // Not being used, @see useSecondaryHeadingPID
 
-        FollowerConstants.drivePIDFCoefficients = new CustomFilteredPIDFCoefficients(0.1,0,0,0.6,0);
-        FollowerConstants.useSecondaryDrivePID = false;
-        FollowerConstants.secondaryDrivePIDFCoefficients = new CustomFilteredPIDFCoefficients(0.1,0,0,0.6,0); // Not being used, @see useSecondaryDrivePID
+        FollowerConstants.drivePIDFCoefficients = new CustomFilteredPIDFCoefficients(0.001,0,0,0.00006,0);
+        FollowerConstants.useSecondaryDrivePID = true;
+        FollowerConstants.secondaryDrivePIDFCoefficients = new CustomFilteredPIDFCoefficients(0.001,0,0,0.00006,0); // Not being used, @see useSecondaryDrivePID
 
         FollowerConstants.zeroPowerAccelerationMultiplier = 4;
         FollowerConstants.centripetalScaling = 0.0005;
