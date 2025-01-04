@@ -39,6 +39,10 @@ public class UnoConductor extends OpMode {
     double  extendPosR = railRMin, extendPosL = railLMin, v4bPos = v4bBackUp,
             depositTimer = 0, clawTimer = 0,
             strafePow, driveSpeed, mult = 1;
+    double startTime, elapsedTime, timeIndex = 0;
+    double[] elapsedTimes = new double[10];
+    boolean timerRunning = false;
+    double highScore = Double.MAX_VALUE;
 
     public void init() {
         robot = new Hardware(hardwareMap);
@@ -118,13 +122,40 @@ public class UnoConductor extends OpMode {
             rbumpPressed = true;
         } else if(!gamepad1.right_bumper) rbumpPressed = false;
 
-        // press 'd-pad down' to deposit sample (driver 1)
+        // press 'd-pad down' to deposit sample (driver 1) and track the timer
         if(gamepad1.dpad_down && !dpad_downPressed) {
+            // Start the timer
+            if (!timerRunning) {
+                startTime = getRuntime();
+                timerRunning = true;
+            } else {
+                // Stop the timer
+                elapsedTime = getRuntime() - startTime;
+                if (timeIndex < 10) {
+                    elapsedTimes[(int) timeIndex] = elapsedTime;
+                    timeIndex++;
+                } else {
+                    // If the array is full, overwrite the earliest time
+                    for (int i = 0; i < 9; i++) {
+                        elapsedTimes[i] = elapsedTimes[i + 1];
+                    }
+                    elapsedTimes[9] = elapsedTime;
+                }
+
+                // Update high score if the new time is better (lower)
+                if (elapsedTime < highScore) {
+                    highScore = elapsedTime;
+                }
+
+                timerRunning = false;
+            }
+
+            // Claw and deposit actions
             if (!extended) {
                 v4bPos = v4bBackDown - 0.05;
                 robot.pitch.setPosition(pitchBOut);
                 depositing = true;
-            }else { // claw close
+            } else { // claw close
                 robot.lilJarret.setPosition(clawClose);
                 depositing = false;
             }
@@ -181,7 +212,19 @@ public class UnoConductor extends OpMode {
             depositTimer = 0;
         }
 
-        // telemetry
+        // telemetry: display all times and highlight the high score
+        StringBuilder timesDisplay = new StringBuilder();
+        for (int i = 0; i < timeIndex; i++) {
+            timesDisplay.append("Time ").append(i + 1).append(": ").append(elapsedTimes[i]).append("s");
+            // Check if it's the high score time
+            if (elapsedTimes[i] == highScore) {
+                timesDisplay.append(" (High Score!)");
+            }
+            timesDisplay.append("\n");
+        }
+
+        telemetry.addData("Recorded Times", timesDisplay.toString());
+        telemetry.addData("Current High Score", highScore + "s");
         telemetry.update();
     }
 }
