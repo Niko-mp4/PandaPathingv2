@@ -1,5 +1,18 @@
 package pandaPathing.constants;
 
+import static pandaPathing.constants.PIDConfig.driveD;
+import static pandaPathing.constants.PIDConfig.driveF;
+import static pandaPathing.constants.PIDConfig.driveI;
+import static pandaPathing.constants.PIDConfig.driveP;
+import static pandaPathing.constants.PIDConfig.headingD;
+import static pandaPathing.constants.PIDConfig.headingF;
+import static pandaPathing.constants.PIDConfig.headingI;
+import static pandaPathing.constants.PIDConfig.headingP;
+import static pandaPathing.constants.PIDConfig.translationalD;
+import static pandaPathing.constants.PIDConfig.translationalF;
+import static pandaPathing.constants.PIDConfig.translationalI;
+import static pandaPathing.constants.PIDConfig.translationalP;
+
 import com.pedropathing.localization.Localizers;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.util.CustomFilteredPIDFCoefficients;
@@ -8,8 +21,20 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class FConstants {
     static {
-        FollowerConstants.localizers = Localizers.PINPOINT;
+        initializeLocalizer();
+        initializeMotorSetup();
+        initializeRobotSettings();
+        initializePIDCoefficients();
+        initializePathConstraints();
+    }
 
+    // Localizer setup
+    private static void initializeLocalizer() {
+        FollowerConstants.localizers = Localizers.PINPOINT;
+    }
+
+    // Motor setup
+    private static void initializeMotorSetup() {
         FollowerConstants.leftFrontMotorName = "em3";
         FollowerConstants.leftRearMotorName = "cm2";
         FollowerConstants.rightFrontMotorName = "em2";
@@ -19,30 +44,42 @@ public class FConstants {
         FollowerConstants.leftRearMotorDirection = DcMotorSimple.Direction.REVERSE;
         FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
         FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.FORWARD;
+    }
 
+    // Robot-specific settings
+    private static void initializeRobotSettings() {
         FollowerConstants.mass = 13.9;
-
         FollowerConstants.xMovement = 72.6541;
         FollowerConstants.yMovement = 60.696;
-
         FollowerConstants.forwardZeroPowerAcceleration = -27.0836;
         FollowerConstants.lateralZeroPowerAcceleration = -63.2158;
-
-        FollowerConstants.translationalPIDFCoefficients = new CustomPIDFCoefficients(0.1,0,0.01,0);
-        FollowerConstants.useSecondaryTranslationalPID = true;
-        FollowerConstants.secondaryTranslationalPIDFCoefficients = new CustomPIDFCoefficients(0.1,0,0.01,0); // Not being used, @see useSecondaryTranslationalPID
-
-        FollowerConstants.headingPIDFCoefficients = new CustomPIDFCoefficients(2,0,0.1,0);
-        FollowerConstants.useSecondaryHeadingPID = true;
-        FollowerConstants.secondaryHeadingPIDFCoefficients = new CustomPIDFCoefficients(2,0,0.1,0); // Not being used, @see useSecondaryHeadingPID
-
-        FollowerConstants.drivePIDFCoefficients = new CustomFilteredPIDFCoefficients(0.001,0,0,0.00006,0);
-        FollowerConstants.useSecondaryDrivePID = true;
-        FollowerConstants.secondaryDrivePIDFCoefficients = new CustomFilteredPIDFCoefficients(0.001,0,0,0.00006,0); // Not being used, @see useSecondaryDrivePID
-
         FollowerConstants.zeroPowerAccelerationMultiplier = 4;
         FollowerConstants.centripetalScaling = 0.0005;
+    }
 
+    // Initialize PID coefficients for translational, heading, and drive
+    private static void initializePIDCoefficients() {
+        // Translational PID
+            FollowerConstants.translationalPIDFCoefficients = new CustomPIDFCoefficients(translationalP, translationalI, translationalD, translationalF);
+                if (PIDConfig.useSecondaryTranslationalPID) {
+            FollowerConstants.secondaryTranslationalPIDFCoefficients = new CustomPIDFCoefficients(translationalP, translationalI, translationalD, translationalF);
+        }
+
+        // Heading PID
+            FollowerConstants.headingPIDFCoefficients = new CustomPIDFCoefficients(headingP, headingI, headingD, headingF);
+                if (PIDConfig.useSecondaryHeadingPID) {
+            FollowerConstants.secondaryHeadingPIDFCoefficients = new CustomPIDFCoefficients(headingP, headingI, headingD, headingF);
+        }
+
+        // Drive PID
+            FollowerConstants.drivePIDFCoefficients = new CustomFilteredPIDFCoefficients(driveP, driveI, driveD, driveF, 0);
+                if (PIDConfig.useSecondaryDrivePID) {
+            FollowerConstants.secondaryDrivePIDFCoefficients = new CustomFilteredPIDFCoefficients(driveP, driveI, driveD, driveF, 0);
+        }
+    }
+
+    // Initialize path constraints (timeouts, velocity, etc.)
+    private static void initializePathConstraints() {
         FollowerConstants.pathEndTimeoutConstraint = 500;
         FollowerConstants.pathEndTValueConstraint = 0.995;
         FollowerConstants.pathEndVelocityConstraint = 0.1;
