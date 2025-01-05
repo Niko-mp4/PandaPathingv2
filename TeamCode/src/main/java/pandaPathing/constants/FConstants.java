@@ -8,6 +8,18 @@ import static pandaPathing.constants.PIDConfig.headingD;
 import static pandaPathing.constants.PIDConfig.headingF;
 import static pandaPathing.constants.PIDConfig.headingI;
 import static pandaPathing.constants.PIDConfig.headingP;
+import static pandaPathing.constants.PIDConfig.secondaryDriveD;
+import static pandaPathing.constants.PIDConfig.secondaryDriveF;
+import static pandaPathing.constants.PIDConfig.secondaryDriveI;
+import static pandaPathing.constants.PIDConfig.secondaryDriveP;
+import static pandaPathing.constants.PIDConfig.secondaryHeadingD;
+import static pandaPathing.constants.PIDConfig.secondaryHeadingF;
+import static pandaPathing.constants.PIDConfig.secondaryHeadingI;
+import static pandaPathing.constants.PIDConfig.secondaryHeadingP;
+import static pandaPathing.constants.PIDConfig.secondaryTranslationalD;
+import static pandaPathing.constants.PIDConfig.secondaryTranslationalF;
+import static pandaPathing.constants.PIDConfig.secondaryTranslationalI;
+import static pandaPathing.constants.PIDConfig.secondaryTranslationalP;
 import static pandaPathing.constants.PIDConfig.translationalD;
 import static pandaPathing.constants.PIDConfig.translationalF;
 import static pandaPathing.constants.PIDConfig.translationalI;
@@ -20,10 +32,12 @@ import com.pedropathing.util.CustomPIDFCoefficients;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class FConstants {
+
     static {
         initializeLocalizer();
         initializeMotorSetup();
         initializeRobotSettings();
+        // Initialize PID coefficients once, and update them in real-time later
         initializePIDCoefficients();
         initializePathConstraints();
     }
@@ -60,21 +74,21 @@ public class FConstants {
     // Initialize PID coefficients for translational, heading, and drive
     private static void initializePIDCoefficients() {
         // Translational PID
-            FollowerConstants.translationalPIDFCoefficients = new CustomPIDFCoefficients(translationalP, translationalI, translationalD, translationalF);
-                if (PIDConfig.useSecondaryTranslationalPID) {
-            FollowerConstants.secondaryTranslationalPIDFCoefficients = new CustomPIDFCoefficients(translationalP, translationalI, translationalD, translationalF);
+        FollowerConstants.translationalPIDFCoefficients = new CustomPIDFCoefficients(translationalP, translationalI, translationalD, translationalF);
+        if (PIDConfig.useSecondaryTranslationalPID) {
+            FollowerConstants.secondaryTranslationalPIDFCoefficients = new CustomPIDFCoefficients(secondaryTranslationalP, secondaryTranslationalI, secondaryTranslationalD, secondaryTranslationalF);
         }
 
         // Heading PID
-            FollowerConstants.headingPIDFCoefficients = new CustomPIDFCoefficients(headingP, headingI, headingD, headingF);
-                if (PIDConfig.useSecondaryHeadingPID) {
-            FollowerConstants.secondaryHeadingPIDFCoefficients = new CustomPIDFCoefficients(headingP, headingI, headingD, headingF);
+        FollowerConstants.headingPIDFCoefficients = new CustomPIDFCoefficients(headingP, headingI, headingD, headingF);
+        if (PIDConfig.useSecondaryHeadingPID) {
+            FollowerConstants.secondaryHeadingPIDFCoefficients = new CustomPIDFCoefficients(secondaryHeadingP, secondaryHeadingI, secondaryHeadingD, secondaryHeadingF);
         }
 
         // Drive PID
-            FollowerConstants.drivePIDFCoefficients = new CustomFilteredPIDFCoefficients(driveP, driveI, driveD, driveF, 0);
-                if (PIDConfig.useSecondaryDrivePID) {
-            FollowerConstants.secondaryDrivePIDFCoefficients = new CustomFilteredPIDFCoefficients(driveP, driveI, driveD, driveF, 0);
+        FollowerConstants.drivePIDFCoefficients = new CustomFilteredPIDFCoefficients(driveP, driveI, driveD, driveF, 0);
+        if (PIDConfig.useSecondaryDrivePID) {
+            FollowerConstants.secondaryDrivePIDFCoefficients = new CustomFilteredPIDFCoefficients(secondaryDriveP, secondaryDriveI, secondaryDriveD, secondaryDriveF, 0);
         }
     }
 

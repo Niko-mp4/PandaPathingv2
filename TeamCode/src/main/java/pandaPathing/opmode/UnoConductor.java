@@ -21,7 +21,6 @@ import static pandaPathing.robot.RobotConstants.yaw0;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -31,7 +30,6 @@ import pandaPathing.robot.Hardware;
 @TeleOp(name = "UnoConductor", group = "Tele")
 public class UnoConductor extends OpMode {
     private Hardware robot;
-    private Follower follower;
 
     boolean dUpPressed, dDownPressed, yPressed, y1Pressed, dpad_upPressed, dpad_up1Pressed, rbumpPressed, lBumpPressed, x1Pressed, dpad_downPressed, dpad_down1Pressed,
             clawIsOpen = false, extended = false, neckUp = true, slowMode = false,
@@ -46,8 +44,6 @@ public class UnoConductor extends OpMode {
 
     public void init() {
         robot = new Hardware(hardwareMap);
-        follower = new Follower(hardwareMap);
-        follower.startTeleopDrive();
         telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.v4b.setPosition(v4bBackUp);
         robot.pitch.setPosition(pitchFDown);
@@ -59,10 +55,38 @@ public class UnoConductor extends OpMode {
     }
 
     public void loop(){
-        // pedro pathing mecanum drive
-        strafePow = gamepad1.left_trigger != 0 ? gamepad1.left_trigger : gamepad1.right_trigger != 0 ? -gamepad1.right_trigger : 0;
-        follower.setTeleOpMovementVectors(driveSpeed*-gamepad1.left_stick_y, 0.8*driveSpeed*strafePow, driveSpeed*-gamepad1.right_stick_x);
-        follower.update();
+        // Read gamepad input for movement
+        double forward = -gamepad1.left_stick_y; // Forward/backward movement
+        double strafe = 0;
+        if (gamepad1.left_trigger != 0) {
+            strafe = gamepad1.left_trigger;  // Strafe left when left trigger is pressed
+        } else if (gamepad1.right_trigger != 0) {
+            strafe = -gamepad1.right_trigger;  // Strafe right when right trigger is pressed
+        }
+        double turn = gamepad1.right_stick_x; // Turning (rotate)
+
+        // Calculate power for each motor based on input
+        double leftFrontPower = forward + strafe + turn;    // Add all components for front-left motor
+        double rightFrontPower = forward - strafe - turn;  // Add all components for front-right motor
+        double leftRearPower = forward - strafe + turn;    // Add all components for rear-left motor
+        double rightRearPower = forward + strafe - turn;   // Add all components for rear-right motor
+
+        // Normalize the motor powers to ensure they are between -1 and 1
+        double maxPower = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),
+                Math.max(Math.abs(leftRearPower), Math.abs(rightRearPower)));
+
+        if (maxPower > 1.0) {
+            leftFrontPower /= maxPower;
+            rightFrontPower /= maxPower;
+            leftRearPower /= maxPower;
+            rightRearPower /= maxPower;
+        }
+
+// Set motor powers directly
+        robot.leftFront.setPower(driveSpeed*leftFrontPower);
+        robot.rightFront.setPower(driveSpeed*rightFrontPower);
+        robot.leftRear.setPower(driveSpeed*leftRearPower);
+        robot.rightRear.setPower(driveSpeed*rightRearPower);
 
         // automatic speed control
         if(robot.railL.getPosition() <= 0.5)
@@ -185,7 +209,7 @@ public class UnoConductor extends OpMode {
          * claw open/close at 20
          */
         if(clawTimerRunning) clawTimer ++;
-        if (clawTimer >= 8){
+        if (clawTimer >= 40){
             robot.lilJarret.setPosition(neckUp ? clawOpen : clawClose);
             clawIsOpen = neckUp;
             clawTimerRunning = false; clawTimer = 0;
@@ -196,18 +220,18 @@ public class UnoConductor extends OpMode {
          * claw close & tuck at 20
          */
         if (depositing) depositTimer++;
-        if(depositTimer >= 2 && !dpad_downPressed) { // make claw drop after return
-            if (depositTimer >= 10) {
+        if(depositTimer >= 10 && !dpad_downPressed) { // make claw drop after return
+            if (depositTimer >= 40) {
                 v4bPos = v4bBackUp;
                 robot.pitch.setPosition(pitchFDown);
                 robot.lilJarret.setPosition(clawClose); // go back in
                 clawIsOpen = false;
-            } else if(depositTimer >= 5){
+            } else if(depositTimer >= 20){
                 v4bPos = v4bBackDown;
                 robot.lilJarret.setPosition(clawOpen); // drop
             }
         }
-        if(depositTimer >= 20){ // cancel sequence after 80 iterations
+        if(depositTimer >= 40){ // cancel sequence after 80 iterations
             depositing = false;
             depositTimer = 0;
         }

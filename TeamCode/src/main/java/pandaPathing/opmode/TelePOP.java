@@ -27,15 +27,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import com.pedropathing.follower.Follower;
-
 import pandaPathing.robot.Hardware;
 
 @Config
 @TeleOp(name = "I HATE NAVEEN SO MUCHHH", group = "Drive")
 public class TelePOP extends OpMode {
     private Hardware robot;
-    private Follower follower;
 
     boolean dUpPressed, dDownPressed, yPressed, y1Pressed, aPressed, a1Pressed, rbumpPressed, lBumpPressed, backPressed, back2Pressed, xPressed, x1Pressed, bPressed, b1Pressed,
             clawIsOpen = false, extended = false, neckUp = true, slowMode = false, hanging = false, slidesUp = false, slidesDown = false,
@@ -46,8 +43,6 @@ public class TelePOP extends OpMode {
 
     public void init() {
         robot = new Hardware(hardwareMap);
-        follower = new Follower(hardwareMap);
-        follower.startTeleopDrive();
         telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.v4b.setPosition(v4bBackUp);
         robot.pitch.setPosition(pitchFDown);
@@ -59,10 +54,38 @@ public class TelePOP extends OpMode {
     }
 
     public void loop(){
-        // pedro pathing mecanum drive
-        strafePow = gamepad1.left_trigger != 0 ? gamepad1.left_trigger : gamepad1.right_trigger != 0 ? -gamepad1.right_trigger : 0;
-        follower.setTeleOpMovementVectors(driveSpeed*-gamepad1.left_stick_y, 0.8*driveSpeed*strafePow, driveSpeed*-gamepad1.right_stick_x);
-        follower.update();
+        // Read gamepad input for movement
+        double forward = -gamepad1.left_stick_y; // Forward/backward movement
+        double strafe = 0;
+        if (gamepad1.left_trigger != 0) {
+            strafe = gamepad1.left_trigger * 5;  // Strafe left when left trigger is pressed
+        } else if (gamepad1.right_trigger != 0) {
+            strafe = -gamepad1.right_trigger * 5;  // Strafe right when right trigger is pressed
+        }
+        double turn = gamepad1.right_stick_x; // Turning (rotate)
+
+        // Calculate power for each motor based on input
+        double leftFrontPower = forward + strafe + turn;    // Add all components for front-left motor
+        double rightFrontPower = forward - strafe - turn;  // Add all components for front-right motor
+        double leftRearPower = forward - strafe + turn;    // Add all components for rear-left motor
+        double rightRearPower = forward + strafe - turn;   // Add all components for rear-right motor
+
+        // Normalize the motor powers to ensure they are between -1 and 1
+        double maxPower = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),
+                Math.max(Math.abs(leftRearPower), Math.abs(rightRearPower)));
+
+        if (maxPower > 1.0) {
+            leftFrontPower /= maxPower;
+            rightFrontPower /= maxPower;
+            leftRearPower /= maxPower;
+            rightRearPower /= maxPower;
+        }
+
+// Set motor powers directly
+        robot.leftFront.setPower(slideSpeed*driveSpeed*leftFrontPower);
+        robot.rightFront.setPower(slideSpeed*driveSpeed*rightFrontPower);
+        robot.leftRear.setPower(slideSpeed*driveSpeed*leftRearPower);
+        robot.rightRear.setPower(slideSpeed*driveSpeed*rightRearPower);
 
         // automatic speed control
         if(robot.railL.getPosition() <= 0.5)
@@ -118,7 +141,7 @@ public class TelePOP extends OpMode {
         // press 'a' to toggle rail extension in/out (driver 2)
         robot.railR.setPosition(extendPosR);
         robot.railL.setPosition(extendPosL);
-        if (gamepad2.a && !aPressed) {
+        if (gamepad1.dpad_up && !aPressed) {
             if (!extended) { // claw open & out when extend
                 robot.pitch.setPosition(pitchFDown);
                 robot.roll.setPosition(claw0);
@@ -137,7 +160,7 @@ public class TelePOP extends OpMode {
                 extended = false;
             }
             aPressed = true;
-        } else if (!gamepad2.a) aPressed = false;
+        } else if (!gamepad1.dpad_up) aPressed = false;
         robot.railR.resetDeviceConfigurationForOpMode();
         robot.railL.resetDeviceConfigurationForOpMode();
 
@@ -157,7 +180,7 @@ public class TelePOP extends OpMode {
         } else if(!gamepad1.right_bumper) rbumpPressed = false;
 
         // press 'b' to deposit sample (driver 2)
-        if(gamepad2.b && !bPressed) {
+        if(gamepad1.dpad_down && !bPressed) {
             if (!extended) {
                 v4bPos = v4bBackDown - 0.05;
                 robot.pitch.setPosition(pitchBOut);
@@ -167,7 +190,7 @@ public class TelePOP extends OpMode {
                 depositing = false;
             }
             bPressed = true;
-        } else if(!gamepad2.b) bPressed = false;
+        } else if(!gamepad1.dpad_down) bPressed = false;
 
         // press 'back' to cancel (driver 2)
         if(gamepad2.back && !back2Pressed){
@@ -246,18 +269,18 @@ public class TelePOP extends OpMode {
          * claw close & tuck at 20
          */
         if (depositing) depositTimer++;
-        if(depositTimer >= 2 && !bPressed) { // make claw drop after return
-            if (depositTimer >= 10) {
+        if(depositTimer >= 5 && !bPressed) { // make claw drop after return
+            if (depositTimer >= 20) {
                 v4bPos = v4bBackUp;
                 robot.pitch.setPosition(pitchFDown);
                 robot.lilJarret.setPosition(clawClose); // go back in
                 clawIsOpen = false;
-            } else if(depositTimer >= 5){
+            } else if(depositTimer >= 10){
                 v4bPos = v4bBackDown;
                 robot.lilJarret.setPosition(clawOpen); // drop
             }
         }
-        if(depositTimer >= 20){ // cancel sequence after 80 iterations
+        if(depositTimer >= 40){ // cancel sequence after 80 iterations
             depositing = false;
             depositTimer = 0;
         }
