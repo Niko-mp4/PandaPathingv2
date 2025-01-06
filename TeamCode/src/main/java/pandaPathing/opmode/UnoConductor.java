@@ -215,7 +215,8 @@ public class UnoConductor extends OpMode {
             clawTimerRunning = false; clawTimer = 0;
         }
 
-        /**Claw deposit sequence:
+        /**
+         * Claw deposit sequence:
          * claw open at 10
          * claw close & tuck at 20
          */

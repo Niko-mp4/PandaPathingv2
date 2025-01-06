@@ -2,13 +2,11 @@ package pandaPathing.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import pandaPathing.util.PDFLController;
-import java.util.Arrays;
 import java.util.List;
 
 @Config
@@ -18,7 +16,6 @@ public class Hardware {
     public DcMotorEx leftFront, leftRear, rightFront, rightRear, rightSlides, leftSlides, hangerL, hangerR;
     public Servo railL, railR, lilJarret, v4b, pitch, roll, yaw;
     public DigitalChannel touchSensor;
-    public List<DcMotorEx> motors;
 
     public PDFLController slideyController;
 
@@ -32,30 +29,37 @@ public class Hardware {
         return slideyController.calculatePow(slidePos, target);
     }
 
-    public Hardware(HardwareMap hardwareMap) {
+    public Hardware(HardwareMap hardwareMap, boolean auto) {
         this.hardwareMap = hardwareMap;
-        initializeMotors();
+        initializeMotors(auto);
+        initializeServos();
+        initializeSensors();
+    }
+    public Hardware(HardwareMap hardwareMap){
+        this.hardwareMap = hardwareMap;
+        initializeMotors(false);
         initializeServos();
         initializeSensors();
     }
 
-    private void initializeMotors() {
-        leftFront = initMotor("em3", DcMotorSimple.Direction.REVERSE);
-        leftRear = initMotor("cm2", DcMotorSimple.Direction.REVERSE);
-        rightFront = initMotor("em2", DcMotorSimple.Direction.FORWARD);
-        rightRear = initMotor("cm3", DcMotorSimple.Direction.FORWARD);
-        rightSlides = initMotor("em1", DcMotorSimple.Direction.REVERSE);
-        leftSlides = initMotor("em0", DcMotorSimple.Direction.FORWARD);
-        hangerL = initMotor("cm1", DcMotorSimple.Direction.FORWARD);
-        hangerR = initMotor("cm0", DcMotorSimple.Direction.FORWARD);
-        motors = Arrays.asList(leftFront, leftRear, rightFront, rightRear);
+    private void initializeMotors(boolean auto) {
+        leftFront = initMotor("em3", DcMotorEx.Direction.REVERSE);
+        leftRear = initMotor("cm2", DcMotorEx.Direction.REVERSE);
+        rightFront = initMotor("em2", DcMotorEx.Direction.FORWARD);
+        rightRear = initMotor("cm3", DcMotorEx.Direction.FORWARD);
+        rightSlides = initMotor("em1", DcMotorEx.Direction.REVERSE);
+        if(auto) rightSlides.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlides = initMotor("em0", DcMotorEx.Direction.FORWARD);
+        hangerL = initMotor("cm1", DcMotorEx.Direction.FORWARD);
+        hangerR = initMotor("cm0", DcMotorEx.Direction.FORWARD);
         slideyController = new PDFLController(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
     }
 
-    private DcMotorEx initMotor(String name, DcMotorSimple.Direction direction) {
+    private DcMotorEx initMotor(String name, DcMotorEx.Direction direction) {
         DcMotorEx motor = hardwareMap.get(DcMotorEx.class, name);
         motor.setDirection(direction);
         motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        //motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         return motor;
     }
 
