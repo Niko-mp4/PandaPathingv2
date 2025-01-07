@@ -73,20 +73,28 @@ public class Automus extends OpMode {
      * Lets assume our robot is 18 by 18 inches
      * Lets assume the Robot is facing the human player and we want to score in the bucket */
 
+
+    // as x goes to 0 it goes to the submersable
+    // as y goes to 0 it gets closer to thr basket
     /** Start Pose of our robot */
     private final Pose startPose = new Pose(136.5, 31.5, Math.toRadians(90));
 
     /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) angle. */
-    private final Pose scorePreloadPose = new Pose(135.5, 22.5, Math.toRadians(90));
-    private final Pose scorePose = new Pose(125, 7, Math.toRadians(180));
+    private final Pose scorePreloadPose = new Pose(134, 22, Math.toRadians(90));
+    private final Pose scorePose1 = new Pose(131, 17, Math.toRadians(120));
+
+    private final Pose scorePose2 = new Pose(129, 16, Math.toRadians(120));
+
+    private final Pose scorePose3 = new Pose(131, 17, Math.toRadians(120));
 
     /** Lowest (First) Sample from the Spike Mark */
-    private final Pose pickup1Pose = new Pose(129, 23.2, Math.toRadians(180));
+    private final Pose pickup1Pose = new Pose(127, 22.5, Math.toRadians(180));
+
     /** Middle (Second) Sample from the Spike Mark */
-    private final Pose pickup2Pose = new Pose(129, 13, Math.toRadians(180));
+    private final Pose pickup2Pose = new Pose(127, 15, Math.toRadians(180));
 
     /** Highest (Third) Sample from the Spike Mark */
-    private final Pose pickup3Pose = new Pose(129, 7, Math.toRadians(180));
+    private final Pose pickup3Pose = new Pose(122, 15, Math.toRadians(210));
 
     /** Park Pose for our robot, after we do all of the scoring. */
     private final Pose parkPose = new Pose(72, 48, Math.toRadians(90));
@@ -133,37 +141,37 @@ public class Automus extends OpMode {
 
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(pickup1Pose), new Point(scorePose)))
-                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading())
+                .addPath(new BezierLine(new Point(pickup1Pose), new Point(scorePose1)))
+                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose1.getHeading())
                 .build();
 
         /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         grabPickup2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(scorePose), new Point(pickup2Pose)))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading())
+                .addPath(new BezierLine(new Point(scorePose1), new Point(pickup2Pose)))
+                .setLinearHeadingInterpolation(scorePose1.getHeading(), pickup2Pose.getHeading())
                 .build();
 
         /* This is our scorePickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(pickup2Pose), new Point(scorePose)))
-                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), scorePose.getHeading())
+                .addPath(new BezierLine(new Point(pickup2Pose), new Point(scorePose2)))
+                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), scorePose2.getHeading())
                 .build();
 
         /* This is our grabPickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         grabPickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(scorePose), new Point(pickup3Pose)))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup3Pose.getHeading())
+                .addPath(new BezierLine(new Point(scorePose2), new Point(pickup3Pose)))
+                .setLinearHeadingInterpolation(scorePose2.getHeading(), pickup3Pose.getHeading())
                 .build();
 
         /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(pickup3Pose), new Point(scorePose)))
-                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), scorePose.getHeading())
+                .addPath(new BezierLine(new Point(pickup3Pose), new Point(scorePose3)))
+                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), scorePose3.getHeading())
                 .build();
 
         /* This is our park path. We are using a BezierCurve with 3 points, which is a curved line that is curved based off of the control point */
-        park = new Path(new BezierCurve(new Point(scorePose), /* Control Point */ new Point(parkControlPose), new Point(parkPose)));
-        park.setLinearHeadingInterpolation(scorePose.getHeading(), parkPose.getHeading());
+        park = new Path(new BezierCurve(new Point(scorePose3), /* Control Point */ new Point(parkControlPose), new Point(parkPose)));
+        park.setLinearHeadingInterpolation(scorePose3.getHeading(), parkPose.getHeading());
     }
 
 
@@ -230,7 +238,7 @@ public class Automus extends OpMode {
                     robot.railL.setPosition(railLMax);
                     robot.lilJarret.setPosition(clawOpen);
                     robot.v4b.setPosition(v4bOutUp);
-                    if(slidePos <= target+40){
+                    if(slidePos <= target+50){
                         setPathState("1.1");
                         stopped = true;
                     }
@@ -284,7 +292,7 @@ public class Automus extends OpMode {
                     robot.railL.setPosition(railLMax);
                     robot.lilJarret.setPosition(clawOpen);
                     robot.v4b.setPosition(v4bOutUp);
-                    if(slidePos <= target+40){
+                    if(slidePos <= target+50){
                         setPathState("2.1");
                         stopped = true;
                     }
@@ -338,7 +346,7 @@ public class Automus extends OpMode {
                     robot.railL.setPosition(railLMax);
                     robot.lilJarret.setPosition(clawOpen);
                     robot.v4b.setPosition(v4bOutUp);
-                    if(slidePos <= target+40){
+                    if(slidePos <= target+50){
                         setPathState("3.1");
                         stopped = true;
                     }
@@ -378,6 +386,8 @@ public class Automus extends OpMode {
                 else if(time > 0.25){
                     robot.yaw.setPosition(yaw45);
                     robot.v4b.setPosition(v4bBackDown);
+                    target = 0;
+                    follower.followPath(park);
                 }
                 break;
         }
