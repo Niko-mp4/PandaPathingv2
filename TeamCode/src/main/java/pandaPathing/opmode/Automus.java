@@ -1,6 +1,7 @@
 package pandaPathing.opmode;
 
 import static pandaPathing.robot.RobotConstants.claw0;
+import static pandaPathing.robot.RobotConstants.claw45;
 import static pandaPathing.robot.RobotConstants.claw45_2;
 import static pandaPathing.robot.RobotConstants.clawClose;
 import static pandaPathing.robot.RobotConstants.clawOpen;
@@ -80,21 +81,21 @@ public class Automus extends OpMode {
     private final Pose startPose = new Pose(136.5, 31.5, Math.toRadians(90));
 
     /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) angle. */
-    private final Pose scorePreloadPose = new Pose(134, 22, Math.toRadians(90));
-    private final Pose scorePose1 = new Pose(131, 17, Math.toRadians(120));
+    private final Pose scorePreloadPose = new Pose(134, 21.5, Math.toRadians(90));
+    private final Pose scorePose1 = new Pose(126, 13, Math.toRadians(180));
 
-    private final Pose scorePose2 = new Pose(129, 16, Math.toRadians(120));
+    private final Pose scorePose2 = new Pose(126, 13, Math.toRadians(180));
 
-    private final Pose scorePose3 = new Pose(131, 17, Math.toRadians(120));
+    private final Pose scorePose3 = new Pose(126, 13, Math.toRadians(180));
 
     /** Lowest (First) Sample from the Spike Mark */
-    private final Pose pickup1Pose = new Pose(127, 22.5, Math.toRadians(180));
+    private final Pose pickup1Pose = new Pose(128, 23, Math.toRadians(180));
 
     /** Middle (Second) Sample from the Spike Mark */
-    private final Pose pickup2Pose = new Pose(127, 15, Math.toRadians(180));
+    private final Pose pickup2Pose = new Pose(126, 16, Math.toRadians(180));
 
     /** Highest (Third) Sample from the Spike Mark */
-    private final Pose pickup3Pose = new Pose(122, 15, Math.toRadians(210));
+    private final Pose pickup3Pose = new Pose(123.5, 16, Math.toRadians(210));
 
     /** Park Pose for our robot, after we do all of the scoring. */
     private final Pose parkPose = new Pose(72, 48, Math.toRadians(90));
@@ -211,9 +212,8 @@ public class Automus extends OpMode {
                     stopped = false;
                 }
                 target = slideMax;
-                if(slidePos >= target - 10){
+                if(slidePos >= target - 15){
                     setPathState("0.2");
-                    stopped = true;
                 }
                 break;
             case "0.2": // score timer 0
@@ -223,6 +223,7 @@ public class Automus extends OpMode {
                 }
                 else if(time > 0.25){
                     robot.yaw.setPosition(yaw45_2);
+                    robot.pitch.setPosition(pitchBOut);
                     robot.v4b.setPosition(v4bBackDown);
                 }
                 break;
@@ -232,20 +233,17 @@ public class Automus extends OpMode {
                     stopped = false;
                 }
 
-                if(time > 0.5){
+                if(time > 1 && slidePos <= target+50){
+                    setPathState("1.1");
+                } else if(time > 0.5){
                     // Rails out at 1 sec
                     robot.railR.setPosition(railRMax);
                     robot.railL.setPosition(railLMax);
                     robot.lilJarret.setPosition(clawOpen);
                     robot.v4b.setPosition(v4bOutUp);
-                    if(slidePos <= target+50){
-                        setPathState("1.1");
-                        stopped = true;
-                    }
                 } else if(time > 0.25) {
                     // Slides down and servos in at 0.5 sec
                     target = 0;
-                    robot.v4b.setPosition(v4bBackUp);
                     robot.lilJarret.setPosition(clawClose);
                     robot.yaw.setPosition(yaw0);
                     robot.pitch.setPosition(pitchFDown);
@@ -254,13 +252,12 @@ public class Automus extends OpMode {
             case "1.1": //grab 1
                 if(time > 0.75) {
                     robot.v4b.setPosition(v4bBackUp);
-                    robot.pitch.setPosition(pitchBOut);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                 } else if(time > 0.25){
                     robot.lilJarret.setPosition(clawClose);
                 } else{
-                    robot.v4b.setPosition(v4bOutDown);
+                    robot.v4b.setPosition(v4bOutDown + 0.04);
                 }
                 if(robot.railR.getPosition() == railRMin) setPathState("1.2");
                 break;
@@ -270,13 +267,12 @@ public class Automus extends OpMode {
                     stopped = false;
                 }
                 target = slideMax;
-                if(time > 0.5 && slidePos >= target-10) {
+                if(time > 2 && slidePos >= target-10){
                     robot.lilJarret.setPosition(clawOpen);
                     setPathState("2.0");
-                    stopped = true;
-                }
-                else if(time > 0.25){
-                    robot.yaw.setPosition(yaw45);
+                } else if(slidePos >= target - 20){
+                    robot.yaw.setPosition(yaw45_2);
+                    robot.pitch.setPosition(pitchBOut);
                     robot.v4b.setPosition(v4bBackDown);
                 }
                 break;
@@ -286,16 +282,15 @@ public class Automus extends OpMode {
                     stopped = false;
                 }
 
-                if(time > 0.5){
+                if(time > 0.75 && slidePos <= target+50){
+                    setPathState("2.1");
+
+                } else if(time > 0.5){
                     // Rails out at 0.5 sec
                     robot.railR.setPosition(railRMax);
                     robot.railL.setPosition(railLMax);
                     robot.lilJarret.setPosition(clawOpen);
                     robot.v4b.setPosition(v4bOutUp);
-                    if(slidePos <= target+50){
-                        setPathState("2.1");
-                        stopped = true;
-                    }
                 } else if(time > 0.25) {
                     // Slides down and servos in at 0.25 sec
                     target = 0;
@@ -308,13 +303,12 @@ public class Automus extends OpMode {
             case "2.1": //grab 1
                 if(time > 0.75) {
                     robot.v4b.setPosition(v4bBackUp);
-                    robot.pitch.setPosition(pitchBOut);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                 } else if(time > 0.25){
                     robot.lilJarret.setPosition(clawClose);
                 } else{
-                    robot.v4b.setPosition(v4bOutDown);
+                    robot.v4b.setPosition(v4bOutDown+0.04);
                 }
                 if(robot.railR.getPosition() == railRMin) setPathState("2.2");
                 break;
@@ -324,13 +318,12 @@ public class Automus extends OpMode {
                     stopped = false;
                 }
                 target = slideMax;
-                if(time > 0.5 && slidePos >= target-10) {
+                if(time > 2 && slidePos >= target-10){
                     robot.lilJarret.setPosition(clawOpen);
                     setPathState("3.0");
-                    stopped = true;
-                }
-                else if(time > 0.25){
-                    robot.yaw.setPosition(yaw45);
+                } else if(slidePos >= target - 20){
+                    robot.yaw.setPosition(yaw45_2);
+                    robot.pitch.setPosition(pitchBOut);
                     robot.v4b.setPosition(v4bBackDown);
                 }
                 break;
@@ -340,17 +333,16 @@ public class Automus extends OpMode {
                     stopped = false;
                 }
 
-                if(time > 1){
+                if(time > 0.75 && slidePos <= target+50){
+                    setPathState("3.1");
+                } else if(time > 0.5){
                     // Rails out at 1 sec
                     robot.railR.setPosition(railRMax);
                     robot.railL.setPosition(railLMax);
                     robot.lilJarret.setPosition(clawOpen);
                     robot.v4b.setPosition(v4bOutUp);
-                    if(slidePos <= target+50){
-                        setPathState("3.1");
-                        stopped = true;
-                    }
-                } else if(time > 0.5) {
+                    robot.roll.setPosition(claw45_2);
+                } else if(time > 0.25) {
                     // Slides down and servos in at 0.5 sec
                     target = 0;
                     robot.v4b.setPosition(v4bBackUp);
@@ -362,13 +354,13 @@ public class Automus extends OpMode {
             case "3.1": //grab 1
                 if(time > 0.75) {
                     robot.v4b.setPosition(v4bBackUp);
-                    robot.pitch.setPosition(pitchBOut);
+                    robot.roll.setPosition(claw0);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                 } else if(time > 0.25){
                     robot.lilJarret.setPosition(clawClose);
                 } else{
-                    robot.v4b.setPosition(v4bOutDown);
+                    robot.v4b.setPosition(v4bOutDown+0.04);
                 }
                 if(robot.railR.getPosition() == railRMin) setPathState("3.2");
                 break;
@@ -378,16 +370,13 @@ public class Automus extends OpMode {
                     stopped = false;
                 }
                 target = slideMax;
-                if(time > 0.5 && slidePos >= target-10) {
+                if(time > 2 && slidePos >= target-10){
                     robot.lilJarret.setPosition(clawOpen);
-                    setPathState("4.0");
-                    stopped = true;
-                }
-                else if(time > 0.25){
-                    robot.yaw.setPosition(yaw45);
+                    setPathState("1.0");
+                } else if(slidePos >= target - 20){
+                    robot.yaw.setPosition(yaw45_2);
+                    robot.pitch.setPosition(pitchBOut);
                     robot.v4b.setPosition(v4bBackDown);
-                    target = 0;
-                    follower.followPath(park);
                 }
                 break;
         }
@@ -398,6 +387,7 @@ public class Automus extends OpMode {
     public void setPathState(String pState) {
         pathState = pState;
         pathTimer.resetTimer();
+        stopped = true;
     }
 
     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
@@ -451,4 +441,3 @@ public class Automus extends OpMode {
     public void stop() {
     }
 }
-

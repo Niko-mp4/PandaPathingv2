@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import pandaPathing.robot.Hardware;
 
 @Config
-@TeleOp(name = "I HATE NAVEEN SO MUCHHH", group = "Drive")
+@TeleOp(name = "i love naveen 😊🥰", group = "Drive")
 public class TelePOP extends OpMode {
     private Hardware robot;
 
@@ -55,14 +55,9 @@ public class TelePOP extends OpMode {
 
     public void loop(){
         // Read gamepad input for movement
-        double forward = -gamepad1.left_stick_y; // Forward/backward movement
-        double strafe = 0;
-        if (gamepad1.left_trigger != 0) {
-            strafe = gamepad1.left_trigger * 5;  // Strafe left when left trigger is pressed
-        } else if (gamepad1.right_trigger != 0) {
-            strafe = -gamepad1.right_trigger * 5;  // Strafe right when right trigger is pressed
-        }
-        double turn = gamepad1.right_stick_x; // Turning (rotate)
+        double forward = slideSpeed*driveSpeed*-gamepad1.left_stick_y; // Forward/backward movement
+        double strafe = 2*slideSpeed*driveSpeed*(gamepad1.left_trigger > 0 ? -gamepad1.left_trigger : (gamepad1.right_trigger > 0 ? gamepad1.right_trigger : 0));
+        double turn = slideSpeed*driveSpeed*gamepad1.right_stick_x; // Turning (rotate)
 
         // Calculate power for each motor based on input
         double leftFrontPower = forward + strafe + turn;    // Add all components for front-left motor
@@ -81,23 +76,25 @@ public class TelePOP extends OpMode {
             rightRearPower /= maxPower;
         }
 
-// Set motor powers directly
-        robot.leftFront.setPower(slideSpeed*driveSpeed*leftFrontPower);
-        robot.rightFront.setPower(slideSpeed*driveSpeed*rightFrontPower);
-        robot.leftRear.setPower(slideSpeed*driveSpeed*leftRearPower);
-        robot.rightRear.setPower(slideSpeed*driveSpeed*rightRearPower);
+        // Set motor powers directly
+        robot.leftFront.setPower(leftFrontPower);
+        robot.rightFront.setPower(rightFrontPower);
+        robot.leftRear.setPower(leftRearPower);
+        robot.rightRear.setPower(rightRearPower);
 
         // automatic speed control
         if(robot.railL.getPosition() <= 0.5)
             driveSpeed = 0.25;
         else driveSpeed = mult;
 
+        slideSpeed = robot.rightSlides.getCurrentPosition() >= 500 ? 1 / (robot.rightSlides.getCurrentPosition() / 500.0) : 1;
+
         // press 'left bumper' to toggle speed slow/fast (driver 1)
         if(gamepad1.left_bumper && !lBumpPressed) {
             if (!slowMode) {
                 mult = 0.33;
                 slowMode = true;
-            } else if (slowMode) {
+            } else {
                 mult = 1;
                 slowMode = false;
             }
@@ -141,7 +138,7 @@ public class TelePOP extends OpMode {
         // press 'a' to toggle rail extension in/out (driver 2)
         robot.railR.setPosition(extendPosR);
         robot.railL.setPosition(extendPosL);
-        if (gamepad1.dpad_up && !aPressed) {
+        if (gamepad2.a && !aPressed) {
             if (!extended) { // claw open & out when extend
                 robot.pitch.setPosition(pitchFDown);
                 robot.roll.setPosition(claw0);
@@ -160,7 +157,7 @@ public class TelePOP extends OpMode {
                 extended = false;
             }
             aPressed = true;
-        } else if (!gamepad1.dpad_up) aPressed = false;
+        } else if (!gamepad2.a) aPressed = false;
         robot.railR.resetDeviceConfigurationForOpMode();
         robot.railL.resetDeviceConfigurationForOpMode();
 
@@ -180,7 +177,7 @@ public class TelePOP extends OpMode {
         } else if(!gamepad1.right_bumper) rbumpPressed = false;
 
         // press 'b' to deposit sample (driver 2)
-        if(gamepad1.dpad_down && !bPressed) {
+        if(gamepad2.b && !bPressed) {
             if (!extended) {
                 v4bPos = v4bBackDown - 0.05;
                 robot.pitch.setPosition(pitchBOut);
@@ -190,7 +187,7 @@ public class TelePOP extends OpMode {
                 depositing = false;
             }
             bPressed = true;
-        } else if(!gamepad1.dpad_down) bPressed = false;
+        } else if(!gamepad2.b) bPressed = false;
 
         // press 'back' to cancel (driver 2)
         if(gamepad2.back && !back2Pressed){
@@ -248,10 +245,6 @@ public class TelePOP extends OpMode {
             }
             backPressed = true;
         } else if (!gamepad1.back) backPressed = false;
-
-        if(slideTarget > 250 || slideTarget > 250)
-            slideSpeed = 0.3;
-        else slideSpeed = 1;
 
         // sequences
         /**Claw open/close timer:
