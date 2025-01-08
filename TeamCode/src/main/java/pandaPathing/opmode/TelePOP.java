@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import pandaPathing.robot.Hardware;
 
 @Config
-@TeleOp(name = "i love naveen 😊🥰", group = "Drive")
+@TeleOp(name = "I HATE Naveen", group = "Drive")
 public class TelePOP extends OpMode {
     private Hardware robot;
 
@@ -87,7 +87,7 @@ public class TelePOP extends OpMode {
             driveSpeed = 0.25;
         else driveSpeed = mult;
 
-        slideSpeed = robot.rightSlides.getCurrentPosition() >= 500 ? 1 / (robot.rightSlides.getCurrentPosition() / 500.0) : 1;
+        slideSpeed = Math.sqrt((robot.rightSlides.getCurrentPosition()-1510.41666)/-1510.41666);
 
         // press 'left bumper' to toggle speed slow/fast (driver 1)
         if(gamepad1.left_bumper && !lBumpPressed) {
@@ -101,14 +101,15 @@ public class TelePOP extends OpMode {
             lBumpPressed = true;
         } else if(!gamepad1.left_bumper) lBumpPressed = false;
 
-        // use 'left stick y' to move slides up/down (driver 2)
         robot.rightSlides.setPower(robot.slidePidPow(slideTarget));
         robot.leftSlides.setPower(robot.slidePidPow(slideTarget));
+
+        //use 'left stick y' to move slides up/down (driver 2)
         if(gamepad2.left_stick_y != 0) {
-            if (-gamepad2.left_stick_y > 0 && slideTarget < slideMax) // upper limit
-                slideTarget += 10 * -gamepad2.left_stick_y;
-            if (-gamepad2.left_stick_y < 0 && slideTarget > slideMin) // lower limit
-                slideTarget += 10 * -gamepad2.left_stick_y;
+            //if (-gamepad2.left_stick_y > 0 && slideTarget < slideMax) // upper limit
+                //slideTarget += 10 * -gamepad2.left_stick_y;
+            //if (-gamepad2.left_stick_y < 0 && slideTarget > slideMin) // lower limit
+                //slideTarget += 10 * -gamepad2.left_stick_y;
         }
 
         // press 'dpad up/down' to set slide target to one of 4 positions (driver 2)

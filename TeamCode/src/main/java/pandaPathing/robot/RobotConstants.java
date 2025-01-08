@@ -9,7 +9,7 @@ public class RobotConstants {
     // Servo positions
     public static double
 
-            pitchFDown = 0.571,
+            pitchFDown = 0.565,
 
             pitchFOut = 1,
 
