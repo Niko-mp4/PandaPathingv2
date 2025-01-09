@@ -9,11 +9,11 @@ public class RobotConstants {
     // Servo positions
     public static double
 
-            pitchFDown = 0.565,
+            pitchFDown = 0.455,
 
             pitchFOut = 1,
 
-            pitchBOut = 0.24,
+            pitchBOut = 0.194,
 
             pitchBDown = 0.2,
 
@@ -37,13 +37,13 @@ public class RobotConstants {
 
             clawClose = 0.1,
 
-            claw45_2 = 0.788,
+            claw45_2 = 0.688,
 
-            claw0 = 0.515,
+            claw0 = 0.488,
 
-            claw45 = 0.320,
+            claw45 = 0.244,
 
-            claw90 = 0.005,
+            claw90 = 0,
 
             yaw45_2 = 0.334,
 
