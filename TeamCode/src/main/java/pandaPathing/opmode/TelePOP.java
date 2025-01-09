@@ -34,7 +34,7 @@ import pandaPathing.robot.Hardware;
 public class TelePOP extends OpMode {
     private Hardware robot;
 
-    boolean dUpPressed, dDownPressed, yPressed, y1Pressed, aPressed, a1Pressed, rbumpPressed, lBumpPressed, backPressed, back2Pressed, xPressed, x1Pressed, bPressed, b1Pressed,
+    boolean dUpPressed, dDownPressed, dLeftPressed, yPressed, y1Pressed, aPressed, a1Pressed, rbumpPressed, lBumpPressed, backPressed, back2Pressed, xPressed, x1Pressed, bPressed, b1Pressed,
             clawIsOpen = false, extended = false, neckUp = true, slowMode = false, hanging = false, slidesUp = false, slidesDown = false,
             depositing = false, clawTimerRunning = false;
     double slideTarget = slideMin, extendPosR = railRMin, extendPosL = railLMin, v4bPos = v4bBackUp,
@@ -122,6 +122,10 @@ public class TelePOP extends OpMode {
                 slideTarget = slideMin; // or slides down all the way
                 dDownPressed = true;
             } else if (!gamepad2.dpad_down) dDownPressed = false;
+            if (gamepad2.dpad_left && !dLeftPressed) {
+                slideTarget = 700; // or slides down all the way
+                dLeftPressed = true;
+            } else if (!gamepad2.dpad_left) dLeftPressed = false;
         } // automatic deposit setup when slides are up
         if(robot.rightSlides.getCurrentPosition() >= slideMax-20 && !slidesUp) {
             robot.pitch.setPosition(pitchBOut); // set claw above basket

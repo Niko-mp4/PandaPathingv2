@@ -9,13 +9,13 @@ public class RobotConstants {
     // Servo positions
     public static double
 
-            pitchFDown = 0.455,
+            pitchFDown = 0.577,
 
-            pitchFOut = 1,
+            //pitchFOut = 1,
 
-            pitchBOut = 0.194,
+            pitchBOut = 0.308,
 
-            pitchBDown = 0.2,
+            //pitchBDown = 0.2,
 
             railRMax = 0.74,
 
