@@ -35,6 +35,7 @@ import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import pandaPathing.constants.FConstants;
@@ -86,24 +87,24 @@ public class Automus extends OpMode {
     private final Pose startPose = new Pose(136.5, 31.5, Math.toRadians(90));
 
     /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) angle. */
-    private final Pose scorePreloadPose = new Pose(135.5, 22, Math.toRadians(90));
-    private final Pose scorePose1 = new Pose(127, 13, Math.toRadians(180));
+    private final Pose scorePreloadPose = new Pose(135.5, 20.4, Math.toRadians(90));
+    private final Pose scorePose1 = new Pose(128, 11, Math.toRadians(180));
 
-    private final Pose scorePose2 = new Pose(127, 13, Math.toRadians(180));
+    private final Pose scorePose2 = new Pose(126.5, 11, Math.toRadians(180));
 
-    private final Pose scorePose3 = new Pose(124.5, 13, Math.toRadians(180));
+    private final Pose scorePose3 = new Pose(125.6, 11, Math.toRadians(180));
 
     /** Lowest (First) Sample from the Spike Mark */
-    private final Pose pickup1Pose = new Pose(128, 23, Math.toRadians(180));
+    private final Pose pickup1Pose = new Pose(127.1, 23.1, Math.toRadians(180));
 
     /** Middle (Second) Sample from the Spike Mark */
-    private final Pose pickup2Pose = new Pose(126.4, 13.35, Math.toRadians(180));
+    private final Pose pickup2Pose = new Pose(125.9, 13.65, Math.toRadians(180));
 
     /** Highest (Third) Sample from the Spike Mark */
-    private final Pose pickup3Pose = new Pose(124, 13.6, Math.toRadians(210));
+    private final Pose pickup3Pose = new Pose(122.4, 14.8, Math.toRadians(210));
 
     /** Park Pose for our robot, after we do all of the scoring. */
-    private final Pose parkPose = new Pose(72, 48, Math.toRadians(90));
+    private final Pose parkPose = new Pose(72, 48, Math.toRadians(270));
 
     /** Park Control Pose for our robot, this is used to manipulate the bezier curve that we will create for the parking.
      * The Robot will not go to this pose, it is used a control point for our bezier curve. */
@@ -142,41 +143,41 @@ public class Automus extends OpMode {
         /* This is our grabPickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         grabPickup1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(scorePreloadPose), new Point(pickup1Pose)))
-                .setLinearHeadingInterpolation(scorePreloadPose.getHeading(), pickup1Pose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
                 .build();
 
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(pickup1Pose), new Point(scorePose1)))
-                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose1.getHeading())
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         grabPickup2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(scorePose1), new Point(pickup2Pose)))
-                .setLinearHeadingInterpolation(scorePose1.getHeading(), pickup2Pose.getHeading())
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         /* This is our scorePickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(pickup2Pose), new Point(scorePose2)))
-                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), scorePose2.getHeading())
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         /* This is our grabPickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         grabPickup3 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(scorePose2), new Point(pickup3Pose)))
-                .setLinearHeadingInterpolation(scorePose2.getHeading(), pickup3Pose.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(210))
                 .build();
 
         /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup3 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(pickup3Pose), new Point(scorePose3)))
-                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), scorePose3.getHeading())
+                .setLinearHeadingInterpolation(Math.toRadians(210), Math.toRadians(180))
                 .build();
 
         /* This is our park path. We are using a BezierCurve with 3 points, which is a curved line that is curved based off of the control point */
-        park = new Path(new BezierCurve(new Point(scorePose3), /* Control Point */ new Point(parkControlPose), new Point(parkPose)));
+        park = new Path(new BezierCurve(new Point(scorePose3), /* Control Point */ new Point(parkPose)));
         park.setLinearHeadingInterpolation(scorePose3.getHeading(), parkPose.getHeading());
     }
 
@@ -205,11 +206,12 @@ public class Automus extends OpMode {
         if(slidePos <= slideMin + 50 && !slidesDown) slidesDown = true;
         else if(slidePos < slideMin - 20) slidesDown = false;
 
+
         switch (pathState) {
             case "0.0": //preload & set max power
                 follower.setMaxPower(1);
                 robot.v4b.setPosition(v4bBackDown);
-                robot.pitch.setPosition(pitchBOut);
+                robot.pitch.setPosition(pitchFDown);
                 robot.lilJarret.setPosition(clawClose);
                 robot.railL.setPosition(railLMin);
                 robot.railR.setPosition(railRMin);
@@ -219,22 +221,24 @@ public class Automus extends OpMode {
                 startTime = System.currentTimeMillis();
                 break;
             case "0.1": //run robo to bucket and lift slides 0
-                if (stopped) {
+                if (slidePos > 500 && stopped) {
                     follower.followPath(scorePreload);
                     stopped = false;
                 }
                 target = slideMax;
-                if (slidesUp){
-                    robot.yaw.setPosition(yaw45_2);
-                    robot.pitch.setPosition(pitchBOut);
-                    robot.v4b.setPosition(v4bBackDown);
+                if (slidesUp && follower.atParametricEnd()){
                     setPathState("0.2");
+                } else if(time > 0.75){
+                    robot.pitch.setPosition(pitchBOut);
+                    robot.v4b.setPosition(v4bBackDown-0.065);
                 }
                 break;
             case "0.2": // score timer 0
-                if(time > 0.5) {
-                    setPathState("1.0");
+                if(time > 1.5) setPathState("1.0");
+                else if(time > 0.5) {
                     robot.lilJarret.setPosition(clawOpen);
+                } else if(time > 0.25){
+                    robot.yaw.setPosition(yaw45_2);
                 }
                 break;
             case "1.0": // Go to grab position 1 and extend
@@ -242,46 +246,49 @@ public class Automus extends OpMode {
                     follower.followPath(grabPickup1);
                     stopped = false;
                 }
-                if (time > 0.75) {
-                    if (slidesDown && robot.railL.getPosition() >= railRMax) setPathState("1.1");
-                    robot.railR.setPosition(railRMax);
-                    robot.railL.setPosition(railLMax);
-                    robot.lilJarret.setPosition(clawOpen);
-                    robot.v4b.setPosition(v4bOutUp);
-                } else if (time > 0.5) {
+                if (slidesDown && time > 1 && follower.atParametricEnd()) setPathState("1.1");
+                else if(time > 0.5){
+                    robot.pitch.setPosition(pitchFDown);
+                }
+                else if (time > 0.25) {
                     target = slideMin;
                     robot.lilJarret.setPosition(clawClose);
                     robot.yaw.setPosition(yaw0);
-                    robot.pitch.setPosition(pitchFDown);
                 }
                 break;
             case "1.1": // Grab 1 and retract
-                if (time > 1) {
+                if (time > 2.5) {
                     if (robot.railR.getPosition() == railRMin) setPathState("1.2");
                     robot.v4b.setPosition(v4bBackUp);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
-                } else if (time > 0.75) {
+                } else if (time > 2.25) {
                     robot.lilJarret.setPosition(clawClose);
-                } else if (time > 0.5){
+                } else if (time > 2){
                     robot.v4b.setPosition(v4bOutDown + 0.04);
+                } else if(time > 1) {
+                    robot.railR.setPosition(railRMax);
+                    robot.railL.setPosition(railLMax);
+                    robot.lilJarret.setPosition(clawOpen);
+                    robot.v4b.setPosition(v4bOutUp);
                 }
                 break;
             case "1.2": // Go to score position 1 and lift slides
-                if (stopped) {
+                if (slidePos > 500 && stopped) {
                     follower.followPath(scorePickup1);
                     stopped = false;
                 }
                 target = slideMax;
-                if(slidesUp){
-                    robot.pitch.setPosition(pitchBOut);
-                    robot.v4b.setPosition(v4bBackDown);
+                if (slidesUp && follower.atParametricEnd()){
                     setPathState("1.3");
+                } else if(time > 0.75){
+                    robot.pitch.setPosition(pitchBOut);
+                    robot.v4b.setPosition(v4bBackDown-0.065);
                 }
                 break;
             case "1.3": // Deposit 1
-                if(time > 0.5) {
-                    setPathState("2.0");
+                if(time > 0.75) setPathState("2.0");
+                else if(time > 0.5) {
                     robot.lilJarret.setPosition(clawOpen);
                 } else if(time > 0.25) {
                     robot.yaw.setPosition(yaw45);
@@ -292,47 +299,54 @@ public class Automus extends OpMode {
                     follower.followPath(grabPickup2);
                     stopped = false;
                 }
-                if (time > 0.75) {
-                    if (slidesDown && robot.railL.getPosition() >= railRMax) setPathState("2.1");
+                if (slidesDown && time > 1 && follower.atParametricEnd()) setPathState("2.1");
+                else if(time > 0.5){
+                    robot.pitch.setPosition(pitchFDown);
+                }
+                else if (time > 0.25) {
                     target = slideMin;
-                    robot.railR.setPosition(railRMax);
-                    robot.railL.setPosition(railLMax);
-                    robot.lilJarret.setPosition(clawOpen);
-                    robot.v4b.setPosition(v4bOutUp);
-                } else if (time > 0.5) {
                     robot.lilJarret.setPosition(clawClose);
                     robot.yaw.setPosition(yaw0);
-                    robot.pitch.setPosition(pitchFDown);
                 }
                 break;
             case "2.1": // Grab 1 and retract
-                if (time > 1.25) {
+                if (time > 2.5) {
+                    if (robot.railR.getPosition() == railRMin) setPathState("2.2");
                     robot.v4b.setPosition(v4bBackUp);
+                    robot.roll.setPosition(claw0);
+                    robot.yaw.setPosition(yaw0);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
-                } else if (time > 1) {
+                } else if (time > 2.25) {
                     robot.lilJarret.setPosition(clawClose);
-                } else if (time > 0.75){
+                } else if (time > 2){
                     robot.v4b.setPosition(v4bOutDown + 0.04);
+                } else if(time > 1.5){
+                    robot.yaw.setPosition(yaw0 + 0.06);
+                }else if(time > 1) {
+                    robot.railR.setPosition(railRMax);
+                    robot.railL.setPosition(railLMax);
+                    robot.lilJarret.setPosition(clawOpen);
+                    robot.roll.setPosition(claw0-0.05);
+                    robot.v4b.setPosition(v4bOutUp);
                 }
-                if (robot.railR.getPosition() == railRMin) setPathState("2.2");
                 break;
             case "2.2": // Go to score position 1 and lift slides
-                if (stopped) {
+                if (slidePos > 750 && stopped) {
                     follower.followPath(scorePickup2);
                     stopped = false;
                 }
                 target = slideMax;
-                if(slidesUp){
+                if (slidesUp && follower.atParametricEnd()){
                     setPathState("2.3");
+                } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
-                    robot.v4b.setPosition(v4bBackDown);
+                    robot.v4b.setPosition(v4bBackDown-0.065);
                 }
                 break;
             case "2.3": // Deposit 1
-                if(time > 0.75) {
-                    setPathState("3.0");
-                } else if(time > 0.5) {
+                if(time > 0.75) setPathState("3.0");
+                else if(time > 0.5) {
                     robot.lilJarret.setPosition(clawOpen);
                 } else if(time > 0.25) {
                     robot.yaw.setPosition(yaw45);
@@ -343,58 +357,73 @@ public class Automus extends OpMode {
                     follower.followPath(grabPickup3);
                     stopped = false;
                 }
-                if (time > 0.75) {
-                    if (slidesDown && robot.railL.getPosition() >= railRMax) setPathState("3.1");
-                    robot.railR.setPosition(railRMax);
-                    robot.railL.setPosition(railLMax);
-                    robot.lilJarret.setPosition(clawOpen);
-                    robot.v4b.setPosition(v4bOutUp);
-                    robot.roll.setPosition(claw45_2);
-                } else if (time > 0.5) {
+                if (slidesDown && time > 1 && follower.atParametricEnd()) setPathState("3.1");
+                else if(time > 0.5){
+                    robot.pitch.setPosition(pitchFDown);
+                }
+                else if (time > 0.25) {
                     target = slideMin;
                     robot.lilJarret.setPosition(clawClose);
                     robot.yaw.setPosition(yaw0);
-                    robot.pitch.setPosition(pitchFDown);
                 }
                 break;
             case "3.1": // Grab 1 and retract
-                if (time > 1) {
+                if (time > 2.5) {
                     if (robot.railR.getPosition() == railRMin) setPathState("3.2");
                     robot.v4b.setPosition(v4bBackUp);
+                    robot.roll.setPosition(claw0);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
-                    robot.roll.setPosition(claw0);
-                } else if (time > 0.75) {
+                } else if (time > 2.25) {
                     robot.lilJarret.setPosition(clawClose);
-                } else if (time > 0.5){
+                } else if (time > 2){
                     robot.v4b.setPosition(v4bOutDown + 0.04);
+                } else if(time > 1) {
+                    robot.railR.setPosition(railRMax);
+                    robot.railL.setPosition(railLMax);
+                    robot.roll.setPosition(claw45_2);
+                    robot.lilJarret.setPosition(clawOpen);
+                    robot.v4b.setPosition(v4bOutUp);
                 }
                 break;
             case "3.2": // Go to score position 1 and lift slides
-                if (stopped) {
+                if (slidePos > 750 && stopped) {
                     follower.followPath(scorePickup3);
                     stopped = false;
                 }
                 target = slideMax;
-                if(slidesUp) {
-                    robot.pitch.setPosition(pitchBOut);
-                    robot.v4b.setPosition(v4bBackDown);
+                if (slidesUp && follower.atParametricEnd()){
                     setPathState("3.3");
+                } else if(time > 0.75){
+                    robot.pitch.setPosition(pitchBOut);
+                    robot.v4b.setPosition(v4bBackDown-0.065);
                 }
                 break;
             case "3.3": // Deposit 1
-                if(time > 1){
-                    setPathState("1.0");
-                } else if(time > 0.5) {
+                if(time > 0.75) setPathState("4.0");
+                else if(time > 0.5) {
                     robot.lilJarret.setPosition(clawOpen);
-                } else if(time > 0.25){
+                } else if(time > 0.25) {
                     robot.yaw.setPosition(yaw45);
                 }
+                break;
+            case "4.0":
+                if (stopped) {
+                    follower.followPath(park);
+                    stopped = false;
+                }
+                if(time > 4){
+                    robot.hangerR.setTargetPosition(5100);
+                    robot.hangerR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    robot.hangerR.setPower(1);
+                    robot.hangerL.setTargetPosition(5100);
+                    robot.hangerL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    robot.hangerL.setPower(1);
+                } else if(time > 1)
+                    target = slideMin;
+
+                break;
         }
-        telemetry.addData("path state", pathState);
-        telemetry.addData("time", time);
-        telemetry.addData("slidePos", slidePos);
-        telemetry.update();
     }
 
     /** These change the states of the paths and actions
@@ -418,7 +447,7 @@ public class Automus extends OpMode {
         robot.leftSlides.setPower(robot.slidePidPow(target));
 
         // Feedback to Driver Hub
-
+        telemetry.addData("x", follower.getXOffset());
     }
 
     /** This method is called once at the init of the OpMode. **/

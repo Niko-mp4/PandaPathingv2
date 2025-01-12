@@ -2,6 +2,7 @@ package pandaPathing.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -50,8 +51,8 @@ public class Hardware {
         rightSlides = initMotor("em1", DcMotorEx.Direction.REVERSE);
         if(auto) rightSlides.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         leftSlides = initMotor("em0", DcMotorEx.Direction.FORWARD);
-        hangerL = initMotor("cm1", DcMotorEx.Direction.FORWARD);
-        hangerR = initMotor("cm0", DcMotorEx.Direction.FORWARD);
+        hangerR = initMotor("cm1", DcMotorEx.Direction.FORWARD);
+        hangerL = initMotor("cm0", DcMotorEx.Direction.FORWARD);
         slideyController = new PDFLController(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
     }
 
