@@ -11,11 +11,15 @@ public class RobotConstants {
 
             pitchFDown = 0.585,
 
-            //pitchFOut = 1,
+            pitchFOut = 1,
+
+            pitchMUp,
 
             pitchBOut = 0.251,
 
             //pitchBDown = 0.2,
+
+            pitchBUp = 0.3,
 
             railRMax = 0.74,
 
@@ -25,13 +29,19 @@ public class RobotConstants {
 
             railLMin = 0.9,
 
-            v4bOutUp = 0.31,
+            railRSpec = 0.6,
 
-            v4bOutDown = 0.39,
+            railLSpec = 0.4,
 
-            v4bBackUp = 0.16,
+            v4bFUp = 0.31,
 
-            v4bBackDown = 0.065,
+            v4bFOut = 0.35,
+
+            v4bFDown = 0.39,
+
+            v4bMUp = 0.16,
+
+            v4bBDown = 0.065,
 
             clawOpen = 0.5,
 

@@ -1,11 +1,9 @@
 package pandaPathing.opmode;
 
 import static pandaPathing.robot.RobotConstants.claw0;
-import static pandaPathing.robot.RobotConstants.claw45;
 import static pandaPathing.robot.RobotConstants.claw45_2;
 import static pandaPathing.robot.RobotConstants.clawClose;
 import static pandaPathing.robot.RobotConstants.clawOpen;
-import static pandaPathing.robot.RobotConstants.f;
 import static pandaPathing.robot.RobotConstants.pitchBOut;
 import static pandaPathing.robot.RobotConstants.pitchFDown;
 import static pandaPathing.robot.RobotConstants.railLMax;
@@ -14,10 +12,10 @@ import static pandaPathing.robot.RobotConstants.railRMax;
 import static pandaPathing.robot.RobotConstants.railRMin;
 import static pandaPathing.robot.RobotConstants.slideMax;
 import static pandaPathing.robot.RobotConstants.slideMin;
-import static pandaPathing.robot.RobotConstants.v4bBackDown;
-import static pandaPathing.robot.RobotConstants.v4bBackUp;
-import static pandaPathing.robot.RobotConstants.v4bOutDown;
-import static pandaPathing.robot.RobotConstants.v4bOutUp;
+import static pandaPathing.robot.RobotConstants.v4bBDown;
+import static pandaPathing.robot.RobotConstants.v4bMUp;
+import static pandaPathing.robot.RobotConstants.v4bFDown;
+import static pandaPathing.robot.RobotConstants.v4bFUp;
 import static pandaPathing.robot.RobotConstants.yaw0;
 import static pandaPathing.robot.RobotConstants.yaw45;
 import static pandaPathing.robot.RobotConstants.yaw45_2;
@@ -36,7 +34,6 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import pandaPathing.constants.FConstants;
 import pandaPathing.constants.LConstants;
@@ -210,7 +207,7 @@ public class Automus extends OpMode {
         switch (pathState) {
             case "0.0": //preload & set max power
                 follower.setMaxPower(1);
-                robot.v4b.setPosition(v4bBackDown);
+                robot.v4b.setPosition(v4bBDown);
                 robot.pitch.setPosition(pitchFDown);
                 robot.lilJarret.setPosition(clawClose);
                 robot.railL.setPosition(railLMin);
@@ -230,7 +227,7 @@ public class Automus extends OpMode {
                     setPathState("0.2");
                 } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
-                    robot.v4b.setPosition(v4bBackDown-0.065);
+                    robot.v4b.setPosition(v4bBDown -0.065);
                 }
                 break;
             case "0.2": // score timer 0
@@ -259,18 +256,18 @@ public class Automus extends OpMode {
             case "1.1": // Grab 1 and retract
                 if (time > 2.5) {
                     if (robot.railR.getPosition() == railRMin) setPathState("1.2");
-                    robot.v4b.setPosition(v4bBackUp);
+                    robot.v4b.setPosition(v4bMUp);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                 } else if (time > 2.25) {
                     robot.lilJarret.setPosition(clawClose);
                 } else if (time > 2){
-                    robot.v4b.setPosition(v4bOutDown + 0.04);
+                    robot.v4b.setPosition(v4bFDown + 0.04);
                 } else if(time > 1) {
                     robot.railR.setPosition(railRMax);
                     robot.railL.setPosition(railLMax);
                     robot.lilJarret.setPosition(clawOpen);
-                    robot.v4b.setPosition(v4bOutUp);
+                    robot.v4b.setPosition(v4bFUp);
                 }
                 break;
             case "1.2": // Go to score position 1 and lift slides
@@ -283,7 +280,7 @@ public class Automus extends OpMode {
                     setPathState("1.3");
                 } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
-                    robot.v4b.setPosition(v4bBackDown-0.065);
+                    robot.v4b.setPosition(v4bBDown -0.065);
                 }
                 break;
             case "1.3": // Deposit 1
@@ -312,7 +309,7 @@ public class Automus extends OpMode {
             case "2.1": // Grab 1 and retract
                 if (time > 2.5) {
                     if (robot.railR.getPosition() == railRMin) setPathState("2.2");
-                    robot.v4b.setPosition(v4bBackUp);
+                    robot.v4b.setPosition(v4bMUp);
                     robot.roll.setPosition(claw0);
                     robot.yaw.setPosition(yaw0);
                     robot.railR.setPosition(railRMin);
@@ -320,7 +317,7 @@ public class Automus extends OpMode {
                 } else if (time > 2.25) {
                     robot.lilJarret.setPosition(clawClose);
                 } else if (time > 2){
-                    robot.v4b.setPosition(v4bOutDown + 0.04);
+                    robot.v4b.setPosition(v4bFDown + 0.04);
                 } else if(time > 1.5){
                     robot.yaw.setPosition(yaw0 + 0.06);
                 }else if(time > 1) {
@@ -328,7 +325,7 @@ public class Automus extends OpMode {
                     robot.railL.setPosition(railLMax);
                     robot.lilJarret.setPosition(clawOpen);
                     robot.roll.setPosition(claw0-0.05);
-                    robot.v4b.setPosition(v4bOutUp);
+                    robot.v4b.setPosition(v4bFUp);
                 }
                 break;
             case "2.2": // Go to score position 1 and lift slides
@@ -341,7 +338,7 @@ public class Automus extends OpMode {
                     setPathState("2.3");
                 } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
-                    robot.v4b.setPosition(v4bBackDown-0.065);
+                    robot.v4b.setPosition(v4bBDown -0.065);
                 }
                 break;
             case "2.3": // Deposit 1
@@ -370,20 +367,20 @@ public class Automus extends OpMode {
             case "3.1": // Grab 1 and retract
                 if (time > 2.5) {
                     if (robot.railR.getPosition() == railRMin) setPathState("3.2");
-                    robot.v4b.setPosition(v4bBackUp);
+                    robot.v4b.setPosition(v4bMUp);
                     robot.roll.setPosition(claw0);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                 } else if (time > 2.25) {
                     robot.lilJarret.setPosition(clawClose);
                 } else if (time > 2){
-                    robot.v4b.setPosition(v4bOutDown + 0.04);
+                    robot.v4b.setPosition(v4bFDown + 0.04);
                 } else if(time > 1) {
                     robot.railR.setPosition(railRMax);
                     robot.railL.setPosition(railLMax);
                     robot.roll.setPosition(claw45_2);
                     robot.lilJarret.setPosition(clawOpen);
-                    robot.v4b.setPosition(v4bOutUp);
+                    robot.v4b.setPosition(v4bFUp);
                 }
                 break;
             case "3.2": // Go to score position 1 and lift slides
@@ -396,7 +393,7 @@ public class Automus extends OpMode {
                     setPathState("3.3");
                 } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
-                    robot.v4b.setPosition(v4bBackDown-0.065);
+                    robot.v4b.setPosition(v4bBDown -0.065);
                 }
                 break;
             case "3.3": // Deposit 1

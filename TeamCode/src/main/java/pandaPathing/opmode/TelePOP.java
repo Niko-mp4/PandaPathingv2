@@ -8,16 +8,21 @@ import static pandaPathing.robot.RobotConstants.clawClose;
 import static pandaPathing.robot.RobotConstants.clawOpen;
 import static pandaPathing.robot.RobotConstants.pitchBOut;
 import static pandaPathing.robot.RobotConstants.pitchFDown;
+import static pandaPathing.robot.RobotConstants.pitchMUp;
 import static pandaPathing.robot.RobotConstants.railLMax;
 import static pandaPathing.robot.RobotConstants.railLMin;
+import static pandaPathing.robot.RobotConstants.railLSpec;
 import static pandaPathing.robot.RobotConstants.railRMax;
 import static pandaPathing.robot.RobotConstants.railRMin;
+import static pandaPathing.robot.RobotConstants.railRSpec;
 import static pandaPathing.robot.RobotConstants.slideMax;
+import static pandaPathing.robot.RobotConstants.slideMaxSpec;
 import static pandaPathing.robot.RobotConstants.slideMin;
-import static pandaPathing.robot.RobotConstants.v4bBackDown;
-import static pandaPathing.robot.RobotConstants.v4bBackUp;
-import static pandaPathing.robot.RobotConstants.v4bOutDown;
-import static pandaPathing.robot.RobotConstants.v4bOutUp;
+import static pandaPathing.robot.RobotConstants.v4bBDown;
+import static pandaPathing.robot.RobotConstants.v4bMUp;
+import static pandaPathing.robot.RobotConstants.v4bFDown;
+import static pandaPathing.robot.RobotConstants.v4bFOut;
+import static pandaPathing.robot.RobotConstants.v4bFUp;
 import static pandaPathing.robot.RobotConstants.yaw0;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -36,17 +41,17 @@ public class TelePOP extends OpMode {
 
     boolean dUpPressed, dDownPressed, dLeftPressed, yPressed, y1Pressed, aPressed, a1Pressed, rBumpPressed, lBumpPressed, backPressed, back2Pressed, xPressed, x1Pressed, bPressed, b1Pressed,
             clawIsOpen = false, extended = false, neckUp = true, slowMode = false, hanging = false, slidesUp = false, slidesDown = false,
-            depositAction = false, grabAction = false;
-    double slideTarget = slideMin, extendPosR = railRMin, extendPosL = railLMin, v4bPos = v4bBackUp,
+            depositAction = false, grabAction = false, specMode = false;
+    double slideTarget = slideMin, extendPosR = railRMin, extendPosL = railLMin, v4bPos = v4bMUp,
             depositTime, depositStartTime, grabStartTime, grabTime,
             driveSpeed, slideSpeed, mult = 1;
 
     public void init() {
         robot = new Hardware(hardwareMap);
         telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-        robot.v4b.setPosition(v4bBackUp);
+        robot.v4b.setPosition(v4bMUp);
         robot.pitch.setPosition(pitchFDown);
-        robot.lilJarret.setPosition(clawClose);
+        robot.lilJarret.setPosition(clawClose); clawIsOpen = false;
         robot.roll.setPosition(claw0);
         robot.yaw.setPosition(yaw0);
         robot.railL.setPosition(railLMin);
@@ -115,7 +120,7 @@ public class TelePOP extends OpMode {
         // press 'dpad up/down' to set slide target to one of 4 positions (driver 2)
         else {
             if (gamepad2.dpad_up && !dUpPressed) {
-                slideTarget = slideMax; // top bar for spec. or top basket
+                slideTarget = specMode ? slideMaxSpec : slideMax; // top bar for spec. or top basket
                 dUpPressed = true;
             } else if (!gamepad2.dpad_up) dUpPressed = false;
             if (gamepad2.dpad_down && !dDownPressed) {
@@ -129,7 +134,7 @@ public class TelePOP extends OpMode {
         } // automatic deposit setup when slides are up
         if(robot.rightSlides.getCurrentPosition() >= slideMax-20 && !slidesUp) {
             robot.pitch.setPosition(pitchBOut); // set claw above basket
-            v4bPos = v4bBackDown+0.05;
+            v4bPos = v4bBDown +0.05;
             slidesUp = true;
         } else if(robot.rightSlides.getCurrentPosition() <= slideMax - 100) slidesUp = false;
         if(slideTarget <= slideMin) slideTarget = slideMin; // reset slide position if out of bounds
@@ -144,21 +149,12 @@ public class TelePOP extends OpMode {
         robot.railR.setPosition(extendPosR);
         robot.railL.setPosition(extendPosL);
         if (gamepad2.a && !aPressed) {
-            if (!extended) { // claw open & out when extend
-                robot.pitch.setPosition(pitchFDown);
-                robot.roll.setPosition(claw0);
-                v4bPos = v4bOutUp;
-                robot.lilJarret.setPosition(clawOpen); clawIsOpen = true;
-                extendPosR = railRMax;
-                extendPosL = railLMax;
+            if (!extended) { // claw open & out when extend || extend into bar for spec
+                if(specMode) railExtendSpec();
+                else railExtend();
                 extended = true;
             } else { // claw close & tuck when retract
-                v4bPos = v4bBackUp;
-                robot.roll.setPosition(claw0);
-                robot.lilJarret.setPosition(clawClose); clawIsOpen = false;
-                robot.pitch.setPosition(pitchFDown);
-                extendPosR = railRMin;
-                extendPosL = railLMin;
+                railRetract();
                 extended = false;
             }
             aPressed = true;
@@ -170,18 +166,18 @@ public class TelePOP extends OpMode {
         robot.v4b.setPosition(v4bPos);
         if(gamepad1.right_bumper && extended && !rBumpPressed){
             if(!neckUp){
-                v4bPos = v4bOutUp;
+                v4bPos = v4bFUp;
                 grabStartTime = System.currentTimeMillis();
                 neckUp = true;
             } else {
-                v4bPos = v4bOutDown;
+                v4bPos = v4bFDown;
                 grabStartTime = System.currentTimeMillis();
                 neckUp = false;
             }
             rBumpPressed = true;
         } else if(!gamepad1.right_bumper) rBumpPressed = false;
         grabTime = (System.currentTimeMillis() - grabStartTime) / 1000.0;
-        if (grabTime > 0.25 && !grabAction){
+        if (grabTime > 0.25 && !grabAction){ // timer to open/close claw after v4b moves
             robot.lilJarret.setPosition(neckUp ? clawOpen : clawClose);
             clawIsOpen = neckUp;
             grabAction = true;
@@ -189,23 +185,37 @@ public class TelePOP extends OpMode {
 
         // press 'b' to deposit sample (driver 2)
         if(gamepad2.b && !bPressed && !extended) {
-            v4bPos = v4bBackDown;
-            robot.pitch.setPosition(pitchBOut);
-            depositStartTime = System.currentTimeMillis();
+            if(!specMode) {
+                v4bPos = v4bBDown;
+                robot.pitch.setPosition(pitchBOut);
+                if(depositTime < 0.5) specMode = true;
+                else depositStartTime = System.currentTimeMillis();
+            } else {
+                robot.lilJarret.setPosition(clawClose); clawIsOpen = false;
+                depositStartTime = System.currentTimeMillis();
+            }
             bPressed = true;
         } else if(!gamepad2.b) bPressed = false;
         depositTime = (System.currentTimeMillis() - depositStartTime) / 1000.0;
-        if(depositTime > 0.5 && !depositAction) { // make claw drop after return
-            v4bPos = v4bBackUp;
-            robot.pitch.setPosition(pitchFDown);
-            robot.lilJarret.setPosition(clawClose); // go back in
-            clawIsOpen = false;
-            depositAction = true;
-        } else if(depositTime > 0.25 && !depositAction){
-            v4bPos = v4bBackDown;
-            robot.lilJarret.setPosition(clawOpen); // drop
-            clawIsOpen = true;
-        } else if(depositTime < 0.25) depositAction = false;
+        if(!specMode) {
+            if (depositTime > 0.5 && !depositAction) {
+                v4bPos = v4bMUp; // tuck
+                robot.pitch.setPosition(pitchFDown);
+                robot.lilJarret.setPosition(clawClose); clawIsOpen = false;
+                depositAction = true;
+            } else if (depositTime > 0.25 && !depositAction) {
+                v4bPos = v4bBDown;
+                robot.lilJarret.setPosition(clawOpen); // drop
+                clawIsOpen = true;
+            } else if (depositTime < 0.25) depositAction = false;
+        } else {
+            if(depositTime > 0.5 && !depositAction){
+                robot.pitch.setPosition(pitchMUp);
+                depositAction = true;
+            }else if(depositTime > 0.25 && !depositAction){
+                v4bPos = v4bMUp;
+            } else if (depositTime < 0.25) depositAction = false;
+        }
 
         // press 'x' to toggle claw (driver 2)
         if(gamepad2.x && !xPressed) {
@@ -260,14 +270,36 @@ public class TelePOP extends OpMode {
         } else if (!(gamepad2.back || gamepad1.back)) backPressed = false;
 
         // telemetry
-        telemetry.addData("hang pos", robot.hangerR.getCurrentPosition() + ", " + robot.hangerL.getCurrentPosition());
-        telemetry.addData("neck", neckUp ? "up" : "down");
-        telemetry.addData("claw open", clawIsOpen ? "open" : "closed");
-        telemetry.addData("Slide Pos", robot.leftSlides.getCurrentPosition());
-        telemetry.addData("Left slide  posit", robot.leftSlides.getCurrentPosition());
-        telemetry.addData("Right slide  posit", robot.rightSlides.getCurrentPosition());
-        telemetry.addData("Target", slideTarget);
+        telemetry.addData("hang pos R, L", robot.hangerR.getCurrentPosition() + ", " + robot.hangerL.getCurrentPosition());
+        telemetry.addLine("neck is " + (neckUp ? "UP" : "DOWN") + "!");
+        telemetry.addLine("claw is " + (clawIsOpen ? "OPEN" : "CLOSED") + "!");
+        telemetry.addLine("robot is scoring " + (specMode ? "SPECIMEN" : "SAMPLE") + "!");
         telemetry.addData("depositTimer", depositTime);
         telemetry.update();
+    }
+
+    public void railExtend(){
+        v4bPos = v4bFUp;
+        robot.lilJarret.setPosition(clawOpen); clawIsOpen = true;
+        robot.pitch.setPosition(pitchFDown);
+        robot.roll.setPosition(claw0);
+        extendPosR = railRMax;
+        extendPosL = railLMax;
+    }
+    public void railExtendSpec(){
+        v4bPos = v4bFOut;
+        robot.pitch.setPosition(pitchFDown);
+        robot.roll.setPosition(claw0);
+        extendPosR = railRSpec;
+        extendPosL = railLSpec;
+    }
+
+    public void railRetract(){
+        v4bPos = v4bMUp;
+        robot.lilJarret.setPosition(clawClose); clawIsOpen = false;
+        robot.pitch.setPosition(pitchFDown);
+        robot.roll.setPosition(claw0);
+        extendPosR = railRMin;
+        extendPosL = railLMin;
     }
 }

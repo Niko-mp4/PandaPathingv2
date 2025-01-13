@@ -12,10 +12,10 @@ import static pandaPathing.robot.RobotConstants.railLMax;
 import static pandaPathing.robot.RobotConstants.railLMin;
 import static pandaPathing.robot.RobotConstants.railRMax;
 import static pandaPathing.robot.RobotConstants.railRMin;
-import static pandaPathing.robot.RobotConstants.v4bBackDown;
-import static pandaPathing.robot.RobotConstants.v4bBackUp;
-import static pandaPathing.robot.RobotConstants.v4bOutDown;
-import static pandaPathing.robot.RobotConstants.v4bOutUp;
+import static pandaPathing.robot.RobotConstants.v4bBDown;
+import static pandaPathing.robot.RobotConstants.v4bMUp;
+import static pandaPathing.robot.RobotConstants.v4bFDown;
+import static pandaPathing.robot.RobotConstants.v4bFUp;
 import static pandaPathing.robot.RobotConstants.yaw0;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -34,7 +34,7 @@ public class UnoConductor extends OpMode {
     boolean dUpPressed, dDownPressed, yPressed, y1Pressed, dpad_upPressed, dpad_up1Pressed, rbumpPressed, lBumpPressed, x1Pressed, dpad_downPressed, dpad_down1Pressed,
             clawIsOpen = false, extended = false, neckUp = true, slowMode = false,
             depositing = false, clawTimerRunning = false;
-    double  extendPosR = railRMin, extendPosL = railLMin, v4bPos = v4bBackUp,
+    double  extendPosR = railRMin, extendPosL = railLMin, v4bPos = v4bMUp,
             depositTimer = 0, clawTimer = 0,
             strafePow, driveSpeed, mult = 1;
     double startTime, elapsedTime, timeIndex = 0;
@@ -45,7 +45,7 @@ public class UnoConductor extends OpMode {
     public void init() {
         robot = new Hardware(hardwareMap);
         telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-        robot.v4b.setPosition(v4bBackUp);
+        robot.v4b.setPosition(v4bMUp);
         robot.pitch.setPosition(pitchFDown);
         robot.lilJarret.setPosition(clawClose);
         robot.roll.setPosition(claw0);
@@ -112,13 +112,13 @@ public class UnoConductor extends OpMode {
             if (!extended) { // claw open & out when extend
                 robot.pitch.setPosition(pitchFDown);
                 robot.roll.setPosition(claw0);
-                v4bPos = v4bOutUp;
+                v4bPos = v4bFUp;
                 robot.lilJarret.setPosition(clawOpen); clawIsOpen = true;
                 extendPosR = railRMax;
                 extendPosL = railLMax;
                 extended = true;
             } else { // claw close & tuck when retract
-                v4bPos = v4bBackUp;
+                v4bPos = v4bMUp;
                 robot.roll.setPosition(claw0);
                 robot.lilJarret.setPosition(clawClose); clawIsOpen = false;
                 robot.pitch.setPosition(pitchFDown);
@@ -135,11 +135,11 @@ public class UnoConductor extends OpMode {
         robot.v4b.setPosition(v4bPos);
         if(gamepad1.right_bumper && extended && !rbumpPressed){
             if(!neckUp){
-                v4bPos = v4bOutUp;
+                v4bPos = v4bFUp;
                 clawTimerRunning = true;
                 neckUp = true;
             } else {
-                v4bPos = v4bOutDown;
+                v4bPos = v4bFDown;
                 clawTimerRunning = true;
                 neckUp = false;
             }
@@ -176,7 +176,7 @@ public class UnoConductor extends OpMode {
 
             // Claw and deposit actions
             if (!extended) {
-                v4bPos = v4bBackDown - 0.05;
+                v4bPos = v4bBDown - 0.05;
                 robot.pitch.setPosition(pitchBOut);
                 depositing = true;
             } else { // claw close
@@ -223,12 +223,12 @@ public class UnoConductor extends OpMode {
         if (depositing) depositTimer++;
         if(depositTimer >= 10 && !dpad_downPressed) { // make claw drop after return
             if (depositTimer >= 40) {
-                v4bPos = v4bBackUp;
+                v4bPos = v4bMUp;
                 robot.pitch.setPosition(pitchFDown);
                 robot.lilJarret.setPosition(clawClose); // go back in
                 clawIsOpen = false;
             } else if(depositTimer >= 20){
-                v4bPos = v4bBackDown;
+                v4bPos = v4bBDown;
                 robot.lilJarret.setPosition(clawOpen); // drop
             }
         }
