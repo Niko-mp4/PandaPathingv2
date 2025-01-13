@@ -226,7 +226,7 @@ public class Automus extends OpMode {
                     stopped = false;
                 }
                 target = slideMax;
-                if (slidesUp && follower.atParametricEnd()){
+                if (slidesUp && !follower.isBusy()){
                     setPathState("0.2");
                 } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
@@ -246,7 +246,7 @@ public class Automus extends OpMode {
                     follower.followPath(grabPickup1);
                     stopped = false;
                 }
-                if (slidesDown && time > 1 && follower.atParametricEnd()) setPathState("1.1");
+                if (slidesDown && time > 1 && !follower.isBusy()) setPathState("1.1");
                 else if(time > 0.5){
                     robot.pitch.setPosition(pitchFDown);
                 }
@@ -279,7 +279,7 @@ public class Automus extends OpMode {
                     stopped = false;
                 }
                 target = slideMax;
-                if (slidesUp && follower.atParametricEnd()){
+                if (slidesUp && !follower.isBusy()){
                     setPathState("1.3");
                 } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
@@ -299,7 +299,7 @@ public class Automus extends OpMode {
                     follower.followPath(grabPickup2);
                     stopped = false;
                 }
-                if (slidesDown && time > 1 && follower.atParametricEnd()) setPathState("2.1");
+                if (slidesDown && time > 1 && !follower.isBusy()) setPathState("2.1");
                 else if(time > 0.5){
                     robot.pitch.setPosition(pitchFDown);
                 }
@@ -337,7 +337,7 @@ public class Automus extends OpMode {
                     stopped = false;
                 }
                 target = slideMax;
-                if (slidesUp && follower.atParametricEnd()){
+                if (slidesUp && !follower.isBusy()){
                     setPathState("2.3");
                 } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
@@ -357,7 +357,7 @@ public class Automus extends OpMode {
                     follower.followPath(grabPickup3);
                     stopped = false;
                 }
-                if (slidesDown && time > 1 && follower.atParametricEnd()) setPathState("3.1");
+                if (slidesDown && time > 1 && !follower.isBusy()) setPathState("3.1");
                 else if(time > 0.5){
                     robot.pitch.setPosition(pitchFDown);
                 }
@@ -392,7 +392,7 @@ public class Automus extends OpMode {
                     stopped = false;
                 }
                 target = slideMax;
-                if (slidesUp && follower.atParametricEnd()){
+                if (slidesUp && !follower.isBusy()){
                     setPathState("3.3");
                 } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
