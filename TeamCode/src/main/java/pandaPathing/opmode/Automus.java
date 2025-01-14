@@ -87,18 +87,18 @@ public class Automus extends OpMode {
     private final Pose scorePreloadPose = new Pose(135.5, 20.4, Math.toRadians(90));
     private final Pose scorePose1 = new Pose(128, 11, Math.toRadians(180));
 
-    private final Pose scorePose2 = new Pose(126.5, 11, Math.toRadians(180));
+    private final Pose scorePose2 = new Pose(124, 11, Math.toRadians(180));
 
-    private final Pose scorePose3 = new Pose(125.6, 11, Math.toRadians(180));
+    private final Pose scorePose3 = new Pose(123, 11, Math.toRadians(180));
 
     /** Lowest (First) Sample from the Spike Mark */
-    private final Pose pickup1Pose = new Pose(127.1, 23.1, Math.toRadians(180));
+    private final Pose pickup1Pose = new Pose(126.5, 23.1, Math.toRadians(180));
 
     /** Middle (Second) Sample from the Spike Mark */
-    private final Pose pickup2Pose = new Pose(125.9, 13.65, Math.toRadians(180));
+    private final Pose pickup2Pose = new Pose(124, 13.65, Math.toRadians(180));
 
     /** Highest (Third) Sample from the Spike Mark */
-    private final Pose pickup3Pose = new Pose(122.4, 14.8, Math.toRadians(210));
+    private final Pose pickup3Pose = new Pose(122, 14.8, Math.toRadians(210));
 
     /** Park Pose for our robot, after we do all of the scoring. */
     private final Pose parkPose = new Pose(72, 48, Math.toRadians(270));

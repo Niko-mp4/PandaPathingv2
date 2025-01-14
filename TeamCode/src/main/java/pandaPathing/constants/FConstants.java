@@ -74,21 +74,21 @@ public class FConstants {
     // Initialize PID coefficients for translational, heading, and drive
     private static void initializePIDCoefficients() {
         // Translational PID
-        FollowerConstants.translationalPIDFCoefficients = new CustomPIDFCoefficients(translationalP, translationalI, translationalD, translationalF);
+        FollowerConstants.translationalPIDFCoefficients.setCoefficients(translationalP, translationalI, translationalD, translationalF);
         if (PIDConfig.useSecondaryTranslationalPID) {
-            FollowerConstants.secondaryTranslationalPIDFCoefficients = new CustomPIDFCoefficients(secondaryTranslationalP, secondaryTranslationalI, secondaryTranslationalD, secondaryTranslationalF);
+            FollowerConstants.secondaryTranslationalPIDFCoefficients.setCoefficients(secondaryTranslationalP, secondaryTranslationalI, secondaryTranslationalD, secondaryTranslationalF);
         }
 
         // Heading PID
-        FollowerConstants.headingPIDFCoefficients = new CustomPIDFCoefficients(headingP, headingI, headingD, headingF);
+        FollowerConstants.headingPIDFCoefficients.setCoefficients(headingP, headingI, headingD, headingF);
         if (PIDConfig.useSecondaryHeadingPID) {
-            FollowerConstants.secondaryHeadingPIDFCoefficients = new CustomPIDFCoefficients(secondaryHeadingP, secondaryHeadingI, secondaryHeadingD, secondaryHeadingF);
+            FollowerConstants.secondaryHeadingPIDFCoefficients.setCoefficients(secondaryHeadingP, secondaryHeadingI, secondaryHeadingD, secondaryHeadingF);
         }
 
         // Drive PID
-        FollowerConstants.drivePIDFCoefficients = new CustomFilteredPIDFCoefficients(driveP, driveI, driveD, driveF, 0);
+        FollowerConstants.drivePIDFCoefficients.setCoefficients(driveP, driveI, driveD, driveF, 0);
         if (PIDConfig.useSecondaryDrivePID) {
-            FollowerConstants.secondaryDrivePIDFCoefficients = new CustomFilteredPIDFCoefficients(secondaryDriveP, secondaryDriveI, secondaryDriveD, secondaryDriveF, 0);
+            FollowerConstants.secondaryDrivePIDFCoefficients.setCoefficients(secondaryDriveP, secondaryDriveI, secondaryDriveD, secondaryDriveF, 0);
         }
     }
 
