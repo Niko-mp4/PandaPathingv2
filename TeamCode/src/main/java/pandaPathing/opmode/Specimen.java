@@ -8,16 +8,20 @@ import static pandaPathing.robot.RobotConstants.clawClose;
 import static pandaPathing.robot.RobotConstants.clawOpen;
 import static pandaPathing.robot.RobotConstants.pitchBOut;
 import static pandaPathing.robot.RobotConstants.pitchFDown;
+import static pandaPathing.robot.RobotConstants.pitchSpec;
 import static pandaPathing.robot.RobotConstants.railLMax;
 import static pandaPathing.robot.RobotConstants.railLMin;
 import static pandaPathing.robot.RobotConstants.railRMax;
 import static pandaPathing.robot.RobotConstants.railRMin;
 import static pandaPathing.robot.RobotConstants.slideMax;
+import static pandaPathing.robot.RobotConstants.slideMaxSpec;
 import static pandaPathing.robot.RobotConstants.slideMin;
+import static pandaPathing.robot.RobotConstants.specDeposit;
 import static pandaPathing.robot.RobotConstants.v4bBackDown;
 import static pandaPathing.robot.RobotConstants.v4bBackUp;
 import static pandaPathing.robot.RobotConstants.v4bOutDown;
 import static pandaPathing.robot.RobotConstants.v4bOutUp;
+import static pandaPathing.robot.RobotConstants.v4bspec;
 import static pandaPathing.robot.RobotConstants.yaw0;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -30,11 +34,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import pandaPathing.robot.Hardware;
 
 @Config
-@TeleOp(name = "I love Naveen so so so so so so so so so so so so so so so so so so so so much!!!", group = "Drive")
-public class TelePOP extends OpMode {
+@TeleOp(name = "Speciboy", group = "Drive")
+public class Specimen extends OpMode {
     private Hardware robot;
 
-    boolean dUpPressed, dDownPressed, dLeftPressed, yPressed, y1Pressed, aPressed, a1Pressed, rBumpPressed, lBumpPressed, backPressed, back2Pressed, xPressed, x1Pressed, bPressed, b1Pressed,
+    boolean dUpPressed, dDownPressed, dLeftPressed, dRightPressed, yPressed, y1Pressed, aPressed, a1Pressed, rBumpPressed, lBumpPressed, backPressed, back2Pressed, xPressed, x1Pressed, bPressed, b1Pressed,
             clawIsOpen = false, extended = false, neckUp = true, slowMode = false, hanging = false, slidesUp = false, slidesDown = false,
             depositAction = false, grabAction = false;
     double slideTarget = slideMin, extendPosR = railRMin, extendPosL = railLMin, v4bPos = v4bBackUp,
@@ -101,39 +105,48 @@ public class TelePOP extends OpMode {
             lBumpPressed = true;
         } else if(!gamepad1.left_bumper) lBumpPressed = false;
 
-        robot.rightSlides.setPower(robot.slidePidPow(slideTarget));
-        robot.leftSlides.setPower(robot.slidePidPow(slideTarget));
+        robot.rightSlides.setPower(robot.slidePidPow1(slideTarget));
+        robot.leftSlides.setPower(robot.slidePidPow1(slideTarget));
 
         //use 'left stick y' to move slides up/down (driver 2)
         if(gamepad2.left_stick_y != 0) {
-            //if (-gamepad2.left_stick_y > 0 && slideTarget < slideMax) // upper limit
-                //slideTarget += 10 * -gamepad2.left_stick_y;
+            //if (-gamepad2.left_stick_y > 0 && slideTarget < slideMaxSpec) // upper limit
+            //slideTarget += 10 * -gamepad2.left_stick_y;
             //if (-gamepad2.left_stick_y < 0 && slideTarget > slideMin) // lower limit
-                //slideTarget += 10 * -gamepad2.left_stick_y;
+            //slideTarget += 10 * -gamepad2.left_stick_y;
         }
 
         // press 'dpad up/down' to set slide target to one of 4 positions (driver 2)
         else {
             if (gamepad2.dpad_up && !dUpPressed) {
-                slideTarget = slideMax; // top bar for spec. or top basket
+                slideTarget = slideMaxSpec; // top bar for spec. or top basket
                 dUpPressed = true;
             } else if (!gamepad2.dpad_up) dUpPressed = false;
             if (gamepad2.dpad_down && !dDownPressed) {
+                robot.lilJarret.setPosition(clawOpen);
                 slideTarget = slideMin; // or slides down all the way
+                robot.pitch.setPosition(pitchFDown);
+                v4bPos = v4bBackUp;
                 dDownPressed = true;
             } else if (!gamepad2.dpad_down) dDownPressed = false;
             if (gamepad2.dpad_left && !dLeftPressed) {
-                slideTarget = 700; // or slides down all the way
+                extendPosR = railRMax;
+                extendPosL = railLMax;
                 dLeftPressed = true;
             } else if (!gamepad2.dpad_left) dLeftPressed = false;
+            if (gamepad2.dpad_right && !dRightPressed) {
+                extendPosR = railRMin;
+                extendPosL = railLMin;
+                dRightPressed = true;
+            } else if (!gamepad2.dpad_right) dRightPressed = false;
         } // automatic deposit setup when slides are up
-        if(robot.rightSlides.getCurrentPosition() >= slideMax-20 && !slidesUp) {
-            robot.pitch.setPosition(pitchBOut); // set claw above basket
-            v4bPos = v4bBackDown+0.05;
+        if(robot.rightSlides.getCurrentPosition() >= slideMaxSpec-20 && !slidesUp) {
+            robot.pitch.setPosition(pitchSpec); // set claw above basket
+            v4bPos = v4bspec;
             slidesUp = true;
-        } else if(robot.rightSlides.getCurrentPosition() <= slideMax - 100) slidesUp = false;
+        } else if(robot.rightSlides.getCurrentPosition() <= slideMaxSpec - 100) slidesUp = false;
         if(slideTarget <= slideMin) slideTarget = slideMin; // reset slide position if out of bounds
-        if(slideTarget >= slideMax) slideTarget = slideMax;
+        if(slideTarget >= slideMaxSpec) slideTarget = slideMaxSpec;
         //if(!robot.touchSensor.getState() && !slidesDown){
         // automatically reset slide zero point when touch sensor is triggered
         //robot.rightSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -145,7 +158,7 @@ public class TelePOP extends OpMode {
         robot.railL.setPosition(extendPosL);
         if (gamepad2.a && !aPressed) {
             if (!extended) { // claw open & out when extend
-                robot.pitch.setPosition(pitchFDown);
+                robot.pitch.setPosition(pitchBOut);
                 robot.roll.setPosition(claw0);
                 v4bPos = v4bOutUp;
                 robot.lilJarret.setPosition(clawOpen); clawIsOpen = true;

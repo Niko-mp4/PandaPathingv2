@@ -30,6 +30,17 @@ public class Hardware {
         return slideyController.calculatePow(slidePos, target);
     }
 
+    public double slidePidPow1(double target) {
+        if (target > 500) {
+            slideyController.updatePDFLConstants(RobotConstants.p1, RobotConstants.d1, RobotConstants.f1, RobotConstants.l1);
+        } else {
+            slideyController.updatePDFLConstants(RobotConstants.p1, RobotConstants.d1, RobotConstants.homingConstant1, RobotConstants.l1);
+        }
+        int slidePos = rightSlides.getCurrentPosition();
+        return slideyController.calculatePow(slidePos, target);
+    }
+
+
     public Hardware(HardwareMap hardwareMap, boolean auto) {
         this.hardwareMap = hardwareMap;
         initializeMotors(auto);

@@ -9,11 +9,13 @@ public class RobotConstants {
     // Servo positions
     public static double
 
-            pitchFDown = 0.585,
+            pitchFDown = 0.593,
 
             //pitchFOut = 1,
 
-            pitchBOut = 0.251,
+            pitchBOut = 0.316,
+
+            pitchSpec = 0,
 
             //pitchBDown = 0.2,
 
@@ -32,6 +34,8 @@ public class RobotConstants {
             v4bBackUp = 0.16,
 
             v4bBackDown = 0.065,
+
+            v4bspec = 0.377,
 
             clawOpen = 0.5,
 
@@ -56,10 +60,15 @@ public class RobotConstants {
     public static int
 
             slideMax = 1450,
-            slideMaxSpec = 1000,
+            slideMaxSpec = 650,
+
+            specDeposit = 450,
+
             slideMin = 0;
 
 
     // PID Constants
     public static double p = 0.035, d = 0.7, f = 0.15, l = 0, homingConstant = 0;
+
+    public static double p1 = 0.02, d1 = 0.7, f1 = 0.15, l1 = 0, homingConstant1 = 0;
 }
