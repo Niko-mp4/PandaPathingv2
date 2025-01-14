@@ -1,4 +1,4 @@
-package pandaPathing.opmode;
+/*package pandaPathing.opmode;
 
 import static pandaPathing.robot.RobotConstants.claw0;
 import static pandaPathing.robot.RobotConstants.claw45;
@@ -284,3 +284,4 @@ public class Specimen extends OpMode {
         telemetry.update();
     }
 }
+ */

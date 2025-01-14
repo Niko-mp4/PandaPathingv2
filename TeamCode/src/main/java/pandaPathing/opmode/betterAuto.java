@@ -7,7 +7,7 @@ import static pandaPathing.robot.RobotConstants.railLMin;
 import static pandaPathing.robot.RobotConstants.railRMin;
 import static pandaPathing.robot.RobotConstants.slideMax;
 import static pandaPathing.robot.RobotConstants.slideMin;
-import static pandaPathing.robot.RobotConstants.v4bBackDown;
+import static pandaPathing.robot.RobotConstants.v4bFDown;
 import static pandaPathing.robot.RobotConstants.yaw0;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -37,28 +37,42 @@ public class betterAuto extends OpMode {
     private Hardware robot;
     private boolean slidesUp, slidesDown;
 
-    private final Pose startPose = new Pose(136.5, 31.5, Math.toRadians(90));
+    private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
 
-    private final Pose scorePreloadPose = new Pose(135.5, 20.4, Math.toRadians(90));
+    private final Pose scorePreloadPose = new Pose(25, 0, Math.toRadians(0));
 
-    private final Pose scorePose1 = new Pose(128, 11, Math.toRadians(180));
+    private final Pose moveRightPose = new Pose(20, -20, Math.toRadians(0));
 
-    private final Pose scorePose2 = new Pose(126.5, 11, Math.toRadians(180));
+    private final Pose pushPositionPose1 = new Pose(55, -39, Math.toRadians(0));
 
-    private final Pose scorePose3 = new Pose(125.6, 11, Math.toRadians(180));
+    private final Pose pushPositionPose2 = new Pose(55, -45.5, Math.toRadians(0));
 
-    private final Pose pickup1Pose = new Pose(127.1, 23.1, Math.toRadians(180));
+    private final Pose pushPositionPose3 = new Pose(55, -54.25, Math.toRadians(0));
 
-    private final Pose pickup2Pose = new Pose(125.9, 13.65, Math.toRadians(180));
+    private final Pose pushPose1 = new Pose(8, -39, Math.toRadians(0));
 
-    private final Pose pickup3Pose = new Pose(122.4, 14.8, Math.toRadians(210));
+    private final Pose pushPose2 = new Pose(8, -50, Math.toRadians(0));
+
+    private final Pose pushPose3 = new Pose(8, -56.5, Math.toRadians(0));
+
+    private final Pose grabPose = new Pose(6, -40, Math.toRadians(0));
+
+    private final Pose hangPose1 = new Pose(25, 5, Math.toRadians(0));
+
+    private final Pose hangPose2 = new Pose(25, 5, Math.toRadians(0));
+
+    private final Pose hangPose3 = new Pose(25, 5, Math.toRadians(0));
+
+    private final Pose hangPose4 = new Pose(25, 5, Math.toRadians(0));
+
+    private final Pose hangPose5 = new Pose(25, 5, Math.toRadians(0));
 
     private final Pose parkPose = new Pose(72, 48, Math.toRadians(270));
 
     private final Pose parkControlPose = new Pose(72, 98, Math.toRadians(90));
 
     private Path scorePreload, park;
-    private PathChain grabPickup1, grabPickup2, grabPickup3, scorePickup1, scorePickup2, scorePickup3;
+    private PathChain moveRight, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, hang1, grab2, hang2, grab3, hang3, grab4, hang4, parkAtEnd;
 
     public void buildPaths() {
 
@@ -67,52 +81,96 @@ public class betterAuto extends OpMode {
 
         scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePreloadPose.getHeading());
 
-        grabPickup1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(scorePreloadPose), new Point(pickup1Pose)))
-                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
+        moveRight = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(scorePreloadPose), new Point(moveRightPose)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
-        scorePickup1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(pickup1Pose), new Point(scorePose1)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+        pushPosition1 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(moveRightPose), new Point(pushPositionPose1)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
-        grabPickup2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(scorePose1), new Point(pickup2Pose)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+
+        pushPosition2 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(pushPose1), new Point(pushPositionPose2)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
-        scorePickup2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(pickup2Pose), new Point(scorePose2)))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+
+        pushPosition3 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(pushPose2), new Point(pushPositionPose3)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
-        grabPickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(scorePose2), new Point(pickup3Pose)))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(210))
+        push1 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(pushPositionPose1), new Point(pushPose1)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
-        scorePickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(pickup3Pose), new Point(scorePose3)))
-                .setLinearHeadingInterpolation(Math.toRadians(210), Math.toRadians(180))
+        push2 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(pushPositionPose2), new Point(pushPose2)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
-        park = new Path(new BezierCurve(new Point(scorePose3), /* Control Point */ new Point(parkPose)));
-        park.setLinearHeadingInterpolation(scorePose3.getHeading(), parkPose.getHeading());
+        push3 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(pushPositionPose3), new Point(pushPose3)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
+        hang1 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(pushPose3), new Point(hangPose1)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
+        grab2 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(hangPose1), new Point(grabPose)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
+        hang2 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(grabPose), new Point(hangPose2)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
+        grab3 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(hangPose2), new Point(grabPose)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
+        hang3 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(grabPose), new Point(hangPose3)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
+        grab4 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(hangPose3), new Point(grabPose)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
+        hang4 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(grabPose), new Point(hangPose4)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
+        parkAtEnd = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(hangPose4), new Point(grabPose)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
     }
 
     public void autonomousPathUpdate() {
 
-        double slidePos = robot.rightSlides.getCurrentPosition();
+       /* double slidePos = robot.rightSlides.getCurrentPosition();
         if(slidePos >= slideMax - 20 && !slidesUp) slidesUp = true;
         else if(slidePos < slideMax - 20) slidesUp = false;
         if(slidePos <= slideMin + 50 && !slidesDown) slidesDown = true;
-        else if(slidePos < slideMin - 20) slidesDown = false;
+        else if(slidePos < slideMin - 20) slidesDown = false; */
 
         switch (pathState) {
-            case 0: //preload & set max power
+            /*case 0: //preload & set max power
                 follower.setMaxPower(1);
-                robot.v4b.setPosition(v4bBackDown);
+                robot.v4b.setPosition(v4bFDown);
                 robot.pitch.setPosition(pitchFDown);
                 robot.lilJarret.setPosition(clawClose);
                 robot.railL.setPosition(railLMin);
@@ -120,38 +178,115 @@ public class betterAuto extends OpMode {
                 robot.roll.setPosition(claw0);
                 robot.yaw.setPosition(yaw0);
                 setPathState(1);
-                break;
+                break;*/
 
-            case 1:
-                    follower.followPath(scorePreload);
-                    setPathState(20);
+            case 00:
+                follower.setMaxPower(1);
+                    follower.followPath(scorePreload, true);
+                    setPathState(01);
                     break;
 
-            case 20: // Wait until the robot is near the first sample pickup position
-                if (!follower.isBusy()) {
-                    follower.followPath(grabPickup1, true);
+            case 01:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(moveRight, true);
+                    setPathState(10);
+                }
+                break;
+
+            case 10:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(pushPosition1, true);
+                    setPathState(11);
+                }
+                break;
+
+            case 11:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(push1, true);
+                    setPathState(12);
+                }
+                break;
+
+            case 12:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(pushPosition2, true);
+                    setPathState(13);
+                }
+                break;
+
+            case 13:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(push2, true);
+                    setPathState(14);
+                }
+                break;
+
+            case 14:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(pushPosition3, true);
+                    setPathState(15);
+                }
+                break;
+
+            case 15:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(push3, true);
+                    setPathState(20);
+                }
+                break;
+
+            case 20:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(hang1, true);
                     setPathState(21);
                 }
                 break;
 
-            case 21: // Wait until the robot is near the first sample pickup position
-                if (!follower.isBusy() /*follower.getCurrentTValue() > .95 --- makes it so after the last 95% complete it moves onto this path. Change .95 with whatever percentage value.*/) {
-                    follower.followPath(scorePickup1, true);
-                    setPathState(30);
+            case 21:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(grab2, true);
+                    setPathState(22);
                 }
                 break;
 
-            case 30: // Wait until the robot is near the first sample pickup position
+            case 22:
                 if (follower.atParametricEnd()) {
-                    follower.followPath(grabPickup2, true);
-                    setPathState(31);
+                    follower.followPath(hang2, true);
+                    setPathState(23);
                 }
                 break;
 
-            case 31: // Wait until the robot is near the first sample pickup position
+            case 23:
                 if (follower.atParametricEnd()) {
-                    follower.followPath(scorePickup2, true);
-                    setPathState(6);
+                    follower.followPath(grab3, true);
+                    setPathState(24);
+                }
+                break;
+
+            case 24:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(hang3, true);
+                    setPathState(25);
+                }
+                break;
+
+            case 25:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(grab4, true);
+                    setPathState(26);
+                }
+                break;
+
+            case 26:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(hang4, true);
+                    setPathState(27);
+                }
+                break;
+
+            case 27:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(parkAtEnd, true);
                 }
                 break;
         }
