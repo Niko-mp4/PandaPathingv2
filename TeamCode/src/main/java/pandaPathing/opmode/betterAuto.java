@@ -1,8 +1,17 @@
 package pandaPathing.opmode;
 
+import static pandaPathing.robot.RobotConstants.claw0;
+import static pandaPathing.robot.RobotConstants.clawClose;
+import static pandaPathing.robot.RobotConstants.clawOpen;
+import static pandaPathing.robot.RobotConstants.pitchFDown;
+import static pandaPathing.robot.RobotConstants.pitchMUp;
 import static pandaPathing.robot.RobotConstants.railLMax;
+import static pandaPathing.robot.RobotConstants.railLMin;
 import static pandaPathing.robot.RobotConstants.railRMax;
+import static pandaPathing.robot.RobotConstants.railRMin;
 import static pandaPathing.robot.RobotConstants.slideMax;
+import static pandaPathing.robot.RobotConstants.v4bFDown;
+import static pandaPathing.robot.RobotConstants.yaw0;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
@@ -174,6 +183,13 @@ public class betterAuto extends OpMode {
 
             case 00:
                 follower.setMaxPower(1);
+                robot.v4b.setPosition(v4bFDown);
+                robot.pitch.setPosition(pitchMUp);
+                robot.lilJarret.setPosition(clawClose);
+                robot.railL.setPosition(railLMin);
+                robot.railR.setPosition(railRMin);
+                robot.roll.setPosition(claw0);
+                robot.yaw.setPosition(yaw0);
                     follower.followPath(hangPreload, true);
                     setPathState(10);
                     break;
@@ -231,9 +247,9 @@ public class betterAuto extends OpMode {
                 if(follower.getCurrentTValue() > 0.5) target = slideMax;
                 if(slidesUp){
                     robot.railR.setPosition(railRMax);
-                    robot.railL.setPosition(railLMax);
+                    robot.railL. setPosition(railLMax);
                 }
-                if (follower.atParametricEnd()) {
+                if (follower.atParametricEnd() && robot.railR.getPosition() == railRMax) {
                     follower.followPath(grab2, true);
                     setPathState(22);
                 }
@@ -247,13 +263,20 @@ public class betterAuto extends OpMode {
                 break;
 
             case 23:
-                if (follower.atParametricEnd()) {
+                if(follower.getCurrentTValue() > 0.5) target = slideMax;
+                if(slidesUp){
+                    robot.railR.setPosition(railRMax);
+                    robot.railL. setPosition(railLMax);
+                }
+                if (follower.atParametricEnd() && robot.railR.getPosition() == railRMax) {
                     follower.followPath(grab3, true);
                     setPathState(24);
                 }
                 break;
 
             case 24:
+                robot.lilJarret.setPosition(clawOpen);
+
                 if (follower.atParametricEnd()) {
                     follower.followPath(hang3, true);
                     setPathState(25);
