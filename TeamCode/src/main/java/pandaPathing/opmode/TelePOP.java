@@ -149,9 +149,8 @@ public class TelePOP extends OpMode {
         robot.railR.setPosition(extendPosR);
         robot.railL.setPosition(extendPosL);
         if (gamepad2.a && !aPressed) {
-            if (!extended) { // claw open & out when extend || extend into bar for spec
-                if(scoringSpec) railExtendSpec();
-                else railExtend();
+            if (!extended) { // claw open & out when extend
+                railExtend();
                 extended = true;
             } else { // claw close & tuck when retract
                 railRetract();
