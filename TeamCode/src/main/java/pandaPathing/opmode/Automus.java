@@ -12,7 +12,7 @@ import static pandaPathing.robot.RobotConstants.railRMax;
 import static pandaPathing.robot.RobotConstants.railRMin;
 import static pandaPathing.robot.RobotConstants.slideMax;
 import static pandaPathing.robot.RobotConstants.slideMin;
-import static pandaPathing.robot.RobotConstants.v4bBDown;
+import static pandaPathing.robot.RobotConstants.v4bBUp;
 import static pandaPathing.robot.RobotConstants.v4bMUp;
 import static pandaPathing.robot.RobotConstants.v4bFDown;
 import static pandaPathing.robot.RobotConstants.v4bFUp;
@@ -203,11 +203,10 @@ public class Automus extends OpMode {
         if(slidePos <= slideMin + 50 && !slidesDown) slidesDown = true;
         else if(slidePos < slideMin - 20) slidesDown = false;
 
-
         switch (pathState) {
             case "0.0": //preload & set max power
                 follower.setMaxPower(1);
-                robot.v4b.setPosition(v4bBDown);
+                robot.v4b.setPosition(v4bBUp);
                 robot.pitch.setPosition(pitchFDown);
                 robot.lilJarret.setPosition(clawClose);
                 robot.railL.setPosition(railLMin);
@@ -227,7 +226,7 @@ public class Automus extends OpMode {
                     setPathState("0.2");
                 } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
-                    robot.v4b.setPosition(v4bBDown -0.065);
+                    robot.v4b.setPosition(v4bBUp -0.065);
                 }
                 break;
             case "0.2": // score timer 0
@@ -280,7 +279,7 @@ public class Automus extends OpMode {
                     setPathState("1.3");
                 } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
-                    robot.v4b.setPosition(v4bBDown -0.065);
+                    robot.v4b.setPosition(v4bBUp -0.065);
                 }
                 break;
             case "1.3": // Deposit 1
@@ -338,7 +337,7 @@ public class Automus extends OpMode {
                     setPathState("2.3");
                 } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
-                    robot.v4b.setPosition(v4bBDown -0.065);
+                    robot.v4b.setPosition(v4bBUp -0.065);
                 }
                 break;
             case "2.3": // Deposit 1
@@ -393,7 +392,7 @@ public class Automus extends OpMode {
                     setPathState("3.3");
                 } else if(time > 0.75){
                     robot.pitch.setPosition(pitchBOut);
-                    robot.v4b.setPosition(v4bBDown -0.065);
+                    robot.v4b.setPosition(v4bBUp -0.065);
                 }
                 break;
             case "3.3": // Deposit 1

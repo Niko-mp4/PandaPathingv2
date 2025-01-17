@@ -12,7 +12,7 @@ import static pandaPathing.robot.RobotConstants.railLMax;
 import static pandaPathing.robot.RobotConstants.railLMin;
 import static pandaPathing.robot.RobotConstants.railRMax;
 import static pandaPathing.robot.RobotConstants.railRMin;
-import static pandaPathing.robot.RobotConstants.v4bBDown;
+import static pandaPathing.robot.RobotConstants.v4bBUp;
 import static pandaPathing.robot.RobotConstants.v4bMUp;
 import static pandaPathing.robot.RobotConstants.v4bFDown;
 import static pandaPathing.robot.RobotConstants.v4bFUp;
@@ -176,7 +176,7 @@ public class UnoConductor extends OpMode {
 
             // Claw and deposit actions
             if (!extended) {
-                v4bPos = v4bBDown - 0.05;
+                v4bPos = v4bBUp - 0.05;
                 robot.pitch.setPosition(pitchBOut);
                 depositing = true;
             } else { // claw close
@@ -228,7 +228,7 @@ public class UnoConductor extends OpMode {
                 robot.lilJarret.setPosition(clawClose); // go back in
                 clawIsOpen = false;
             } else if(depositTimer >= 20){
-                v4bPos = v4bBDown;
+                v4bPos = v4bBUp;
                 robot.lilJarret.setPosition(clawOpen); // drop
             }
         }

@@ -26,17 +26,8 @@ public class EncoderTester extends LinearOpMode {
     public void runOpMode() {
         slideyController = new PDFLController(p, d, f, l);
         waitForStart();
-        //servoTest();
-        motorTest();
-    }
-    public double slidePidPow(double target){
-        if(target > 500){
-            slideyController.updatePDFLConstants(p, d, f, l);
-        } else {
-            slideyController.updatePDFLConstants(p, d, homingConstant, l);
-        }
-        int slidePos = test1.getCurrentPosition();
-        return slideyController.calculatePow(slidePos, target);
+        servoTest();
+        //motorTest();
     }
 
     public void motorTest(){
@@ -79,7 +70,6 @@ public class EncoderTester extends LinearOpMode {
             telemetry.addData("hangL  posit", test2.getCurrentPosition());
             telemetry.addData("hangR ampss", test1.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("hangL ampss", test2.getCurrent(CurrentUnit.AMPS));
-            telemetry.addData("slide  power set ", slidePidPow(slideTarget));
             telemetry.addData("slide  power read", test1.getPower());
             telemetry.update();
         }
@@ -87,7 +77,7 @@ public class EncoderTester extends LinearOpMode {
 
     public void servoTest(){
         Servo cs0;
-        cs0 = (ServoImplEx)hardwareMap.get(Servo.class, "cs1");
+        cs0 = (ServoImplEx)hardwareMap.get(Servo.class, "es0");
 
         double position0 = 0;
         boolean aPressed = false;
@@ -99,7 +89,7 @@ public class EncoderTester extends LinearOpMode {
                 aPressed = true;
             }
             else if(!gamepad2.a) aPressed = false;
-            telemetry.addData("cs0", cs0.getPosition());
+            telemetry.addData("es0", cs0.getPosition());
             telemetry.update();
         }
     }
