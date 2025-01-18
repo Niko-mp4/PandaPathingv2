@@ -1,8 +1,20 @@
 package pandaPathing.opmode;
 
+import static pandaPathing.robot.RobotConstants.claw0;
+import static pandaPathing.robot.RobotConstants.clawClose;
+import static pandaPathing.robot.RobotConstants.pitchFDown;
+import static pandaPathing.robot.RobotConstants.pitchMUp;
 import static pandaPathing.robot.RobotConstants.railLMax;
+import static pandaPathing.robot.RobotConstants.railLMin;
 import static pandaPathing.robot.RobotConstants.railRMax;
+import static pandaPathing.robot.RobotConstants.railRMin;
 import static pandaPathing.robot.RobotConstants.slideMax;
+import static pandaPathing.robot.RobotConstants.slideMaxSpec;
+import static pandaPathing.robot.RobotConstants.slideMin;
+import static pandaPathing.robot.RobotConstants.v4bFDown;
+import static pandaPathing.robot.RobotConstants.v4bFUp;
+import static pandaPathing.robot.RobotConstants.v4bMUp;
+import static pandaPathing.robot.RobotConstants.yaw0;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
@@ -34,23 +46,21 @@ public class betterAuto extends OpMode {
 
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
 
-    private final Pose hangPreloadPose = new Pose(25, 0, Math.toRadians(0));
+    private final Pose scorePreloadPose = new Pose(30, 0, Math.toRadians(0));
 
-    private final Pose startPushControlPoint1 = new Pose(14.7, -26, Math.toRadians(0));
+    private final Pose moveRightPose = new Pose(25, -20, Math.toRadians(0));
 
-    private final Pose startPushControlPoint2 = new Pose(62.6, -20.5, Math.toRadians(0));
+    private final Pose pushPositionPose1 = new Pose(55, -39, Math.toRadians(0));
 
-    private final Pose startPush1 = new Pose(55, -39, Math.toRadians(0));
+    private final Pose pushPositionPose2 = new Pose(55, -45.5, Math.toRadians(0));
 
-    private final Pose startPush2 = new Pose(55, -45.5, Math.toRadians(0));
+    private final Pose pushPositionPose3 = new Pose(55, -54.25, Math.toRadians(0));
 
-    private final Pose startPush3 = new Pose(55, -54.25, Math.toRadians(0));
+    private final Pose pushPose1 = new Pose(8, -39, Math.toRadians(0));
 
-    private final Pose endPush1 = new Pose(8, -39, Math.toRadians(0));
+    private final Pose pushPose2 = new Pose(8, -50, Math.toRadians(0));
 
-    private final Pose endPush2 = new Pose(8, -50, Math.toRadians(0));
-
-    private final Pose endPush3 = new Pose(8, -56.5, Math.toRadians(0));
+    private final Pose pushPose3 = new Pose(8, -56.5, Math.toRadians(0));
 
     private final Pose grabPose = new Pose(6, -40, Math.toRadians(0));
 
@@ -66,7 +76,6 @@ public class betterAuto extends OpMode {
 
     private final Pose parkPose = new Pose(72, 48, Math.toRadians(270));
 
-    private final Pose parkControlPose = new Pose(72, 98, Math.toRadians(90));
 
     private PathChain hangPreload, moveRight, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, hang1, grab2, hang2, grab3, hang3, grab4, hang4, parkAtEnd;
 
@@ -74,44 +83,49 @@ public class betterAuto extends OpMode {
 
 
         hangPreload = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPose), new Point(hangPreloadPose)))
-                .setLinearHeadingInterpolation(startPose.getHeading(), hangPreloadPose.getHeading())
+                .addPath(new BezierLine(new Point(startPose), new Point(scorePreloadPose)))
+                .setLinearHeadingInterpolation(startPose.getHeading(), scorePreloadPose.getHeading())
+                .build();
+
+        moveRight = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(scorePreloadPose), new Point(moveRightPose)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         pushPosition1 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(hangPreloadPose), new Point(startPushControlPoint1), new Point(startPushControlPoint2), new Point(startPush1)))
+                .addPath(new BezierLine(new Point(moveRightPose), new Point(pushPositionPose1)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
 
         pushPosition2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(endPush1), new Point(startPush2)))
+                .addPath(new BezierLine(new Point(pushPose1), new Point(pushPositionPose2)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
 
         pushPosition3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(endPush2), new Point(startPush3)))
+                .addPath(new BezierLine(new Point(pushPose2), new Point(pushPositionPose3)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         push1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPush1), new Point(endPush1)))
+                .addPath(new BezierLine(new Point(pushPositionPose1), new Point(pushPose1)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         push2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPush2), new Point(endPush2)))
+                .addPath(new BezierLine(new Point(pushPositionPose2), new Point(pushPose2)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         push3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPush3), new Point(endPush3)))
+                .addPath(new BezierLine(new Point(pushPositionPose3), new Point(pushPose3)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         hang1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(endPush3), new Point(hangPose1)))
+                .addPath(new BezierLine(new Point(pushPose3), new Point(hangPose1)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
@@ -153,67 +167,98 @@ public class betterAuto extends OpMode {
 
     public void autonomousPathUpdate() {
 
-       /* double slidePos = robot.rightSlides.getCurrentPosition();
-        if(slidePos >= slideMax - 20 && !slidesUp) slidesUp = true;
+       double slidePos = robot.rightSlides.getCurrentPosition();
+        if(slidePos >= slideMaxSpec - 20 && !slidesUp) slidesUp = true;
         else if(slidePos < slideMax - 20) slidesUp = false;
         if(slidePos <= slideMin + 50 && !slidesDown) slidesDown = true;
-        else if(slidePos < slideMin - 20) slidesDown = false; */
+        else if(slidePos < slideMin - 20) slidesDown = false;
 
         switch (pathState) {
-            /*case 0: //preload & set max power
+            case 00: //preload & set max power
                 follower.setMaxPower(1);
-                robot.v4b.setPosition(v4bFDown);
-                robot.pitch.setPosition(pitchFDown);
+                robot.v4b.setPosition(v4bFUp);
+                robot.pitch.setPosition(pitchMUp);
                 robot.lilJarret.setPosition(clawClose);
                 robot.railL.setPosition(railLMin);
                 robot.railR.setPosition(railRMin);
                 robot.roll.setPosition(claw0);
                 robot.yaw.setPosition(yaw0);
-                setPathState(1);
-                break;*/
+                setPathState(01);
+                break;
 
-            case 00:
+            case 01:
                 follower.setMaxPower(1);
                     follower.followPath(hangPreload, true);
-                    setPathState(10);
+                    setPathState(02);
                     break;
 
+            case 02:
+                if(follower.getCurrentTValue() > 0.5) target = slideMaxSpec;
+                if(slidesUp){
+                    setPathState(03);
+                }
+                break;
+
+            case 03:
+                if(follower.atParametricEnd()) {
+                    robot.railR.setPosition(railRMax);
+                    robot.railL.setPosition(railLMax);
+                    setPathState(04);
+                }
+                break;
+
+            case 04:
+                if(pathTimer.getElapsedTimeSeconds() > 1) {
+                    robot.railR.setPosition(railRMin);
+                    robot.railL.setPosition(railLMin);
+                    setPathState(10);
+                }
+                break;
+
+
             case 10:
-                if (follower.atParametricEnd()) {
-                    follower.followPath(pushPosition1, true);
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                    target = slideMin;
                     setPathState(11);
                 }
                 break;
 
             case 11:
-                if (follower.atParametricEnd()) {
-                    follower.followPath(push1, true);
+                if (target == slideMin) {
+                    follower.followPath(pushPosition1, true);
                     setPathState(12);
                 }
                 break;
 
             case 12:
                 if (follower.atParametricEnd()) {
-                    follower.followPath(pushPosition2, true);
+                    follower.followPath(push1, true);
                     setPathState(13);
                 }
                 break;
 
             case 13:
                 if (follower.atParametricEnd()) {
-                    follower.followPath(push2, true);
+                    follower.followPath(pushPosition2, true);
                     setPathState(14);
                 }
                 break;
 
             case 14:
                 if (follower.atParametricEnd()) {
-                    follower.followPath(pushPosition3, true);
+                    follower.followPath(push2, true);
                     setPathState(15);
                 }
                 break;
 
             case 15:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(pushPosition3, true);
+                    setPathState(16);
+                }
+                break;
+
+            case 16:
                 if (follower.atParametricEnd()) {
                     follower.followPath(push3, true);
                     setPathState(20);
@@ -228,11 +273,6 @@ public class betterAuto extends OpMode {
                 break;
 
             case 21:
-                if(follower.getCurrentTValue() > 0.5) target = slideMax;
-                if(slidesUp){
-                    robot.railR.setPosition(railRMax);
-                    robot.railL.setPosition(railLMax);
-                }
                 if (follower.atParametricEnd()) {
                     follower.followPath(grab2, true);
                     setPathState(22);
@@ -292,6 +332,7 @@ public class betterAuto extends OpMode {
         pathTimer = new Timer();
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
+        robot = new Hardware(hardwareMap);
         follower.setStartingPose(startPose);
         buildPaths();
     }
