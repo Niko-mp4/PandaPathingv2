@@ -268,6 +268,8 @@ public class TelePOP extends OpMode {
         telemetry.addData("Right slide  posit", robot.rightSlides.getCurrentPosition());
         telemetry.addData("Target", slideTarget);
         telemetry.addData("depositTimer", depositTime);
+        telemetry.addData("pitch Position", robot.pitch.getPosition());
+        telemetry.addData("v4b Position", robot.v4b.getPosition());
         telemetry.update();
     }
 }

@@ -1,7 +1,10 @@
 package pandaPathing.opmode;
 
 import static pandaPathing.robot.RobotConstants.claw0;
+import static pandaPathing.robot.RobotConstants.claw180;
 import static pandaPathing.robot.RobotConstants.clawClose;
+import static pandaPathing.robot.RobotConstants.clawOpen;
+import static pandaPathing.robot.RobotConstants.pitchBOut;
 import static pandaPathing.robot.RobotConstants.pitchFDown;
 import static pandaPathing.robot.RobotConstants.pitchMUp;
 import static pandaPathing.robot.RobotConstants.railLMax;
@@ -11,6 +14,7 @@ import static pandaPathing.robot.RobotConstants.railRMin;
 import static pandaPathing.robot.RobotConstants.slideMax;
 import static pandaPathing.robot.RobotConstants.slideMaxSpec;
 import static pandaPathing.robot.RobotConstants.slideMin;
+import static pandaPathing.robot.RobotConstants.v4bBUp;
 import static pandaPathing.robot.RobotConstants.v4bFDown;
 import static pandaPathing.robot.RobotConstants.v4bFUp;
 import static pandaPathing.robot.RobotConstants.v4bMUp;
@@ -21,6 +25,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.BezierPoint;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
@@ -46,7 +51,9 @@ public class betterAuto extends OpMode {
 
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
 
-    private final Pose scorePreloadPose = new Pose(30, 0, Math.toRadians(0));
+    private final Pose scorePreloadPose = new Pose(24, 0, Math.toRadians(0));
+
+    private final Pose moveForwardPose = new Pose(28, 0, Math.toRadians(0));
 
     private final Pose moveRightPose = new Pose(25, -20, Math.toRadians(0));
 
@@ -54,30 +61,30 @@ public class betterAuto extends OpMode {
 
     private final Pose pushPositionPose2 = new Pose(55, -45.5, Math.toRadians(0));
 
-    private final Pose pushPositionPose3 = new Pose(55, -54.25, Math.toRadians(0));
+    private final Pose pushPositionPose3 = new Pose(55, -54.1, Math.toRadians(0));
 
     private final Pose pushPose1 = new Pose(8, -39, Math.toRadians(0));
 
     private final Pose pushPose2 = new Pose(8, -50, Math.toRadians(0));
 
-    private final Pose pushPose3 = new Pose(8, -56.5, Math.toRadians(0));
+    private final Pose pushPose3 = new Pose(4.8, -56, Math.toRadians(0));
 
     private final Pose grabPose = new Pose(6, -40, Math.toRadians(0));
 
-    private final Pose hangPose1 = new Pose(25, 5, Math.toRadians(0));
+    private final Pose hangPose1 = new Pose(26, 2, Math.toRadians(0));
 
-    private final Pose hangPose2 = new Pose(25, 5, Math.toRadians(0));
+    private final Pose hangPose2 = new Pose(26, 6, Math.toRadians(0));
 
-    private final Pose hangPose3 = new Pose(25, 5, Math.toRadians(0));
+    private final Pose hangPose3 = new Pose(26, 10, Math.toRadians(0));
 
-    private final Pose hangPose4 = new Pose(25, 5, Math.toRadians(0));
+    private final Pose hangPose4 = new Pose(26, 14, Math.toRadians(0));
 
-    private final Pose hangPose5 = new Pose(25, 5, Math.toRadians(0));
+    private final Pose hangPose5 = new Pose(26, 6, Math.toRadians(0));
 
     private final Pose parkPose = new Pose(72, 48, Math.toRadians(270));
 
 
-    private PathChain hangPreload, moveRight, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, hang1, grab2, hang2, grab3, hang3, grab4, hang4, parkAtEnd;
+    private PathChain hangPreload, moveForward, moveRight, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, hang1, grab2, hang2, grab3, hang3, grab4, hang4, parkAtEnd;
 
     public void buildPaths() {
 
@@ -87,8 +94,13 @@ public class betterAuto extends OpMode {
                 .setLinearHeadingInterpolation(startPose.getHeading(), scorePreloadPose.getHeading())
                 .build();
 
+        moveForward = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(scorePreloadPose), new Point(moveForwardPose)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
         moveRight = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(scorePreloadPose), new Point(moveRightPose)))
+                .addPath(new BezierCurve(new Point(moveForwardPose), new Point(moveRightPose)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
@@ -208,7 +220,21 @@ public class betterAuto extends OpMode {
                 break;
 
             case 04:
-                if(pathTimer.getElapsedTimeSeconds() > 1) {
+                follower.setMaxPower(1);
+                follower.followPath(moveForward, true);
+                setPathState(06);
+                break;
+
+
+            case 06:
+                if(pathTimer.getElapsedTimeSeconds() > 0.6) {
+                    robot.lilJarret.setPosition(clawOpen);
+                    setPathState(07);
+                }
+                break;
+
+            case 07:
+                if(pathTimer.getElapsedTimeSeconds() > 0.4) {
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                     setPathState(10);
@@ -217,7 +243,7 @@ public class betterAuto extends OpMode {
 
 
             case 10:
-                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
                     target = slideMin;
                     setPathState(11);
                 }
@@ -229,6 +255,7 @@ public class betterAuto extends OpMode {
                     setPathState(12);
                 }
                 break;
+
 
             case 12:
                 if (follower.atParametricEnd()) {
@@ -259,6 +286,15 @@ public class betterAuto extends OpMode {
                 break;
 
             case 16:
+                if(follower.getCurrentTValue() > 0.2) {
+                    robot.v4b.setPosition(v4bBUp);
+                    robot.pitch.setPosition(pitchBOut);
+                    robot.roll.setPosition(claw180);
+                    setPathState(17);
+                }
+                break;
+
+            case 17:
                 if (follower.atParametricEnd()) {
                     follower.followPath(push3, true);
                     setPathState(20);
@@ -266,55 +302,303 @@ public class betterAuto extends OpMode {
                 break;
 
             case 20:
-                if (follower.atParametricEnd()) {
-                    follower.followPath(hang1, true);
+                if(pathTimer.getElapsedTimeSeconds() > 2) {
+                    robot.lilJarret.setPosition(clawClose);
+                    target = slideMin + 80;
                     setPathState(21);
                 }
                 break;
 
             case 21:
-                if (follower.atParametricEnd()) {
-                    follower.followPath(grab2, true);
+                if (target == slideMin + 80) {
+                    follower.followPath(hang1, true);
                     setPathState(22);
                 }
                 break;
 
             case 22:
-                if (follower.atParametricEnd()) {
-                    follower.followPath(hang2, true);
+                if(follower.getCurrentTValue() > 0.2) {
+                    robot.v4b.setPosition(v4bFUp);
+                    robot.pitch.setPosition(pitchMUp);
+                    robot.roll.setPosition(claw0);
                     setPathState(23);
                 }
                 break;
 
             case 23:
-                if (follower.atParametricEnd()) {
-                    follower.followPath(grab3, true);
+                if(follower.getCurrentTValue() > 0.5) target = slideMaxSpec;
+                if(slidesUp){
                     setPathState(24);
                 }
                 break;
 
             case 24:
-                if (follower.atParametricEnd()) {
-                    follower.followPath(hang3, true);
+                if(follower.atParametricEnd()) {
+                    robot.railR.setPosition(railRMax);
+                    robot.railL.setPosition(railLMax);
                     setPathState(25);
                 }
                 break;
 
             case 25:
-                if (follower.atParametricEnd()) {
-                    follower.followPath(grab4, true);
+                if(pathTimer.getElapsedTimeSeconds() > 0.6) {
+                    robot.lilJarret.setPosition(clawOpen);
                     setPathState(26);
                 }
                 break;
 
             case 26:
-                if (follower.atParametricEnd()) {
-                    follower.followPath(hang4, true);
+                if(pathTimer.getElapsedTimeSeconds() > 0.4) {
+                    robot.railR.setPosition(railRMin);
+                    robot.railL.setPosition(railLMin);
                     setPathState(27);
                 }
                 break;
 
+
             case 27:
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
+                    target = slideMin;
+                    setPathState(30);
+                }
+                break;
+
+
+            case 30:
+                if (target == slideMin) {
+                    follower.followPath(grab2, true);
+                    setPathState(31);
+                }
+                break;
+
+            case 31:
+                if(follower.getCurrentTValue() > 0.2) {
+                    robot.v4b.setPosition(v4bBUp);
+                    robot.pitch.setPosition(pitchBOut);
+                    robot.roll.setPosition(claw180);
+                    setPathState(32);
+                }
+                break;
+
+            case 32:
+                if(pathTimer.getElapsedTimeSeconds() > 2) {
+                    robot.lilJarret.setPosition(clawClose);
+                    target = slideMin + 80;
+                    setPathState(33);
+                }
+                break;
+
+            case 33:
+                if (target == slideMin + 80) {
+                    follower.followPath(hang2, true);
+                    setPathState(34);
+                }
+                break;
+
+            case 34:
+                if(follower.getCurrentTValue() > 0.2) {
+                    robot.v4b.setPosition(v4bFUp);
+                    robot.pitch.setPosition(pitchMUp);
+                    robot.roll.setPosition(claw0);
+                    setPathState(35);
+                }
+                break;
+
+            case 35:
+                if(follower.getCurrentTValue() > 0.5) target = slideMaxSpec;
+                if(slidesUp){
+                    setPathState(36);
+                }
+                break;
+
+            case 36:
+                if(follower.atParametricEnd()) {
+                    robot.railR.setPosition(railRMax);
+                    robot.railL.setPosition(railLMax);
+                    setPathState(37);
+                }
+                break;
+
+            case 37:
+                if(pathTimer.getElapsedTimeSeconds() > 0.6) {
+                    robot.lilJarret.setPosition(clawOpen);
+                    setPathState(38);
+                }
+                break;
+
+            case 38:
+                if(pathTimer.getElapsedTimeSeconds() > 0.4) {
+                    robot.railR.setPosition(railRMin);
+                    robot.railL.setPosition(railLMin);
+                    setPathState(39);
+                }
+                break;
+
+
+            case 39:
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
+                    target = slideMin;
+                    setPathState(40);
+                }
+                break;
+
+            case 40:
+                if (target == slideMin) {
+                    follower.followPath(grab3, true);
+                    setPathState(41);
+                }
+                break;
+
+            case 41:
+                if(follower.getCurrentTValue() > 0.2) {
+                    robot.v4b.setPosition(v4bBUp);
+                    robot.pitch.setPosition(pitchBOut);
+                    robot.roll.setPosition(claw180);
+                    setPathState(42);
+                }
+                break;
+
+            case 42:
+                if(pathTimer.getElapsedTimeSeconds() > 2) {
+                    robot.lilJarret.setPosition(clawClose);
+                    target = slideMin + 80;
+                    setPathState(43);
+                }
+                break;
+
+            case 43:
+                if (target == slideMin + 80) {
+                    follower.followPath(hang3, true);
+                    setPathState(44);
+                }
+                break;
+
+            case 44:
+                if(follower.getCurrentTValue() > 0.2) {
+                    robot.v4b.setPosition(v4bFUp);
+                    robot.pitch.setPosition(pitchMUp);
+                    robot.roll.setPosition(claw0);
+                    setPathState(45);
+                }
+                break;
+
+            case 45:
+                if(follower.getCurrentTValue() > 0.5) target = slideMaxSpec;
+                if(slidesUp){
+                    setPathState(46);
+                }
+                break;
+
+            case 46:
+                if(follower.atParametricEnd()) {
+                    robot.railR.setPosition(railRMax);
+                    robot.railL.setPosition(railLMax);
+                    setPathState(47);
+                }
+                break;
+
+            case 47:
+                if(pathTimer.getElapsedTimeSeconds() > 0.6) {
+                    robot.lilJarret.setPosition(clawOpen);
+                    setPathState(48);
+                }
+                break;
+
+            case 48:
+                if(pathTimer.getElapsedTimeSeconds() > 0.4) {
+                    robot.railR.setPosition(railRMin);
+                    robot.railL.setPosition(railLMin);
+                    setPathState(49);
+                }
+                break;
+
+
+            case 49:
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
+                    target = slideMin;
+                    setPathState(50);
+                }
+                break;
+
+            case 50:
+                if (target == slideMin) {
+                    follower.followPath(grab4, true);
+                    setPathState(51);
+                }
+                break;
+
+            case 51:
+                if(follower.getCurrentTValue() > 0.2) {
+                    robot.v4b.setPosition(v4bBUp);
+                    robot.pitch.setPosition(pitchBOut);
+                    robot.roll.setPosition(claw180);
+                    setPathState(52);
+                }
+                break;
+
+            case 52:
+                if(pathTimer.getElapsedTimeSeconds() > 2) {
+                    robot.lilJarret.setPosition(clawClose);
+                    target = slideMin + 80;
+                    setPathState(53);
+                }
+                break;
+
+            case 53:
+                if (target == slideMin + 80) {
+                    follower.followPath(hang4, true);
+                    setPathState(54);
+                }
+                break;
+
+            case 54:
+                if(follower.getCurrentTValue() > 0.2) {
+                    robot.v4b.setPosition(v4bFUp);
+                    robot.pitch.setPosition(pitchMUp);
+                    robot.roll.setPosition(claw0);
+                    setPathState(55);
+                }
+                break;
+
+            case 55:
+                if(follower.getCurrentTValue() > 0.5) target = slideMaxSpec;
+                if(slidesUp){
+                    setPathState(56);
+                }
+                break;
+
+            case 56:
+                if(follower.atParametricEnd()) {
+                    robot.railR.setPosition(railRMax);
+                    robot.railL.setPosition(railLMax);
+                    setPathState(57);
+                }
+                break;
+
+            case 57:
+                if(pathTimer.getElapsedTimeSeconds() > 0.6) {
+                    robot.lilJarret.setPosition(clawOpen);
+                    setPathState(58);
+                }
+                break;
+
+            case 58:
+                if(pathTimer.getElapsedTimeSeconds() > 0.4) {
+                    robot.railR.setPosition(railRMin);
+                    robot.railL.setPosition(railLMin);
+                    setPathState(59);
+                }
+                break;
+
+
+            case 59:
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
+                    target = slideMin;
+                    setPathState(60);
+                }
+                break;
+
+            case 60:
                 if (follower.atParametricEnd()) {
                     follower.followPath(parkAtEnd, true);
                 }
@@ -346,6 +630,9 @@ public class betterAuto extends OpMode {
 
         telemetry.addData("Path State", pathState);
         telemetry.addData("Position", follower.getPose().toString());
+        telemetry.addData("T-Value", follower.getCurrentTValue());
+        telemetry.addData("pitch Position", robot.pitch.getPosition());
+        telemetry.addData("v4b Position", robot.v4b.getPosition());
         telemetry.update();
     }
 }
