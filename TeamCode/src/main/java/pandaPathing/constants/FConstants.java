@@ -58,6 +58,8 @@ public class FConstants {
         FollowerConstants.leftRearMotorDirection = DcMotorSimple.Direction.REVERSE;
         FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
         FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.FORWARD;
+
+        FollowerConstants.useBrakeModeInTeleOp = true;
     }
 
     // Robot-specific settings

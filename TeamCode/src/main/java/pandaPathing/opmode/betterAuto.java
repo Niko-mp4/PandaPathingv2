@@ -14,6 +14,7 @@ import static pandaPathing.robot.RobotConstants.railRMin;
 import static pandaPathing.robot.RobotConstants.slideMax;
 import static pandaPathing.robot.RobotConstants.slideMaxSpec;
 import static pandaPathing.robot.RobotConstants.slideMin;
+import static pandaPathing.robot.RobotConstants.v4bBDown;
 import static pandaPathing.robot.RobotConstants.v4bBUp;
 import static pandaPathing.robot.RobotConstants.v4bFDown;
 import static pandaPathing.robot.RobotConstants.v4bFUp;
@@ -51,7 +52,7 @@ public class betterAuto extends OpMode {
 
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
 
-    private final Pose scorePreloadPose = new Pose(26, 0, Math.toRadians(0));
+    private final Pose scorePreloadPose = new Pose(28, 0, Math.toRadians(0));
 
     private final Pose moveRightPose = new Pose(20, -20, Math.toRadians(0));
 
@@ -69,9 +70,9 @@ public class betterAuto extends OpMode {
 
     private final Pose finalPushPose = new Pose(53, -54, Math.toRadians(0));
 
-    private final Pose strafeGrabPose = new Pose(15, -26, Math.toRadians(0));
+    private final Pose strafeGrabPose = new Pose(25, -20, Math.toRadians(0));
 
-    private final Pose grabPose = new Pose(7, -2, Math.toRadians(0));
+    private final Pose grabPose = new Pose(7.2, -26, Math.toRadians(0));
 
     private final Pose hangPose1 = new Pose(26, 2, Math.toRadians(0));
 
@@ -250,14 +251,14 @@ public class betterAuto extends OpMode {
                 break;
 
             case 04:
-                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.7) {
                     robot.lilJarret.setPosition(clawOpen);
                     setPathState(05);
                 }
                 break;
 
             case 05:
-                if (pathTimer.getElapsedTimeSeconds() > 0.4) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                     rails = false;
@@ -318,7 +319,7 @@ public class betterAuto extends OpMode {
 
             case 16:
                 if (follower.getCurrentTValue() > 0.2) {
-                    robot.v4b.setPosition(v4bBUp);
+                    robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
                     robot.roll.setPosition(claw180);
                     setPathState(17);
@@ -406,7 +407,7 @@ public class betterAuto extends OpMode {
 
             case 29:
                 if (follower.getCurrentTValue() > 0.2) {
-                    robot.v4b.setPosition(v4bBUp);
+                    robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
                     robot.roll.setPosition(claw180);
                     setPathState(30);
@@ -495,7 +496,7 @@ public class betterAuto extends OpMode {
 
             case 40:
                 if (follower.getCurrentTValue() > 0.2) {
-                    robot.v4b.setPosition(v4bBUp);
+                    robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
                     robot.roll.setPosition(claw180);
                     setPathState(50);
@@ -584,7 +585,7 @@ public class betterAuto extends OpMode {
 
             case 60:
                 if (follower.getCurrentTValue() > 0.2) {
-                    robot.v4b.setPosition(v4bBUp);
+                    robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
                     robot.roll.setPosition(claw180);
                     setPathState(70);
@@ -673,7 +674,7 @@ public class betterAuto extends OpMode {
 
             case 80:
                 if (follower.getCurrentTValue() > 0.2) {
-                    robot.v4b.setPosition(v4bBUp);
+                    robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
                     robot.roll.setPosition(claw180);
                 }
