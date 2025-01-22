@@ -2,6 +2,7 @@ package pandaPathing.constants;
 
 import com.acmerobotics.dashboard.config.Config;
 
+
 @Config
 public class PIDConfig {
 
@@ -28,12 +29,12 @@ public class PIDConfig {
     public static double secondaryHeadingF = 0.0;
 
     // Drive PID
-    public static double driveP = 0.01;
+    public static double driveP = 0.02;
     public static double driveI = 0.0;
     public static double driveD = 0.0;
     public static double driveF = 0.00006;
 
-    public static double secondaryDriveP = 0.01;
+    public static double secondaryDriveP = 0.02;
     public static double secondaryDriveI = 0.0;
     public static double secondaryDriveD = 0.0;
     public static double secondaryDriveF = 0.0006;
