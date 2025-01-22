@@ -51,9 +51,7 @@ public class betterAuto extends OpMode {
 
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
 
-    private final Pose scorePreloadPose = new Pose(24, 0, Math.toRadians(0));
-
-    private final Pose moveForwardPose = new Pose(28, 0, Math.toRadians(0));
+    private final Pose scorePreloadPose = new Pose(26, 0, Math.toRadians(0));
 
     private final Pose moveRightPose = new Pose(20, -20, Math.toRadians(0));
 
@@ -88,7 +86,7 @@ public class betterAuto extends OpMode {
     private final Pose parkPose = new Pose(72, 48, Math.toRadians(270));
 
 
-    private PathChain hangPreload, moveForward, moveRight, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, finalPush, hang1, strafeGrab2, grab2, hang2, strafeGrab3, grab3, hang3, strafeGrab4, grab4, hang4, grab5, parkAtEnd;
+    private PathChain hangPreload, moveRight, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, finalPush, hang1, strafeGrab2, grab2, hang2, strafeGrab3, grab3, hang3, strafeGrab4, grab4, hang4, grab5, parkAtEnd;
 
     public void buildPaths() {
 
@@ -98,13 +96,8 @@ public class betterAuto extends OpMode {
                 .setLinearHeadingInterpolation(startPose.getHeading(), scorePreloadPose.getHeading())
                 .build();
 
-        moveForward = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(scorePreloadPose), new Point(moveForwardPose)))
-                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .build();
-
         moveRight = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(moveForwardPose), new Point(moveRightPose)))
+                .addPath(new BezierCurve(new Point(scorePreloadPose), new Point(moveRightPose)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
@@ -257,20 +250,13 @@ public class betterAuto extends OpMode {
                 break;
 
             case 04:
-                follower.setMaxPower(1);
-                follower.followPath(moveForward, true);
-                setPathState(06);
-                break;
-
-
-            case 06:
                 if (pathTimer.getElapsedTimeSeconds() > 0.6) {
                     robot.lilJarret.setPosition(clawOpen);
-                    setPathState(07);
+                    setPathState(05);
                 }
                 break;
 
-            case 07:
+            case 05:
                 if (pathTimer.getElapsedTimeSeconds() > 0.4) {
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
