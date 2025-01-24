@@ -15,7 +15,7 @@ public class RobotConstants {
 
     pitchMUp = 0,
 
-    pitchBOut = 0.316,
+    pitchBOut = 0.292,
 
     //pitchBDown = 0.2,
 
@@ -71,9 +71,9 @@ public class RobotConstants {
     // Slide constants
     public static int
 
-    slideMax = 1450,
+    slideMax = 1460,
 
-    slideMaxSpec = 540,
+    slideMaxSpec = 550,
 
     slideMin = 0;
 
