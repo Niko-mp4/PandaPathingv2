@@ -17,6 +17,7 @@ import static pandaPathing.robot.RobotConstants.railRMax;
 import static pandaPathing.robot.RobotConstants.railRMin;
 import static pandaPathing.robot.RobotConstants.slideMax;
 import static pandaPathing.robot.RobotConstants.slideMaxSpec;
+import static pandaPathing.robot.RobotConstants.slideMaxSpecTele;
 import static pandaPathing.robot.RobotConstants.slideMin;
 import static pandaPathing.robot.RobotConstants.v4bBDown;
 import static pandaPathing.robot.RobotConstants.v4bBUp;
@@ -81,8 +82,14 @@ public class TelePOP extends OpMode {
                 true);
         follower.update();
 
+
+        robot.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         // automatic speed control
-        if (robot.railL.getPosition() <= 0.5)
+        if (robot.railL.getPosition() == railLMax || clawOut)
             driveSpeed = 0.25;
         else driveSpeed = mult;
 
@@ -105,7 +112,7 @@ public class TelePOP extends OpMode {
 
         // press 'dpad up/down' to set slide target to one of 4 positions (driver 2)
         if (gamepad2.dpad_up && !dUpPressed) {
-            slideTarget = scoringSpec ? slideMaxSpec : slideMax; // top bar for spec. or top basket
+            slideTarget = scoringSpec ? slideMaxSpecTele : slideMax; // top bar for spec. or top basket
             dUpPressed = true;
         } else if (!gamepad2.dpad_up) dUpPressed = false;
         if (gamepad2.dpad_down && !dDownPressed) {
@@ -179,6 +186,7 @@ public class TelePOP extends OpMode {
         if (gamepad2.b && !bPressed && !extended) {
             if (!clawOut) {
                 v4bPos = v4bBDown;
+                robot.roll.setPosition(claw0);
                 robot.pitch.setPosition(pitchBOut);
                 clawOut = true;
             } else {
@@ -208,12 +216,14 @@ public class TelePOP extends OpMode {
                 scoringSpec = true;
                 v4bPos = v4bFOut;
                 robot.pitch.setPosition(pitchMUp);
+                slideTarget = slideMin;
                 depositAction = true;
             } else if (depositTime > 0.5 && !depositAction) {
                 robot.roll.setPosition(claw180);
-            } else if (depositTime > 0.25 && !depositAction)
+            } else if (depositTime > 0.25 && !depositAction) {
                 v4bPos = v4bBUp;
-            else if (depositTime < 0.25) depositAction = false;
+                slideTarget = slideMin+100;
+            } else if (depositTime < 0.25) depositAction = false;
         }
 
         // press 'x' to toggle claw (driver 2)
@@ -231,6 +241,7 @@ public class TelePOP extends OpMode {
         // press 'back' to toggle spec mode (driver 2)
         if (gamepad2.back && !back2Pressed) {
             specMode = !specMode;
+            if(!specMode) scoringSpec = false;
             back2Pressed = true;
         } else if (!gamepad2.back) back2Pressed = false;
 
