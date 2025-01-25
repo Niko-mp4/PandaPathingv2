@@ -242,7 +242,7 @@ public class betterAuto extends OpMode {
                 break;
 
             case 02:
-                if (follower.getCurrentTValue() > 0.5) target = slideMaxSpec;
+                if (follower.getCurrentTValue() > 0.1) target = slideMaxSpec;
                 if (slidesUp) {
                     setPathState(03);
                 }
@@ -265,14 +265,14 @@ public class betterAuto extends OpMode {
                 break;
 
             case 04:
-                if (pathTimer.getElapsedTimeSeconds() > 0.4) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
                     robot.lilJarret.setPosition(clawOpen);
                     setPathState(05);
                 }
                 break;
 
             case 05:
-                if (pathTimer.getElapsedTimeSeconds() > 0.4) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                     rails = false;
@@ -283,7 +283,7 @@ public class betterAuto extends OpMode {
 
 
             case 10:
-                if (!rails) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
                     follower.followPath(pushPosition1, true);
                     setPathState(11);
                 }

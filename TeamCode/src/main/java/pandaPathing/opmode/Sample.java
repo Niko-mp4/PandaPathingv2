@@ -55,23 +55,65 @@ public class Sample extends OpMode {
 
     private final Pose startPose = new Pose(0, 0, Math.toRadians(-90));
 
-    private final Pose preloadPose = new Pose(5, 12, Math.toRadians(-45));
+    private final Pose scorePose = new Pose(5, 12, Math.toRadians(-45));
 
     private final Pose firstSamplePose = new Pose(13, 9, Math.toRadians(0));
 
-    private PathChain preload, firstSample;
+    private final Pose firstScorePose = new Pose(10, 16, Math.toRadians(-45));
+
+    private final Pose secondSamplePose = new Pose(13, 16.5, Math.toRadians(0));
+
+    private final Pose secondScorePose = new Pose(10, 16, Math.toRadians(-45));
+
+    private final Pose thirdSamplePose = new Pose(15, 18, Math.toRadians(20));
+
+    private final Pose thirdScorePose = new Pose(10, 16, Math.toRadians(-45));
+
+    private final Pose parkPose = new Pose(40, 5, Math.toRadians(0));
+
+    private PathChain preload, firstSample, firstScore, secondSample, secondScore, thirdSample, thirdScore, park;
 
     public void buildPaths() {
 
 
         preload = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPose), new Point(preloadPose)))
-                .setLinearHeadingInterpolation(startPose.getHeading(), preloadPose.getHeading())
+                .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
+                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
                 .build();
 
         firstSample = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(preloadPose), new Point(firstSamplePose)))
-                .setLinearHeadingInterpolation(preloadPose.getHeading(), firstSamplePose.getHeading())
+                .addPath(new BezierLine(new Point(scorePose), new Point(firstSamplePose)))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), firstSamplePose.getHeading())
+                .build();
+
+        firstScore = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(firstSamplePose), new Point(firstScorePose)))
+                .setLinearHeadingInterpolation(firstSamplePose.getHeading(), firstScorePose.getHeading())
+                .build();
+
+        secondSample = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(firstScorePose), new Point(secondSamplePose)))
+                .setLinearHeadingInterpolation(firstScorePose.getHeading(), secondSamplePose.getHeading())
+                .build();
+
+        secondScore = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(secondSamplePose), new Point(secondScorePose)))
+                .setLinearHeadingInterpolation(secondSamplePose.getHeading(), secondScorePose.getHeading())
+                .build();
+
+        thirdSample = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(secondScorePose), new Point(thirdSamplePose)))
+                .setLinearHeadingInterpolation(secondScorePose.getHeading(), thirdSamplePose.getHeading())
+                .build();
+
+        thirdScore = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(thirdSamplePose), new Point(thirdScorePose)))
+                .setLinearHeadingInterpolation(thirdSamplePose.getHeading(), thirdScorePose.getHeading())
+                .build();
+
+        park = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(thirdScorePose), new Point(parkPose)))
+                .setLinearHeadingInterpolation(thirdScorePose.getHeading(), parkPose.getHeading())
                 .build();
     }
 
@@ -84,7 +126,7 @@ public class Sample extends OpMode {
         else if(slidePos < slideMin - 20) slidesDown = false;
 
         switch (pathState) {
-            case 00: //preload & set max power
+            case 0: //preload & set max power
                 follower.setMaxPower(1);
                 robot.v4b.setPosition(v4bMUp);
                 robot.pitch.setPosition(pitchBOut);
@@ -94,13 +136,14 @@ public class Sample extends OpMode {
                 robot.roll.setPosition(claw90);
                 robot.yaw.setPosition(yaw0);
                 rails = false;
-                setPathState(01);
+                setPathState(1);
                 break;
 
             case 1:
-                follower.setMaxPower(1);
-                follower.followPath(preload, true);
-                setPathState(2);
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    follower.followPath(preload, true);
+                    setPathState(2);
+                }
                 break;
 
             case 2:
@@ -173,7 +216,230 @@ public class Sample extends OpMode {
                     robot.v4b.setPosition(v4bMUp);
                     robot.pitch.setPosition(pitchBOut);
                     rails = false;
-                    setPathState(16);
+                    setPathState(20);
+                }
+                break;
+
+
+
+            case 20:
+                if (!rails) {
+                    follower.followPath(firstScore, true);
+                    setPathState(21);
+                }
+                break;
+
+            case 21:
+                if (follower.getCurrentTValue() > 0.01)
+                    target = slideMax;
+                if (slidesUp) {
+                    setPathState(22);
+                }
+                break;
+
+            case 22:
+                if (slidePos > (slideMax - 50)) {
+                    robot.v4b.setPosition(v4bBDown);
+                    robot.roll.setPosition(claw90);
+                    setPathState(23);
+                }
+                break;
+
+            case 23:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    robot.lilJarret.setPosition(clawOpen);
+                    setPathState(24);
+                }
+                break;
+
+            case 24:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    follower.followPath(secondSample, true);
+                    setPathState(25);
+                }
+                break;
+
+            case 25:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    target = slideMin;
+                    robot.lilJarret.setPosition(clawOpen);
+                    setPathState(26);
+                }
+                break;
+
+            case 26:
+                if (!follower.isBusy()) {
+                    robot.roll.setPosition(claw0);
+                    robot.railR.setPosition(railRMax);
+                    robot.railL.setPosition(railLMax);
+                    robot.v4b.setPosition(v4bFUp);
+                    robot.pitch.setPosition(pitchFDown);
+                    rails = true;
+                    setPathState(27);
+                }
+                break;
+
+            case 27:
+                if (pathTimer.getElapsedTimeSeconds() > 0.7) {
+                    robot.v4b.setPosition(v4bFDown);
+                    setPathState(28);
+                }
+                break;
+
+            case 28:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    robot.lilJarret.setPosition(clawClose);
+                    setPathState(29);
+                }
+                break;
+
+            case 29:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    robot.railR.setPosition(railRMin);
+                    robot.railL.setPosition(railLMin);
+                    robot.v4b.setPosition(v4bMUp);
+                    robot.pitch.setPosition(pitchBOut);
+                    rails = false;
+                    setPathState(30);
+                }
+                break;
+
+
+
+            case 30:
+                if (!rails) {
+                    follower.followPath(secondScore, true);
+                    setPathState(31);
+                }
+                break;
+
+            case 31:
+                if (follower.getCurrentTValue() > 0.01)
+                    target = slideMax;
+                if (slidesUp) {
+                    setPathState(32);
+                }
+                break;
+
+            case 32:
+                if (slidePos > (slideMax - 50)) {
+                    robot.v4b.setPosition(v4bBDown);
+                    robot.roll.setPosition(claw90);
+                    setPathState(33);
+                }
+                break;
+
+            case 33:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    robot.lilJarret.setPosition(clawOpen);
+                    setPathState(34);
+                }
+                break;
+
+            case 34:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    follower.followPath(thirdSample, true);
+                    setPathState(35);
+                }
+                break;
+
+            case 35:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    target = slideMin;
+                    robot.lilJarret.setPosition(clawOpen);
+                    setPathState(36);
+                }
+                break;
+
+            case 36:
+                if (!follower.isBusy()) {
+                    robot.roll.setPosition(claw0);
+                    robot.railR.setPosition(railRMax);
+                    robot.railL.setPosition(railLMax);
+                    robot.v4b.setPosition(v4bFUp);
+                    robot.pitch.setPosition(pitchFDown);
+                    robot.roll.setPosition(claw45);
+                    rails = true;
+                    setPathState(37);
+                }
+                break;
+
+            case 37:
+                if (pathTimer.getElapsedTimeSeconds() > 0.7) {
+                    robot.v4b.setPosition(v4bFDown);
+                    setPathState(38);
+                }
+                break;
+
+            case 38:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    robot.lilJarret.setPosition(clawClose);
+                    setPathState(39);
+                }
+                break;
+
+            case 39:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    robot.railR.setPosition(railRMin);
+                    robot.railL.setPosition(railLMin);
+                    robot.v4b.setPosition(v4bMUp);
+                    robot.pitch.setPosition(pitchBOut);
+                    robot.roll.setPosition(claw0);
+                    rails = false;
+                    setPathState(40);
+                }
+                break;
+
+
+
+            case 40:
+                if (!rails) {
+                    follower.followPath(thirdScore, true);
+                    setPathState(41);
+                }
+                break;
+
+            case 41:
+                if (follower.getCurrentTValue() > 0.01)
+                    target = slideMax;
+                if (slidesUp) {
+                    setPathState(42);
+                }
+                break;
+
+            case 42:
+                if (slidePos > (slideMax - 50)) {
+                    robot.v4b.setPosition(v4bBDown);
+                    robot.roll.setPosition(claw90);
+                    setPathState(43);
+                }
+                break;
+
+            case 43:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    robot.lilJarret.setPosition(clawOpen);
+                    setPathState(44);
+                }
+                break;
+
+            case 44:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    follower.followPath(park, true);
+                    setPathState(45);
+                }
+                break;
+
+            case 45:
+                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    target = slideMin;
+                    robot.v4b.setPosition(v4bMUp);
+                    robot.pitch.setPosition(pitchBOut);
+                    robot.lilJarret.setPosition(clawOpen);
+                    robot.railL.setPosition(railLMin);
+                    robot.railR.setPosition(railRMin);
+                    robot.roll.setPosition(claw0);
+                    robot.yaw.setPosition(yaw0);
+                    setPathState(46);
                 }
                 break;
         }

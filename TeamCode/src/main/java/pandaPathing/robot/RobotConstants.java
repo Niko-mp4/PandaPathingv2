@@ -71,7 +71,7 @@ public class RobotConstants {
     // Slide constants
     public static int
 
-    slideMax = 1460,
+    slideMax = 1450,
 
     slideMaxSpec = 550,
 
