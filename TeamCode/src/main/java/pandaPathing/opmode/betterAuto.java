@@ -76,15 +76,15 @@ public class betterAuto extends OpMode {
 
     private final Pose grabPose = new Pose(7, -30, Math.toRadians(0));
 
-    private final Pose hangPose1 = new Pose(26, 0, Math.toRadians(0));
+    private final Pose hangPose1 = new Pose(28, 0, Math.toRadians(0));
 
-    private final Pose hangPose2 = new Pose(26, 3, Math.toRadians(0));
+    private final Pose hangPose2 = new Pose(28, 3, Math.toRadians(0));
 
-    private final Pose hangPose3 = new Pose(26, 7, Math.toRadians(0));
+    private final Pose hangPose3 = new Pose(28, 7, Math.toRadians(0));
 
-    private final Pose hangPose4 = new Pose(26, 11, Math.toRadians(0));
+    private final Pose hangPose4 = new Pose(28, 11, Math.toRadians(0));
 
-    private final Pose hangPose5 = new Pose(26, 6, Math.toRadians(0));
+    private final Pose hangPose5 = new Pose(28, 6, Math.toRadians(0));
 
     private final Pose parkPose = new Pose(72, 48, Math.toRadians(270));
 
@@ -333,7 +333,7 @@ public class betterAuto extends OpMode {
 
             case 16:
                 if (follower.getCurrentTValue() > 0.2) {
-                    robot.v4b.setPosition(v4bBUp);
+                    robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
                     robot.roll.setPosition(claw180);
                     setPathState(17);
@@ -358,7 +358,7 @@ public class betterAuto extends OpMode {
 
             case 21:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
-                    target = slideMin + 100;
+                    target = slideMin + 150;
                     follower.followPath(hang1, true);
                     setPathState(22);
                 }
@@ -390,7 +390,7 @@ public class betterAuto extends OpMode {
                 break;
 
             case 25:
-                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
                     robot.lilJarret.setPosition(clawOpen);
                     setPathState(26);
                 }
@@ -421,7 +421,7 @@ public class betterAuto extends OpMode {
 
             case 29:
                 if (follower.getCurrentTValue() > 0.2) {
-                    robot.v4b.setPosition(v4bBUp);
+                    robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
                     robot.roll.setPosition(claw180);
                     setPathState(30);
@@ -446,7 +446,7 @@ public class betterAuto extends OpMode {
 
             case 32:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
-                    target = slideMin + 100;
+                    target = slideMin + 150;
                     follower.followPath(hang2, true);
                     setPathState(33);
                 }
@@ -479,7 +479,7 @@ public class betterAuto extends OpMode {
                 break;
 
             case 36:
-                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
                     robot.lilJarret.setPosition(clawOpen);
                     setPathState(37);
                 }
@@ -510,7 +510,7 @@ public class betterAuto extends OpMode {
 
             case 40:
                 if (follower.getCurrentTValue() > 0.2) {
-                    robot.v4b.setPosition(v4bBUp);
+                    robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
                     robot.roll.setPosition(claw180);
                     setPathState(50);
@@ -535,7 +535,7 @@ public class betterAuto extends OpMode {
 
             case 52:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
-                    target = slideMin + 100;
+                    target = slideMin + 150;
                     follower.followPath(hang3, true);
                     setPathState(53);
                 }
@@ -568,7 +568,7 @@ public class betterAuto extends OpMode {
                 break;
 
             case 56:
-                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
                     robot.lilJarret.setPosition(clawOpen);
                     setPathState(57);
                 }
@@ -599,7 +599,7 @@ public class betterAuto extends OpMode {
 
             case 60:
                 if (follower.getCurrentTValue() > 0.2) {
-                    robot.v4b.setPosition(v4bBUp);
+                    robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
                     robot.roll.setPosition(claw180);
                     setPathState(70);
@@ -624,7 +624,7 @@ public class betterAuto extends OpMode {
 
             case 72:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
-                    target = slideMin + 100;
+                    target = slideMin + 150;
                     follower.followPath(hang4, true);
                     setPathState(73);
                 }
@@ -657,7 +657,7 @@ public class betterAuto extends OpMode {
                 break;
 
             case 76:
-                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
                     robot.lilJarret.setPosition(clawOpen);
                     setPathState(77);
                 }
@@ -675,7 +675,7 @@ public class betterAuto extends OpMode {
             case 78:
                 if (!rails) {
                     follower.followPath(grab5, true);
-                    setPathState(59);
+                    setPathState(79);
                 }
                 break;
 

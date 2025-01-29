@@ -32,6 +32,10 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.BezierPoint;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -46,12 +50,14 @@ import pandaPathing.robot.Hardware;
 public class TelePOP extends OpMode {
     private Hardware robot;
     private Follower follower;
+    private Path holdHeading;
 
     boolean dUpPressed, dDownPressed, dLeftPressed, yPressed, y1Pressed, aPressed, a1Pressed, rBumpPressed, lBumpPressed, backPressed, back2Pressed, xPressed, x1Pressed, bPressed, b1Pressed,
             clawIsOpen = false, extended = false, neckUp = true, slowMode = false, hanging = false, slidesUp = false, slidesDown = false, clawOut = false,
-            depositAction = true, grabAction = false, scoringSpec = false, specMode = false;
+            depositAction = true, grabAction = false, specRetractAction = true,
+            scoringSpec = false, specMode = false, firstRun = true, headingLock = true, teleRestart = false;
     double slideTarget = slideMin, extendPosR = railRMin, extendPosL = railLMin, v4bPos = v4bMUp,
-            depositTime, depositStartTime, grabStartTime, grabTime,
+            depositTime, depositStartTime, grabStartTime, grabTime, specRetractStartTime, specRetractTime,
             driveSpeed, slideSpeed, mult = 1;
 
     public void init() {
@@ -80,8 +86,26 @@ public class TelePOP extends OpMode {
                 2*slideSpeed*driveSpeed * (gamepad1.left_trigger > 0 ? gamepad1.left_trigger : (gamepad1.right_trigger > 0 ? -gamepad1.right_trigger : 0)),
                 slideSpeed*driveSpeed * -gamepad1.right_stick_x,
                 true);
-        follower.update();
+        /*if(clawOut && specMode && !headingLock){\
+            Follower.useHeading = true;
+            holdHeading = new Path(new BezierLine(new Point(0,0, Point.CARTESIAN), new Point(1,0, Point.CARTESIAN)));
+            holdHeading.setConstantHeadingInterpolation(0);
+            follower.holdPoint(new Point(follower.getXOffset(), follower.getYOffset()), Math.toRadians(0));
+            teleRestart = false;
+            headingLock = true;
+        } else if(!clawOut){
+            headingLock = false;
+        }
+        if(headingLock && !teleRestart){
+            follower.startTeleopDrive();
+            Follower.useHeading = false;
+            Follower.useTranslational = false;
+            Follower.useCentripetal = false;
+            Follower.useDrive = false;
+            teleRestart = true;
+        }*/
 
+        follower.update();
 
         robot.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         robot.leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -89,11 +113,12 @@ public class TelePOP extends OpMode {
         robot.rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // automatic speed control
-        if (robot.railL.getPosition() == railLMax || clawOut)
-            driveSpeed = 0.25;
+        if (robot.railL.getPosition() == railLMax || (clawOut && specMode))
+            driveSpeed = 0.2;
         else driveSpeed = mult;
 
         slideSpeed = Math.sqrt((robot.rightSlides.getCurrentPosition() - 1510.41666) / -1510.41666);
+        if(scoringSpec) slideSpeed *= 1.2;
 
         // press 'left bumper' to toggle speed slow/fast (driver 1)
         if (gamepad1.left_bumper && !lBumpPressed) {
@@ -117,12 +142,6 @@ public class TelePOP extends OpMode {
         } else if (!gamepad2.dpad_up) dUpPressed = false;
         if (gamepad2.dpad_down && !dDownPressed) {
             slideTarget = slideMin; // or slides down all the way
-            if (scoringSpec) {
-                scoringSpec = false;
-                robot.lilJarret.setPosition(clawOpen);
-                clawIsOpen = true;
-                railRetract();
-            }
             dDownPressed = true;
         } else if (!gamepad2.dpad_down) dDownPressed = false;
         if (gamepad2.dpad_left && !dLeftPressed) {
@@ -132,7 +151,7 @@ public class TelePOP extends OpMode {
         // automatic deposit setup when slides are up
         if (robot.rightSlides.getCurrentPosition() >= slideMax - 20 && !slidesUp) {
             robot.pitch.setPosition(pitchBOut); // set claw above basket
-            v4bPos = v4bBUp;
+            v4bPos = v4bBDown;
             slidesUp = true;
         } else if (robot.rightSlides.getCurrentPosition() <= slideMax - 100) slidesUp = false;
         if (slideTarget <= slideMin)
@@ -176,11 +195,11 @@ public class TelePOP extends OpMode {
             rBumpPressed = true;
         } else if (!gamepad1.right_bumper) rBumpPressed = false;
         grabTime = (System.currentTimeMillis() - grabStartTime) / 1000.0;
-        if (grabTime > 0.25 && !grabAction) { // timer to open/close claw after v4b moves
+        if (grabTime > 0.12 && !grabAction) { // timer to open/close claw after v4b moves
             robot.lilJarret.setPosition(neckUp ? clawOpen : clawClose);
             clawIsOpen = neckUp;
             grabAction = true;
-        } else if (grabTime < 0.25) grabAction = false;
+        } else if (grabTime < 0.12) grabAction = false;
 
         // press 'b' to deposit sample (driver 2)
         if (gamepad2.b && !bPressed && !extended) {
@@ -202,6 +221,7 @@ public class TelePOP extends OpMode {
             if (depositTime > 0.5 && !depositAction) {
                 v4bPos = v4bMUp;
                 robot.pitch.setPosition(pitchFDown);
+                if(firstRun) {specMode = true; firstRun = false;}
                 clawOut = false;
                 depositAction = true;
                 scoringSpec = false;
@@ -221,9 +241,18 @@ public class TelePOP extends OpMode {
             } else if (depositTime > 0.5 && !depositAction) {
                 robot.roll.setPosition(claw180);
             } else if (depositTime > 0.25 && !depositAction) {
-                v4bPos = v4bBUp;
-                slideTarget = slideMin+100;
+                v4bPos = v4bBDown;
+                slideTarget = slideMin+200;
             } else if (depositTime < 0.25) depositAction = false;
+        }
+        specRetractTime = (System.currentTimeMillis() - specRetractStartTime) / 1000.0;
+        if(specRetractTime > 0.5 && !specRetractAction){
+            slideTarget = slideMin;
+            scoringSpec = false;
+            robot.lilJarret.setPosition(clawOpen);
+            specRetractAction = true;
+        } else if(specRetractTime < 0.5){
+            specRetractAction = false;
         }
 
         // press 'x' to toggle claw (driver 2)
@@ -316,6 +345,7 @@ public class TelePOP extends OpMode {
         extendPosL = railLMin;
         if (scoringSpec) {
             robot.lilJarret.setPosition(clawOpen);
+            specRetractStartTime = System.currentTimeMillis();
             clawIsOpen = true;
         } else {
             v4bPos = v4bMUp;

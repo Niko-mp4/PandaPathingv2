@@ -43,7 +43,7 @@ public class RobotConstants {
 
     v4bBUp = 0.31,
 
-    v4bBDown = 0.23,
+    v4bBDown = 0.25,
 
     v4bspec = 0.377,
 
@@ -73,7 +73,7 @@ public class RobotConstants {
 
     slideMax = 1450,
 
-    slideMaxSpec = 550,
+    slideMaxSpec = 540,
 
     slideMaxSpecTele = 630,
 
