@@ -319,7 +319,7 @@ public class TelePOP extends OpMode {
         telemetry.addLine("neck is " + (neckUp ? "UP" : "DOWN") + "!");
         telemetry.addLine("claw is " + (clawIsOpen ? "OPEN" : "CLOSED") + " and " + (clawOut ? "OUT" : "IN"));
         telemetry.addLine("robot is scoring " + (specMode ? "SPECIMEN" : "SAMPLE") + "!");
-        telemetry.addData("depositTimer", depositTime);
+        telemetry.addData("slide pos", robot.rightSlides.getCurrentPosition());
         telemetry.update();
     }
 
