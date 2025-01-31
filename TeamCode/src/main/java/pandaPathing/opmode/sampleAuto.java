@@ -1,15 +1,12 @@
 package pandaPathing.opmode;
 
 import static pandaPathing.robot.RobotConstants.claw0;
-import static pandaPathing.robot.RobotConstants.claw180;
-import static pandaPathing.robot.RobotConstants.claw45;
 import static pandaPathing.robot.RobotConstants.claw45_2;
 import static pandaPathing.robot.RobotConstants.claw90;
 import static pandaPathing.robot.RobotConstants.clawClose;
 import static pandaPathing.robot.RobotConstants.clawOpen;
 import static pandaPathing.robot.RobotConstants.pitchBOut;
 import static pandaPathing.robot.RobotConstants.pitchFDown;
-import static pandaPathing.robot.RobotConstants.pitchMUp;
 import static pandaPathing.robot.RobotConstants.railLMax;
 import static pandaPathing.robot.RobotConstants.railLMin;
 import static pandaPathing.robot.RobotConstants.railRMax;
@@ -18,7 +15,6 @@ import static pandaPathing.robot.RobotConstants.slideMax;
 import static pandaPathing.robot.RobotConstants.slideMaxSpec;
 import static pandaPathing.robot.RobotConstants.slideMin;
 import static pandaPathing.robot.RobotConstants.v4bBDown;
-import static pandaPathing.robot.RobotConstants.v4bBUp;
 import static pandaPathing.robot.RobotConstants.v4bFDown;
 import static pandaPathing.robot.RobotConstants.v4bFUp;
 import static pandaPathing.robot.RobotConstants.v4bMUp;
@@ -27,10 +23,7 @@ import static pandaPathing.robot.RobotConstants.yaw0;
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.BezierPoint;
-import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
@@ -44,7 +37,7 @@ import pandaPathing.robot.Hardware;
 
 @Config
 @Autonomous(name = "Sample Boiii", group = "Opmode")
-public class Sample extends OpMode {
+public class sampleAuto extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -358,7 +351,7 @@ public class Sample extends OpMode {
                     robot.railL.setPosition(railLMax);
                     robot.v4b.setPosition(v4bFUp);
                     robot.pitch.setPosition(pitchFDown);
-                    robot.roll.setPosition(claw45);
+                    robot.roll.setPosition(claw45_2);
                     rails = true;
                     setPathState(37);
                 }
@@ -438,7 +431,6 @@ public class Sample extends OpMode {
                     robot.railL.setPosition(railLMin);
                     robot.railR.setPosition(railRMin);
                     robot.roll.setPosition(claw0);
-                    robot.yaw.setPosition(yaw0);
                     setPathState(46);
                 }
                 break;

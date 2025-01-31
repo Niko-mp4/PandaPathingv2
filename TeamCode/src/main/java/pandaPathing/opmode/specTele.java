@@ -9,18 +9,15 @@ import static pandaPathing.robot.RobotConstants.clawClose;
 import static pandaPathing.robot.RobotConstants.clawOpen;
 import static pandaPathing.robot.RobotConstants.pitchBOut;
 import static pandaPathing.robot.RobotConstants.pitchFDown;
-import static pandaPathing.robot.RobotConstants.pitchFOut;
 import static pandaPathing.robot.RobotConstants.pitchMUp;
 import static pandaPathing.robot.RobotConstants.railLMax;
 import static pandaPathing.robot.RobotConstants.railLMin;
 import static pandaPathing.robot.RobotConstants.railRMax;
 import static pandaPathing.robot.RobotConstants.railRMin;
 import static pandaPathing.robot.RobotConstants.slideMax;
-import static pandaPathing.robot.RobotConstants.slideMaxSpec;
 import static pandaPathing.robot.RobotConstants.slideMaxSpecTele;
 import static pandaPathing.robot.RobotConstants.slideMin;
 import static pandaPathing.robot.RobotConstants.v4bBDown;
-import static pandaPathing.robot.RobotConstants.v4bBUp;
 import static pandaPathing.robot.RobotConstants.v4bMUp;
 import static pandaPathing.robot.RobotConstants.v4bFDown;
 import static pandaPathing.robot.RobotConstants.v4bFOut;
@@ -32,10 +29,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.BezierPoint;
 import com.pedropathing.pathgen.Path;
-import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -46,8 +40,8 @@ import pandaPathing.constants.LConstants;
 import pandaPathing.robot.Hardware;
 
 @Config
-@TeleOp(name = "telelelelelellel", group = "Drive")
-public class TelePOP extends OpMode {
+@TeleOp(name = "speckimen!", group = "tellelelellel")
+public class specTele extends OpMode {
     private Hardware robot;
     private Follower follower;
     private Path holdHeading;
@@ -86,7 +80,7 @@ public class TelePOP extends OpMode {
                 2*slideSpeed*driveSpeed * (gamepad1.left_trigger > 0 ? gamepad1.left_trigger : (gamepad1.right_trigger > 0 ? -gamepad1.right_trigger : 0)),
                 slideSpeed*driveSpeed * -gamepad1.right_stick_x,
                 true);
-        /*if(clawOut && specMode && !headingLock){\
+        /*if(clawOut && specMode && !headingLock){
             Follower.useHeading = true;
             holdHeading = new Path(new BezierLine(new Point(0,0, Point.CARTESIAN), new Point(1,0, Point.CARTESIAN)));
             holdHeading.setConstantHeadingInterpolation(0);
@@ -113,7 +107,7 @@ public class TelePOP extends OpMode {
         robot.rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // automatic speed control
-        if (robot.railL.getPosition() == railLMax || (clawOut && specMode))
+        if (extended|| (clawOut && specMode))
             driveSpeed = 0.2;
         else driveSpeed = mult;
 
@@ -145,11 +139,13 @@ public class TelePOP extends OpMode {
             dDownPressed = true;
         } else if (!gamepad2.dpad_down) dDownPressed = false;
         if (gamepad2.dpad_left && !dLeftPressed) {
-            slideTarget = 700; // or slides down all the way
+            slideTarget = 900; // or slides down all the way
             dLeftPressed = true;
         } else if (!gamepad2.dpad_left) dLeftPressed = false;
         // automatic deposit setup when slides are up
-        if (robot.rightSlides.getCurrentPosition() >= slideMax - 20 && !slidesUp) {
+        if (robot.rightSlides.getCurrentPosition() >= slideMax - 20)
+            robot.roll.setPosition(claw90);
+        else if (robot.rightSlides.getCurrentPosition() >= slideMax - 50 && !slidesUp) {
             robot.pitch.setPosition(pitchBOut); // set claw above basket
             v4bPos = v4bBDown;
             slidesUp = true;
@@ -205,7 +201,7 @@ public class TelePOP extends OpMode {
         if (gamepad2.b && !bPressed && !extended) {
             if (!clawOut) {
                 v4bPos = v4bBDown;
-                robot.roll.setPosition(claw0);
+                if(!slidesUp) robot.roll.setPosition(claw0);
                 robot.pitch.setPosition(pitchBOut);
                 clawOut = true;
             } else {
@@ -246,12 +242,15 @@ public class TelePOP extends OpMode {
             } else if (depositTime < 0.25) depositAction = false;
         }
         specRetractTime = (System.currentTimeMillis() - specRetractStartTime) / 1000.0;
-        if(specRetractTime > 0.5 && !specRetractAction){
+        if(specRetractTime > 0.7 && !specRetractAction){
             slideTarget = slideMin;
             scoringSpec = false;
-            robot.lilJarret.setPosition(clawOpen);
             specRetractAction = true;
-        } else if(specRetractTime < 0.5){
+        } else if(specRetractTime > 0.2 && !specRetractAction){
+            robot.roll.setPosition(claw0);
+            extendPosR = railRMin;
+            extendPosL = railLMin;
+        } else if(specRetractTime < 0.2){
             specRetractAction = false;
         }
 
@@ -340,14 +339,14 @@ public class TelePOP extends OpMode {
     }
 
     public void railRetract() {
-        robot.roll.setPosition(claw0);
-        extendPosR = railRMin;
-        extendPosL = railLMin;
         if (scoringSpec) {
             robot.lilJarret.setPosition(clawOpen);
             specRetractStartTime = System.currentTimeMillis();
             clawIsOpen = true;
         } else {
+            robot.roll.setPosition(claw0);
+            extendPosR = railRMin;
+            extendPosL = railLMin;
             v4bPos = v4bMUp;
             robot.pitch.setPosition(pitchFDown);
         }

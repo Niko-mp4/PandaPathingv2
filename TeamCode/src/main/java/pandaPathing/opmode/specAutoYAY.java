@@ -5,7 +5,7 @@ import static pandaPathing.robot.RobotConstants.claw180;
 import static pandaPathing.robot.RobotConstants.clawClose;
 import static pandaPathing.robot.RobotConstants.clawOpen;
 import static pandaPathing.robot.RobotConstants.pitchBOut;
-import static pandaPathing.robot.RobotConstants.pitchFDown;
+import static pandaPathing.robot.RobotConstants.pitchFOut;
 import static pandaPathing.robot.RobotConstants.pitchMUp;
 import static pandaPathing.robot.RobotConstants.railLMax;
 import static pandaPathing.robot.RobotConstants.railLMin;
@@ -15,10 +15,7 @@ import static pandaPathing.robot.RobotConstants.slideMax;
 import static pandaPathing.robot.RobotConstants.slideMaxSpec;
 import static pandaPathing.robot.RobotConstants.slideMin;
 import static pandaPathing.robot.RobotConstants.v4bBDown;
-import static pandaPathing.robot.RobotConstants.v4bBUp;
-import static pandaPathing.robot.RobotConstants.v4bFDown;
 import static pandaPathing.robot.RobotConstants.v4bFUp;
-import static pandaPathing.robot.RobotConstants.v4bMUp;
 import static pandaPathing.robot.RobotConstants.yaw0;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -26,8 +23,6 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.BezierPoint;
-import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
@@ -40,8 +35,8 @@ import pandaPathing.robot.Hardware;
 
 
 @Config
-@Autonomous(name = "AmungAuto", group = "Opmode")
-public class betterAuto extends OpMode {
+@Autonomous(name = "automUs", group = "Opmode")
+public class specAutoYAY extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -273,6 +268,7 @@ public class betterAuto extends OpMode {
 
             case 05:
                 if (pathTimer.getElapsedTimeSeconds() > 0.6) {
+                    robot.pitch.setPosition(pitchFOut);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                     rails = false;
@@ -398,6 +394,7 @@ public class betterAuto extends OpMode {
 
             case 26:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
+                    robot.pitch.setPosition(pitchFOut);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                     rails = false;
@@ -487,6 +484,7 @@ public class betterAuto extends OpMode {
 
             case 37:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
+                    robot.pitch.setPosition(pitchFOut);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                     rails = false;
@@ -576,6 +574,7 @@ public class betterAuto extends OpMode {
 
             case 57:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
+                    robot.pitch.setPosition(pitchFOut);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                     rails = false;
@@ -665,6 +664,7 @@ public class betterAuto extends OpMode {
 
             case 77:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
+                    robot.pitch.setPosition(pitchFOut);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                     rails = false;
