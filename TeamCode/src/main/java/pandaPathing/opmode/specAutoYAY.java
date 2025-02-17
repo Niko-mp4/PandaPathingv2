@@ -35,7 +35,7 @@ import pandaPathing.robot.Hardware;
 
 
 @Config
-@Autonomous(name = "automUs", group = "Opmode")
+@Autonomous(name = "specAuto", group = "Opmode")
 public class specAutoYAY extends OpMode {
 
     private Follower follower;
@@ -47,11 +47,11 @@ public class specAutoYAY extends OpMode {
 
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
 
-    private final Pose scorePreloadPose = new Pose(22, 2, Math.toRadians(0));
+    private final Pose scorePreloadPose = new Pose(22, 3, Math.toRadians(0));
 
     private final Pose moveRightPose = new Pose(20, -20, Math.toRadians(0));
 
-    private final Pose moveForwardPose = new Pose(28, 2, Math.toRadians(0));
+    private final Pose moveForwardPose = new Pose(28, 3, Math.toRadians(0));
 
     private final Pose pushPositionPose1 = new Pose(52, -39, Math.toRadians(0));
 
@@ -267,7 +267,7 @@ public class specAutoYAY extends OpMode {
                 break;
 
             case 05:
-                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.7) {
                     robot.pitch.setPosition(pitchFOut);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);

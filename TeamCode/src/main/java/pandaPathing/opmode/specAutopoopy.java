@@ -28,6 +28,7 @@ import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.pedropathing.util.Timer;
 import pandaPathing.constants.FConstants;
@@ -36,6 +37,7 @@ import pandaPathing.robot.Hardware;
 
 
 @Config
+@Disabled
 @Autonomous(name = "PoopShoot", group = "Opmode")
 public class specAutopoopy extends OpMode {
 

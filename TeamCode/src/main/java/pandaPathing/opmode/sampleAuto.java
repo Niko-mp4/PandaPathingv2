@@ -36,7 +36,7 @@ import pandaPathing.robot.Hardware;
 
 
 @Config
-@Autonomous(name = "Sample Boiii", group = "Opmode")
+@Autonomous(name = "sampleAuto", group = "Opmode")
 public class sampleAuto extends OpMode {
 
     private Follower follower;
@@ -62,7 +62,7 @@ public class sampleAuto extends OpMode {
 
     private final Pose thirdScorePose = new Pose(10, 16, Math.toRadians(-45));
 
-    private final Pose parkPose = new Pose(40, 5, Math.toRadians(0));
+    private final Pose parkPose = new Pose(45, -5, Math.toRadians(0));
 
     private PathChain preload, firstSample, firstScore, secondSample, secondScore, thirdSample, thirdScore, park;
 

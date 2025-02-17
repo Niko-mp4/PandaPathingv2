@@ -6,7 +6,7 @@ public class PDFLController {
 
     private Timer timer = new Timer();
 
-    double slowDown = 0.1;
+    double slowDown = 0.2;
 
     private RingBuffer<Double> timeBuffer = new RingBuffer<Double>(3, 0.0);
     private RingBuffer<Double> errorBuffer = new RingBuffer<Double>(3, 0.0);

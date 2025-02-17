@@ -1,6 +1,7 @@
 package pandaPathing.robot;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -17,6 +18,7 @@ public class Hardware {
     public DcMotorEx leftFront, leftRear, rightFront, rightRear, rightSlides, leftSlides, hangerL, hangerR;
     public Servo railL, railR, lilJarret, v4b, pitch, roll, yaw;
     public DigitalChannel touchSensor;
+    public Limelight3A limelight;
 
     public PDFLController slideyController;
 
@@ -69,9 +71,9 @@ public class Hardware {
         railL = initServo("es2");
         railR = initServo("es4");
         v4b = initServo("es0");
-        lilJarret = initServo("cs0");
+        lilJarret = initServo("cs1");
         pitch = initServo("es5");
-        roll = initServo("cs2");
+        roll = initServo("cs3");
         yaw = initServo("es3");
     }
 
@@ -82,6 +84,8 @@ public class Hardware {
     private void initializeSensors() {
         touchSensor = hardwareMap.get(DigitalChannel.class, "cd0");
         touchSensor.setMode(DigitalChannel.Mode.INPUT);
+        limelight = hardwareMap.get(Limelight3A.class, "Limelight3A");
+
     }
 
     public double calculateSlidePower(double target) {
