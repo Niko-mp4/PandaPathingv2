@@ -1,11 +1,14 @@
 package pandaPathing.opmode;
 
 import static pandaPathing.robot.RobotConstants.claw0;
+import static pandaPathing.robot.RobotConstants.claw180;
+import static pandaPathing.robot.RobotConstants.claw45;
 import static pandaPathing.robot.RobotConstants.claw45_2;
 import static pandaPathing.robot.RobotConstants.clawClose;
 import static pandaPathing.robot.RobotConstants.clawOpen;
 import static pandaPathing.robot.RobotConstants.pitchBOut;
 import static pandaPathing.robot.RobotConstants.pitchFDown;
+import static pandaPathing.robot.RobotConstants.pitchFOut;
 import static pandaPathing.robot.RobotConstants.pitchMUp;
 import static pandaPathing.robot.RobotConstants.railLMax;
 import static pandaPathing.robot.RobotConstants.railLMin;
@@ -37,7 +40,6 @@ import pandaPathing.robot.Hardware;
 
 
 @Config
-@Disabled
 @Autonomous(name = "PoopShoot", group = "Opmode")
 public class specAutopoopy extends OpMode {
 
@@ -50,15 +52,15 @@ public class specAutopoopy extends OpMode {
 
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
 
-    private final Pose scorePreloadPose = new Pose(24, 0, Math.toRadians(0));
+    private final Pose scorePreloadPose = new Pose(22, 0, Math.toRadians(0));
 
     private final Pose moveForwardPose = new Pose(28, 0, Math.toRadians(0));
 
     private final Pose grabPosition1Pose = new Pose(15, -39, Math.toRadians(0));
 
-    private final Pose grabPosition2Pose = new Pose(15, -49.5, Math.toRadians(0));
+    private final Pose grabPosition2Pose = new Pose(15, -48, Math.toRadians(0));
 
-    private final Pose grabPosition3Pose = new Pose(20, -45, Math.toRadians(-45));
+    private final Pose grabPosition3Pose = new Pose(19, -46, Math.toRadians(-45));
 
     private final Pose bringBack1Pose = new Pose(12, -39, Math.toRadians(0));
 
@@ -131,50 +133,45 @@ public class specAutopoopy extends OpMode {
                 robot.lilJarret.setPosition(clawClose);
                 robot.railL.setPosition(railLMin);
                 robot.railR.setPosition(railRMin);
-                robot.roll.setPosition(claw0);
+                robot.roll.setPosition(claw180);
                 robot.yaw.setPosition(yaw0);
                 rails = false;
                 setPathState(01);
                 break;
 
-            case 1:
+            case 01:
                 follower.setMaxPower(1);
                 follower.followPath(hangPreload, true);
-                setPathState(2);
+                target = slideMaxSpec - 10;
+                setPathState(03);
                 break;
 
-            case 2:
-                if (follower.getCurrentTValue() > 0.5) target = slideMaxSpec;
-                if (slidesUp) {
-                    setPathState(3);
-                }
-                break;
-
-            case 3:
+            case 03:
                 if (follower.atParametricEnd()) {
                     robot.railR.setPosition(railRMax);
                     robot.railL.setPosition(railLMax);
                     rails = true;
-                    setPathState(4);
+                    setPathState(0305);
                 }
                 break;
 
-            case 4:
-                follower.setMaxPower(1);
-                follower.followPath(moveForward, true);
-                setPathState(6);
-                break;
-
-
-            case 6:
-                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
-                    robot.lilJarret.setPosition(clawOpen);
-                    setPathState(7);
+            case 0305:
+                if (follower.atParametricEnd()) {
+                    follower.followPath(moveForward);
+                    setPathState(04);
                 }
                 break;
 
-            case 7:
+            case 04:
                 if (pathTimer.getElapsedTimeSeconds() > 0.4) {
+                    robot.lilJarret.setPosition(clawOpen);
+                    setPathState(05);
+                }
+                break;
+
+            case 05:
+                if (pathTimer.getElapsedTimeSeconds() > 0.3) {
+                    robot.pitch.setPosition(pitchFOut);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                     rails = false;
@@ -199,7 +196,7 @@ public class specAutopoopy extends OpMode {
 
 
             case 10:
-                if (follower.atParametricEnd()) {
+                if (!follower.isBusy()) {
                     robot.railR.setPosition(railRMax);
                     robot.railL.setPosition(railLMax);
                     robot.v4b.setPosition(v4bFUp);
@@ -210,7 +207,7 @@ public class specAutopoopy extends OpMode {
                 break;
 
             case 11:
-                if (pathTimer.getElapsedTimeSeconds() > 0.7) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
                     robot.v4b.setPosition(v4bFDown);
                     setPathState(12);
                 }
@@ -269,7 +266,7 @@ public class specAutopoopy extends OpMode {
                 break;
 
             case 22:
-                if (pathTimer.getElapsedTimeSeconds() > 0.7) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
                     robot.v4b.setPosition(v4bFDown);
                     setPathState(23);
                 }
@@ -322,14 +319,14 @@ public class specAutopoopy extends OpMode {
                     robot.railL.setPosition(railLMax);
                     robot.v4b.setPosition(v4bFUp);
                     robot.pitch.setPosition(pitchFDown);
-                    robot.roll.setPosition(claw45_2);
+                    robot.roll.setPosition(claw45);
                     rails = true;
                     setPathState(32);
                 }
                 break;
 
             case 32:
-                if (pathTimer.getElapsedTimeSeconds() > 0.7) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
                     robot.v4b.setPosition(v4bFDown);
                     setPathState(33);
                 }

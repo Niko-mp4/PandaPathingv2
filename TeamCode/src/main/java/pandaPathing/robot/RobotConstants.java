@@ -9,25 +9,25 @@ public class RobotConstants {
     // Servo positions
     public static double
 
-    pitchFDown = 0.44,
+    pitchFDown = 0.1,
 
-    pitchFOut = 0.7,
+    pitchFOut = 0.382,
 
-    pitchMUp = 0.9,
+    pitchMUp = 0.555,
 
-    pitchBOut = 0.16,
+    pitchBOut = 0.9,
 
     //pitchBDown = 0.2,
 
     pitchBUp = 0.3,
 
-    railRMax = 0.74,
+    railRMax = 1,
 
-    railLMax = 0.28,
+    railLMax = 0,
 
-    railRMin = 0.1,
+    railRMin = 0,
 
-    railLMin = 0.9,
+    railLMin = 1,
 
     v4bFUp = 0.8,
 
@@ -39,7 +39,7 @@ public class RobotConstants {
 
     v4bBUp = 0.57,
 
-    v4bBDown = 0.5,
+    v4bBDown = 0.49,
 
     v4bspec = 0.377,
 
@@ -69,7 +69,7 @@ public class RobotConstants {
 
     slideMax = 1450,
 
-    slideMaxSpec = 540,
+    slideMaxSpec = 520,
 
     slideMaxSpecTele = 630,
 
