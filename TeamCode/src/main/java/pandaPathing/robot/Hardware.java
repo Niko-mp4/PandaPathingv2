@@ -51,9 +51,9 @@ public class Hardware {
         leftRear = initMotor("cm2", DcMotorEx.Direction.REVERSE);
         rightFront = initMotor("em2", DcMotorEx.Direction.FORWARD);
         rightRear = initMotor("cm3", DcMotorEx.Direction.FORWARD);
-        rightSlides = initMotor("em1", DcMotorEx.Direction.REVERSE);
+        rightSlides = initMotor("em0", DcMotorEx.Direction.REVERSE);
         if(auto) rightSlides.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        leftSlides = initMotor("em0", DcMotorEx.Direction.FORWARD);
+        leftSlides = initMotor("em1", DcMotorEx.Direction.FORWARD);
         hangerR = initMotor("cm1", DcMotorEx.Direction.FORWARD);
         hangerL = initMotor("cm0", DcMotorEx.Direction.FORWARD);
         slideyController = new PDFLController(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);

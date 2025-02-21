@@ -47,11 +47,11 @@ public class specAutoYAY extends OpMode {
 
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
 
-    private final Pose scorePreloadPose = new Pose(22, 3, Math.toRadians(0));
+    private final Pose scorePreloadPose = new Pose(22, 0, Math.toRadians(0));
 
     private final Pose moveRightPose = new Pose(20, -20, Math.toRadians(0));
 
-    private final Pose moveForwardPose = new Pose(28, 3, Math.toRadians(0));
+    private final Pose moveForwardPose = new Pose(28, 0, Math.toRadians(0));
 
     private final Pose pushPositionPose1 = new Pose(52, -39, Math.toRadians(0));
 
@@ -63,25 +63,21 @@ public class specAutoYAY extends OpMode {
 
     private final Pose pushPose2 = new Pose(8, -51, Math.toRadians(0));
 
-    private final Pose pushPose3 = new Pose(5, -55, Math.toRadians(0));
+    private final Pose pushPose3 = new Pose(6, -55, Math.toRadians(0));
 
     private final Pose finalPushPose = new Pose(53, -55, Math.toRadians(0));
 
     private final Pose strafeGrabPose = new Pose(15, -25, Math.toRadians(0));
 
-    private final Pose grabPose = new Pose(7, -30, Math.toRadians(0));
+    private final Pose grabPose = new Pose(7.6, -30, Math.toRadians(0));
 
     private final Pose hangPose1 = new Pose(28, 0, Math.toRadians(0));
 
-    private final Pose hangPose2 = new Pose(28, 3, Math.toRadians(0));
+    private final Pose hangPose2 = new Pose(28, 1, Math.toRadians(0));
 
-    private final Pose hangPose3 = new Pose(28, 7, Math.toRadians(0));
+    private final Pose hangPose3 = new Pose(28, 3, Math.toRadians(0));
 
-    private final Pose hangPose4 = new Pose(28, 11, Math.toRadians(0));
-
-    private final Pose hangPose5 = new Pose(28, 6, Math.toRadians(0));
-
-    private final Pose parkPose = new Pose(72, 48, Math.toRadians(270));
+    private final Pose hangPose4 = new Pose(28, 5, Math.toRadians(0));
 
 
     private PathChain hangPreload, moveRight, moveForward, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, finalPush, hang1, strafeGrab2, grab2, hang2, strafeGrab3, grab3, hang3, strafeGrab4, grab4, hang4, grab5, parkAtEnd;
@@ -224,7 +220,7 @@ public class specAutoYAY extends OpMode {
                 robot.lilJarret.setPosition(clawClose);
                 robot.railL.setPosition(railLMin);
                 robot.railR.setPosition(railRMin);
-                robot.roll.setPosition(claw0);
+                robot.roll.setPosition(claw180);
                 robot.yaw.setPosition(yaw0);
                 rails = false;
                 setPathState(01);
@@ -233,14 +229,8 @@ public class specAutoYAY extends OpMode {
             case 01:
                 follower.setMaxPower(1);
                 follower.followPath(hangPreload, true);
-                setPathState(02);
-                break;
-
-            case 02:
-                if (follower.getCurrentTValue() > 0.1) target = slideMaxSpec;
-                if (slidesUp) {
-                    setPathState(03);
-                }
+                target = slideMaxSpec ;
+                setPathState(03);
                 break;
 
             case 03:
@@ -260,14 +250,14 @@ public class specAutoYAY extends OpMode {
                 break;
 
             case 04:
-                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.4) {
                     robot.lilJarret.setPosition(clawOpen);
                     setPathState(05);
                 }
                 break;
 
             case 05:
-                if (pathTimer.getElapsedTimeSeconds() > 0.7) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.3) {
                     robot.pitch.setPosition(pitchFOut);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
@@ -331,7 +321,7 @@ public class specAutoYAY extends OpMode {
                 if (follower.getCurrentTValue() > 0.2) {
                     robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
-                    robot.roll.setPosition(claw180);
+                    robot.roll.setPosition(claw0);
                     setPathState(17);
                 }
                 break;
@@ -354,7 +344,7 @@ public class specAutoYAY extends OpMode {
 
             case 21:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
-                    target = slideMin + 150;
+                    target = slideMaxSpec;
                     follower.followPath(hang1, true);
                     setPathState(22);
                 }
@@ -364,19 +354,12 @@ public class specAutoYAY extends OpMode {
                 if (follower.getCurrentTValue() > 0.2) {
                     robot.v4b.setPosition(v4bFUp);
                     robot.pitch.setPosition(pitchMUp);
-                    robot.roll.setPosition(claw0);
+                    robot.roll.setPosition(claw180);
                     setPathState(23);
                 }
                 break;
 
             case 23:
-                if (follower.getCurrentTValue() > 0.5) target = slideMaxSpec;
-                if (slidesUp) {
-                    setPathState(24);
-                }
-                break;
-
-            case 24:
                 if (follower.atParametricEnd()) {
                     robot.railR.setPosition(railRMax);
                     robot.railL.setPosition(railLMax);
@@ -420,7 +403,7 @@ public class specAutoYAY extends OpMode {
                 if (follower.getCurrentTValue() > 0.2) {
                     robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
-                    robot.roll.setPosition(claw180);
+                    robot.roll.setPosition(claw0);
                     setPathState(30);
                 }
                 break;
@@ -443,7 +426,7 @@ public class specAutoYAY extends OpMode {
 
             case 32:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
-                    target = slideMin + 150;
+                    target = slideMaxSpec;
                     follower.followPath(hang2, true);
                     setPathState(33);
                 }
@@ -453,20 +436,12 @@ public class specAutoYAY extends OpMode {
                 if (follower.getCurrentTValue() > 0.2) {
                     robot.v4b.setPosition(v4bFUp);
                     robot.pitch.setPosition(pitchMUp);
-                    robot.roll.setPosition(claw0);
+                    robot.roll.setPosition(claw180);
                     setPathState(34);
                 }
                 break;
 
             case 34:
-                if (follower.getCurrentTValue() > 0.5)
-                    target = slideMaxSpec;
-                if (slidesUp) {
-                    setPathState(35);
-                }
-                break;
-
-            case 35:
                 if (follower.atParametricEnd()) {
                     robot.railR.setPosition(railRMax);
                     robot.railL.setPosition(railLMax);
@@ -510,7 +485,7 @@ public class specAutoYAY extends OpMode {
                 if (follower.getCurrentTValue() > 0.2) {
                     robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
-                    robot.roll.setPosition(claw180);
+                    robot.roll.setPosition(claw0);
                     setPathState(50);
                 }
                 break;
@@ -533,7 +508,7 @@ public class specAutoYAY extends OpMode {
 
             case 52:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
-                    target = slideMin + 150;
+                    target = slideMaxSpec;
                     follower.followPath(hang3, true);
                     setPathState(53);
                 }
@@ -543,20 +518,12 @@ public class specAutoYAY extends OpMode {
                 if (follower.getCurrentTValue() > 0.2) {
                     robot.v4b.setPosition(v4bFUp);
                     robot.pitch.setPosition(pitchMUp);
-                    robot.roll.setPosition(claw0);
+                    robot.roll.setPosition(claw180);
                     setPathState(54);
                 }
                 break;
 
             case 54:
-                if (follower.getCurrentTValue() > 0.5)
-                    target = slideMaxSpec;
-                if (slidesUp) {
-                    setPathState(55);
-                }
-                break;
-
-            case 55:
                 if (follower.atParametricEnd()) {
                     robot.railR.setPosition(railRMax);
                     robot.railL.setPosition(railLMax);
@@ -600,7 +567,7 @@ public class specAutoYAY extends OpMode {
                 if (follower.getCurrentTValue() > 0.2) {
                     robot.v4b.setPosition(v4bBDown);
                     robot.pitch.setPosition(pitchBOut);
-                    robot.roll.setPosition(claw180);
+                    robot.roll.setPosition(claw0);
                     setPathState(70);
                 }
                 break;
@@ -623,7 +590,7 @@ public class specAutoYAY extends OpMode {
 
             case 72:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
-                    target = slideMin + 150;
+                    target = slideMaxSpec;
                     follower.followPath(hang4, true);
                     setPathState(73);
                 }
@@ -633,20 +600,12 @@ public class specAutoYAY extends OpMode {
                 if (follower.getCurrentTValue() > 0.2) {
                     robot.v4b.setPosition(v4bFUp);
                     robot.pitch.setPosition(pitchMUp);
-                    robot.roll.setPosition(claw0);
+                    robot.roll.setPosition(claw180);
                     setPathState(74);
                 }
                 break;
 
             case 74:
-                if (follower.getCurrentTValue() > 0.5)
-                    target = slideMaxSpec;
-                if (slidesUp) {
-                    setPathState(75);
-                }
-                break;
-
-            case 75:
                 if (follower.atParametricEnd()) {
                     robot.railR.setPosition(railRMax);
                     robot.railL.setPosition(railLMax);
@@ -714,6 +673,8 @@ public class specAutoYAY extends OpMode {
         telemetry.addData("T-Value", follower.getCurrentTValue());
         telemetry.addData("pitch Position", robot.pitch.getPosition());
         telemetry.addData("v4b Position", robot.v4b.getPosition());
+        telemetry.addData("R Slide", robot.rightSlides.getCurrentPosition());
+        telemetry.addData("L Slide", robot.leftSlides.getCurrentPosition());
         telemetry.update();
     }
 }
