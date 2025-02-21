@@ -29,7 +29,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -44,9 +46,9 @@ import pandaPathing.robot.Hardware;
 public class sampleTele extends OpMode {
     private Hardware robot;
     private Follower follower;
-    private Path holdHeading;
+    private Path toBucket;
 
-    boolean dUpPressed, dDownPressed, dLeftPressed, yPressed, y1Pressed, aPressed, a1Pressed, rBumpPressed, lBumpPressed, backPressed, back2Pressed, xPressed, x1Pressed, bPressed, b1Pressed,
+    boolean dUpPressed, dDownPressed, dLeftPressed, dLeft1Pressed, yPressed, y1Pressed, aPressed, a1Pressed, rBumpPressed, lBumpPressed, backPressed, back2Pressed, xPressed, x1Pressed, bPressed, b1Pressed,
             clawIsOpen = false, extended = false, neckUp = true, slowMode = false, hanging = false, slidesUp = false, slidesDown = false, clawOut = false,
             depositAction = true, grabAction = false, specRetractAction = true, specScoreRetryAction = true,
             scoringSpec = false, specMode = false, headingLock = true, teleRestart = false;
@@ -74,31 +76,28 @@ public class sampleTele extends OpMode {
     }
 
     public void loop() {
-
         follower.setTeleOpMovementVectors(
                 slideSpeed * driveSpeed * -gamepad1.left_stick_y,
                 2 * slideSpeed * driveSpeed * (gamepad1.left_trigger > 0 ? gamepad1.left_trigger : (gamepad1.right_trigger > 0 ? -gamepad1.right_trigger : 0)),
                 slideSpeed * driveSpeed * -gamepad1.right_stick_x,
                 true);
-        /*if(clawOut && specMode && !headingLock){
-            Follower.useHeading = true;
-            holdHeading = new Path(new BezierLine(new Point(0,0, Point.CARTESIAN), new Point(1,0, Point.CARTESIAN)));
-            holdHeading.setConstantHeadingInterpolation(0);
-            follower.holdPoint(new Point(follower.getXOffset(), follower.getYOffset()), Math.toRadians(0));
-            teleRestart = false;
-            headingLock = true;
-        } else if(!clawOut){
-            headingLock = false;
-        }
-        if(headingLock && !teleRestart){
-            follower.startTeleopDrive();
-            Follower.useHeading = false;
-            Follower.useTranslational = false;
-            Follower.useCentripetal = false;
-            Follower.useDrive = false;
-            teleRestart = true;
-        }*/
 
+        // auto drive code
+        if(!follower.isBusy() && gamepad1.dpad_left && !dLeft1Pressed){
+            toBucket = new Path(new BezierLine(
+                    new Point(follower.getPose().getX(), follower.getPose().getY()),
+                    new Point(10,16)
+            ));
+            toBucket.setConstantHeadingInterpolation(Math.toRadians(-45));
+            follower.followPath(toBucket);
+            teleRestart = false;
+            dLeft1Pressed = true;
+        } else if(!gamepad1.dpad_left) dLeft1Pressed = false;
+
+        if(toBucket.isAtParametricEnd() && !teleRestart){
+            follower.startTeleopDrive();
+            teleRestart = true;
+        }
         follower.update();
 
         robot.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -308,26 +307,16 @@ public class sampleTele extends OpMode {
         } else if (!gamepad1.b) b1Pressed = false;
 
         //hanging (driver 1)
-        if (gamepad1.back && !backPressed) {
-            if (!hanging) {
-                robot.hangerL.setTargetPosition(5700);
-                robot.hangerL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.hangerL.setPower(1);
-                robot.hangerR.setTargetPosition(5700);
-                robot.hangerR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.hangerR.setPower(1);
-                hanging = true;
-            } else {
-                robot.hangerL.setTargetPosition(-1000);
-                robot.hangerL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.hangerL.setPower(1);
-                robot.hangerR.setTargetPosition(-5000);
-                robot.hangerR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.hangerR.setPower(1);
-                hanging = false;
-            }
-            backPressed = true;
-        } else if (!gamepad1.back) backPressed = false;
+        if (gamepad1.dpad_up){
+            robot.hangerL.setPower(1);
+            robot.hangerR.setPower(1);
+        } else if(gamepad1.dpad_down){
+            robot.hangerL.setPower(-1);
+            robot.hangerR.setPower(-1);
+        } else {
+            robot.hangerL.setPower(0);
+            robot.hangerR.setPower(0);
+        }
 
         // telemetry
         telemetry.addData("hang pos R, L", robot.hangerR.getCurrentPosition() + ", " + robot.hangerL.getCurrentPosition());

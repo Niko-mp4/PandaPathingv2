@@ -99,7 +99,7 @@ public class FConstants {
         FollowerConstants.pathEndTimeoutConstraint = 500;
         FollowerConstants.pathEndTValueConstraint = 0.995;
         FollowerConstants.pathEndVelocityConstraint = 0.1;
-        FollowerConstants.pathEndTranslationalConstraint = 0.1;
+        FollowerConstants.pathEndTranslationalConstraint = 0.01;
         FollowerConstants.pathEndHeadingConstraint = 0.007;
     }
 }

@@ -1,5 +1,12 @@
 package pandaPathing.opmode;
 
+import static pandaPathing.robot.RobotConstants.clawClose;
+import static pandaPathing.robot.RobotConstants.clawOpen;
+import static pandaPathing.robot.RobotConstants.railLMax;
+import static pandaPathing.robot.RobotConstants.railRMax;
+import static pandaPathing.robot.RobotConstants.v4bFDown;
+import static pandaPathing.robot.RobotConstants.v4bFUp;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.pathgen.BezierLine;
@@ -40,10 +47,18 @@ public class limelightTEST extends LinearOpMode {
         double ty = 0;
         Path toSample = null;
         int nextPath = 0;
+
+        boolean dLeftPressed = false, dRightPressed = false, neckUp = false, grabAction = false;
+        double grabStartTime = 0, grabTime = 0;
+
+        robot.railL.setPosition(railLMax);
+        robot.railR.setPosition(railRMax);
         
 
-        PIDConfig.translationalP = 1.4;
+        PIDConfig.translationalP = 1;
+        //PIDConfig.driveP = 0.02;
         Constants.setConstants(FConstants.class, LConstants.class);
+        //Constants.pathEndTranslationalConstraint = 0;
         follower = new Follower(hardwareMap);
 
         robot.limelight.start();
@@ -58,7 +73,7 @@ public class limelightTEST extends LinearOpMode {
             LLResult result = robot.limelight.getLatestResult();
 
             //If the followr is not currently running
-            if(!follower.isBusy()) {
+            //if(!follower.isBusy()) {
                 // record a snapshot if a sample is detected (!null and within area threshold)
                 if (result != null && result.getTa() > 2 && frames < 15) {
                     Vec2 position = new Vec2(result.getTx(), result.getTy());
@@ -77,43 +92,72 @@ public class limelightTEST extends LinearOpMode {
                         resultPos.add(sample);
                     resultPos.divide(15);
 
-                    relX = limeToIn(resultPos.x, resultPos.y);
-                    relY = resultPos.y;
+                    relX = limeXToIn(resultPos.x, resultPos.y);
+                    relY = limeYToIn(resultPos.y);
 
                     ty = y - relX;
-                    tx = x + Math.abs(relY+20)/40;
+                    tx = x + relY - 3;
 
                     toSample = new Path(new BezierLine(
                             new Point(x, y),
-                            new Point(x, ty)
+                            new Point(tx, ty)
                     ));
-                    toSample.setConstantHeadingInterpolation(r);
-                    follower.followPath(toSample);
+                    toSample.setConstantHeadingInterpolation(0);
+                    if(gamepad1.dpad_left && !dLeftPressed) {
+                        follower.followPath(toSample);
+                        dLeftPressed = true;
+                    } else if(!gamepad1.dpad_left)
+                        dLeftPressed = false;
 
                     frames = 0;
                     sampling.clear();
                 }
-            }
+
+            if (gamepad1.dpad_right && !dRightPressed) {
+                if (!neckUp) {
+                    robot.v4b.setPosition(v4bFUp);
+                    grabStartTime = System.currentTimeMillis();
+                    neckUp = true;
+                } else {
+                    robot.v4b.setPosition(v4bFDown);
+                    grabStartTime = System.currentTimeMillis();
+                    neckUp = false;
+                }
+                dRightPressed = true;
+            } else if (!gamepad1.dpad_right) dRightPressed = false;
+            grabTime = (System.currentTimeMillis() - grabStartTime) / 1000.0;
+            if (grabTime > 0.12 && !grabAction) { // timer to open/close claw after v4b moves
+                robot.lilJarret.setPosition(neckUp ? clawOpen : clawClose);
+                grabAction = true;
+            } else if (grabTime < 0.12) grabAction = false;
+            //}
             follower.update();
             telemetry.addLine("frame " + frames);
-            telemetry.addLine("result " + ((result != null) ? result.getTa() + "" : "null"));
+            telemetry.addLine("result " + ((result != null) ? result.getTa() : "null"));
             telemetry.addLine("robot (x, y) = ("+follower.getPose().getX()+", "+follower.getPose().getY()+")");
             telemetry.addLine("limel (x, y) = ("+relX+", "+relY+")");
             telemetry.addLine("targe (x, y) = ("+tx+", "+ty+")");
+            telemetry.addLine("angle " + ((result != null) ?
+                    result.getColorResults().get(0).getTargetCorners().get(0).get(0)-
+                    result.getColorResults().get(0).getTargetCorners().get(2).get(0)
+                    : "null"));
             telemetry.update();
         }
     }
 
-    public double limeToIn(double distance, double fovUnit){
-        return (distance/40)*(7.6549983233 + Math.pow(1.02183885967, fovUnit));
+    public double limeXToIn(double distance, double fovUnit){
+        return (distance/50)*(7.6549983233 + Math.pow(1.02183885967, fovUnit));
+    }
+
+    public double limeYToIn(double distance){
+        return (distance+20)/40*12;
     }
 
     public Double sampleYaw(LLResult analysis) {
         if (analysis == null) return null;
         List<LLResultTypes.ColorResult> crs = analysis.getColorResults();
         for (LLResultTypes.ColorResult cr : crs) {
-            Pose3D samplePos = cr.getTargetPoseCameraSpace();
-            return samplePos.getOrientation().getYaw(AngleUnit.DEGREES);
+            return cr.getTargetPoseCameraSpace().getOrientation().getYaw(AngleUnit.DEGREES);
         }
         return null;
     }
