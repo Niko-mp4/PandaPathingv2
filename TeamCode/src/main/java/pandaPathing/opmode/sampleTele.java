@@ -94,7 +94,7 @@ public class sampleTele extends OpMode {
             dLeft1Pressed = true;
         } else if(!gamepad1.dpad_left) dLeft1Pressed = false;
 
-        if(toBucket.isAtParametricEnd() && !teleRestart){
+        if(!teleRestart){
             follower.startTeleopDrive();
             teleRestart = true;
         }
@@ -230,7 +230,7 @@ public class sampleTele extends OpMode {
         } else if (!gamepad2.b) bPressed = false;
         depositTime = (System.currentTimeMillis() - depositStartTime) / 1000.0;
         if (clawOut) {
-            if (depositTime > 0.5 && !depositAction) {
+            if (depositTime > 0.4 && !depositAction) {
                 v4bPos = v4bMUp;
                 robot.pitch.setPosition(pitchFDown);
                 clawOut = false;
@@ -289,19 +289,19 @@ public class sampleTele extends OpMode {
         } else if (!gamepad2.back) back2Pressed = false;
 
         // press 'x', 'y', 'a', and 'b' for roll control (driver 1)
-        if (extended && gamepad1.y && !y1Pressed) {
+        if (gamepad1.y && !y1Pressed) {
             robot.roll.setPosition(claw0);
             y1Pressed = true;
         } else if (!gamepad1.y) y1Pressed = false;
-        if (extended && gamepad1.a && !a1Pressed) {
+        if (gamepad1.x && !x1Pressed) {
             robot.roll.setPosition(claw90);
-            a1Pressed = true;
-        } else if (!gamepad1.a) a1Pressed = false;
-        if (extended && gamepad1.x && !x1Pressed) {
-            robot.roll.setPosition(claw45);
             x1Pressed = true;
         } else if (!gamepad1.x) x1Pressed = false;
-        if (extended && gamepad1.b && !b1Pressed) {
+        if (gamepad1.a && !a1Pressed) {
+            robot.roll.setPosition(claw45);
+            a1Pressed = true;
+        } else if (!gamepad1.a) a1Pressed = false;
+        if (gamepad1.b && !b1Pressed) {
             robot.roll.setPosition(claw45_2);
             b1Pressed = true;
         } else if (!gamepad1.b) b1Pressed = false;
@@ -354,7 +354,7 @@ public class sampleTele extends OpMode {
             extendPosR = railRMin;
             extendPosL = railLMin;
             v4bPos = v4bMUp;
-            robot.pitch.setPosition(pitchFDown);
+            robot.pitch.setPosition(pitchMUp+0.15);
         }
     }
 }

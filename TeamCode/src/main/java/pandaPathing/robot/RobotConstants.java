@@ -9,13 +9,13 @@ public class RobotConstants {
     // Servo positions
     public static double
 
-    pitchFDown = 0.1,
+    pitchFDown = 0.15,
 
     pitchFOut = 0.382,
 
-    pitchMUp = 0.555,
+    pitchMUp = 0.6,
 
-    pitchBOut = 0.9,
+    pitchBOut = 0.97,
 
     //pitchBDown = 0.2,
 
@@ -29,37 +29,41 @@ public class RobotConstants {
 
     railLMin = 1,
 
-    v4bFUp = 0.8,
+    v4bFUp = 0.87,
 
-    v4bFOut = 0.86,
+    v4bFOut = 0.85,
 
-    v4bFDown = 0.97,
+    v4bFDown = 0.96,
 
-    v4bMUp = 0.63,
+    v4bMUp = 0.7,
 
     v4bBUp = 0.57,
 
-    v4bBDown = 0.49,
+    v4bBDown = 0.53,
 
     v4bspec = 0.377,
 
     clawOpen = 0.53,
 
-    clawClose = 0,
+    clawClose = 0.05,
 
-    claw0 = 0.66,
+    claw0 = 0.8,
+    //y
 
-    claw45 = 0.513,
+    claw45 = 0.7,
+    //a
 
-    claw90 = 0.9,
+    claw90 = 0.5,
+    //x
 
-    claw45_2 = 0.75,
+    claw45_2 = 0.38,
+    //b
 
-    claw180 = 0.09,
+    claw180 = 0.2,
 
     yaw45_2 = 0.75,
 
-    yaw0 = 0.6,
+    yaw0 = 0.2,
 
     yaw45 = 0.845;
 
@@ -69,17 +73,19 @@ public class RobotConstants {
 
     slideMax = 1450,
 
-    slideMaxSpec = 520,
+    slideMaxSpec = 613,
 
-    slideMaxSpecTele = 630,
+    slideMaxSpecTele = 613,
 
-    slideMin = 0,
+    slideSampleAuto = 490,
+
+    slideMin = -10,
 
     CVSmoothing = 1;
 
 
     // PID Constants
-    public static double p = 0.035, d = 0.7, f = 0.15, l = 0, homingConstant = 0;
+    public static double p = 0.034, d = 0.9, f = 0.2, l = 0, homingConstant = 0;
 
     public static double p1 = 0.02, d1 = 0.7, f1 = 0.15, l1 = 0, homingConstant1 = 0;
 }

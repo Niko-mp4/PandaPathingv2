@@ -14,6 +14,7 @@ import static pandaPathing.robot.RobotConstants.railRMin;
 import static pandaPathing.robot.RobotConstants.slideMax;
 import static pandaPathing.robot.RobotConstants.slideMaxSpec;
 import static pandaPathing.robot.RobotConstants.slideMin;
+import static pandaPathing.robot.RobotConstants.slideSampleAuto;
 import static pandaPathing.robot.RobotConstants.v4bBDown;
 import static pandaPathing.robot.RobotConstants.v4bFDown;
 import static pandaPathing.robot.RobotConstants.v4bFUp;
@@ -52,9 +53,9 @@ public class sampleAuto extends OpMode {
 
     private final Pose firstSamplePose = new Pose(13, 9, Math.toRadians(0));
 
-    private final Pose firstScorePose = new Pose(10, 16, Math.toRadians(-45));
+    private final Pose firstScorePose = new Pose(10, 14, Math.toRadians(-45));
 
-    private final Pose secondSamplePose = new Pose(13, 16.5, Math.toRadians(0));
+    private final Pose secondSamplePose = new Pose(13, 16.1, Math.toRadians(0));
 
     private final Pose secondScorePose = new Pose(10, 16, Math.toRadians(-45));
 
@@ -62,7 +63,7 @@ public class sampleAuto extends OpMode {
 
     private final Pose thirdScorePose = new Pose(10, 16, Math.toRadians(-45));
 
-    private final Pose parkPose = new Pose(45, -5, Math.toRadians(0));
+    private final Pose parkPose = new Pose(65, -17, Math.toRadians(90));
 
     private PathChain preload, firstSample, firstScore, secondSample, secondScore, thirdSample, thirdScore, park;
 
@@ -433,6 +434,19 @@ public class sampleAuto extends OpMode {
                     robot.roll.setPosition(claw0);
                     setPathState(46);
                 }
+
+            case 46:
+                if (follower.atParametricEnd()) {
+                    target = slideSampleAuto;
+                    setPathState(47);
+                }
+                break;
+
+            case 47:
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                    robot.v4b.setPosition(v4bBDown);
+                    setPathState(48);
+                }
                 break;
         }
     }
@@ -449,6 +463,15 @@ public class sampleAuto extends OpMode {
         follower = new Follower(hardwareMap);
         robot = new Hardware(hardwareMap);
         follower.setStartingPose(startPose);
+        follower.setMaxPower(1);
+        robot.v4b.setPosition(v4bMUp);
+        robot.pitch.setPosition(pitchBOut);
+        robot.lilJarret.setPosition(clawClose);
+        robot.railL.setPosition(railLMin);
+        robot.railR.setPosition(railRMin);
+        robot.roll.setPosition(claw90);
+        robot.yaw.setPosition(yaw0);
+        rails = false;
         buildPaths();
     }
 

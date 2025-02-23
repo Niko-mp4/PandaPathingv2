@@ -71,13 +71,13 @@ public class specAutoYAY extends OpMode {
 
     private final Pose grabPose = new Pose(7.6, -30, Math.toRadians(0));
 
-    private final Pose hangPose1 = new Pose(28, 0, Math.toRadians(0));
+    private final Pose hangPose1 = new Pose(28, -1, Math.toRadians(0));
 
-    private final Pose hangPose2 = new Pose(28, 1, Math.toRadians(0));
+    private final Pose hangPose2 = new Pose(28, 2, Math.toRadians(0));
 
-    private final Pose hangPose3 = new Pose(28, 3, Math.toRadians(0));
+    private final Pose hangPose3 = new Pose(28, 5, Math.toRadians(0));
 
-    private final Pose hangPose4 = new Pose(28, 5, Math.toRadians(0));
+    private final Pose hangPose4 = new Pose(28, 8, Math.toRadians(0));
 
 
     private PathChain hangPreload, moveRight, moveForward, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, finalPush, hang1, strafeGrab2, grab2, hang2, strafeGrab3, grab3, hang3, strafeGrab4, grab4, hang4, grab5, parkAtEnd;
@@ -658,6 +658,15 @@ public class specAutoYAY extends OpMode {
         follower = new Follower(hardwareMap);
         robot = new Hardware(hardwareMap);
         follower.setStartingPose(startPose);
+        follower.setMaxPower(1);
+        robot.v4b.setPosition(v4bFUp);
+        robot.pitch.setPosition(pitchMUp);
+        robot.lilJarret.setPosition(clawClose);
+        robot.railL.setPosition(railLMin);
+        robot.railR.setPosition(railRMin);
+        robot.roll.setPosition(claw180);
+        robot.yaw.setPosition(yaw0);
+        rails = false;
         buildPaths();
     }
 
