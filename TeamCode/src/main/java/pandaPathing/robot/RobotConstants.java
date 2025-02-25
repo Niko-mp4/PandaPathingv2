@@ -13,9 +13,9 @@ public class RobotConstants {
 
     pitchFOut = 0.382,
 
-    pitchMUp = 0.6,
+    pitchMUp = 0.65,
 
-    pitchBOut = 0.97,
+    pitchBOut = 1,
 
     //pitchBDown = 0.2,
 
@@ -39,18 +39,18 @@ public class RobotConstants {
 
     v4bBUp = 0.57,
 
-    v4bBDown = 0.53,
+    v4bBDown = 0.48,
 
     v4bspec = 0.377,
 
     clawOpen = 0.53,
 
-    clawClose = 0.05,
+    clawClose = 0,
 
     claw0 = 0.8,
     //y
 
-    claw45 = 0.7,
+    claw45 = 0.66,
     //a
 
     claw90 = 0.5,
@@ -75,7 +75,7 @@ public class RobotConstants {
 
     slideMaxSpec = 613,
 
-    slideMaxSpecTele = 613,
+    slideMaxSpecTele = 615,
 
     slideSampleAuto = 490,
 
@@ -85,7 +85,7 @@ public class RobotConstants {
 
 
     // PID Constants
-    public static double p = 0.034, d = 0.9, f = 0.2, l = 0, homingConstant = 0;
+    public static double p = 0.036, d = 0.9, f = 0.15, l = 0, homingConstant = 0;
 
     public static double p1 = 0.02, d1 = 0.7, f1 = 0.15, l1 = 0, homingConstant1 = 0;
 }

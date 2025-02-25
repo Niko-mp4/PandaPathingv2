@@ -214,7 +214,7 @@ public class specTele extends OpMode {
         } else if (!gamepad2.b) bPressed = false;
         depositTime = (System.currentTimeMillis() - depositStartTime) / 1000.0;
         if (clawOut) {
-            if (depositTime > 0.5 && !depositAction) {
+            if (depositTime > 0.4 && !depositAction) {
                 v4bPos = v4bMUp;
                 robot.pitch.setPosition(pitchFDown);
                 if(firstRun) {specMode = true; firstRun = false;}
@@ -274,19 +274,19 @@ public class specTele extends OpMode {
         } else if (!gamepad2.back) back2Pressed = false;
 
         // press 'x', 'y', 'a', and 'b' for roll control (driver 1)
-        if (extended && gamepad1.y && !y1Pressed) {
+        if (gamepad1.y && !y1Pressed) {
             robot.roll.setPosition(claw0);
             y1Pressed = true;
         } else if (!gamepad1.y) y1Pressed = false;
-        if (extended && gamepad1.a && !a1Pressed) {
+        if (gamepad1.x && !x1Pressed) {
             robot.roll.setPosition(claw90);
-            a1Pressed = true;
-        } else if (!gamepad1.a) a1Pressed = false;
-        if (extended && gamepad1.x && !x1Pressed) {
-            robot.roll.setPosition(claw45);
             x1Pressed = true;
         } else if (!gamepad1.x) x1Pressed = false;
-        if (extended && gamepad1.b && !b1Pressed) {
+        if (gamepad1.a && !a1Pressed) {
+            robot.roll.setPosition(claw45);
+            a1Pressed = true;
+        } else if (!gamepad1.a) a1Pressed = false;
+        if (gamepad1.b && !b1Pressed) {
             robot.roll.setPosition(claw45_2);
             b1Pressed = true;
         } else if (!gamepad1.b) b1Pressed = false;

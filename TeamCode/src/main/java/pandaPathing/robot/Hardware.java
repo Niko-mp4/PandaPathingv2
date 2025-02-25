@@ -68,12 +68,12 @@ public class Hardware {
     }
 
     private void initializeServos() {
-        railL = initServo("cs4");
-        railR = initServo("cs5");
+        railL = initServo("es3");
+        railR = initServo("es4");
         v4b = initServo("es0");
         lilJarret = initServo("cs1");
         pitch = initServo("es5");
-        roll = initServo("cs3");
+        roll = initServo("es1");
         yaw = initServo("es3");
     }
 
