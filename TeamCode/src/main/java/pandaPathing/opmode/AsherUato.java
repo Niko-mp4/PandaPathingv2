@@ -217,7 +217,7 @@ public class AsherUato extends OpMode {
                 follower.setMaxPower(1);
                 robot.v4b.setPosition(v4bFUp);
                 robot.pitch.setPosition(pitchMUp);
-                robot.lilJarret.setPosition(clawClose);
+                robot.lilJarret.setPosition(clawOpen);
                 robot.railL.setPosition(railLMin);
                 robot.railR.setPosition(railRMin);
                 robot.roll.setPosition(claw180);
