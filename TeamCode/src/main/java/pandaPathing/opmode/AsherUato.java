@@ -34,8 +34,8 @@ import pandaPathing.robot.Hardware;
 
 
 @Config
-@Autonomous(name = "specAuto", group = "Opmode")
-public class specAutoYAY extends OpMode {
+@Autonomous(name = "ASHER", group = "Opmode")
+public class AsherUato extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -78,8 +78,10 @@ public class specAutoYAY extends OpMode {
 
     private final Pose hangPose4 = new Pose(28, 8, Math.toRadians(0));
 
+    private final Pose hangPose5 = new Pose(28, 11, Math.toRadians(0));
 
-    private PathChain hangPreload, moveRight, moveForward, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, finalPush, hang1, strafeGrab2, grab2, hang2, strafeGrab3, grab3, hang3, strafeGrab4, grab4, hang4, grab5, parkAtEnd;
+
+    private PathChain hangPreload, moveRight, moveForward, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, finalPush, hang1, strafeGrab2, grab2, hang2, strafeGrab3, grab3, hang3, strafeGrab4, grab4, hang4, grab5, hang5;
 
     public void buildPaths() {
 
@@ -196,16 +198,15 @@ public class specAutoYAY extends OpMode {
                 .addPath(new BezierLine(new Point(hangPose4), new Point(grabPose)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
-
-        parkAtEnd = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(hangPose4), new Point(grabPose)))
+        hang5 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(grabPose), new Point(hangPose5)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
     }
 
     public void autonomousPathUpdate() {
 
-       double slidePos = robot.rightSlides.getCurrentPosition();
+        double slidePos = robot.rightSlides.getCurrentPosition();
         if(slidePos >= slideMaxSpec - 20 && !slidesUp) slidesUp = true;
         else if(slidePos < slideMax - 20) slidesUp = false;
         if(slidePos <= slideMin + 50 && !slidesDown) slidesDown = true;
@@ -221,47 +222,7 @@ public class specAutoYAY extends OpMode {
                 robot.railR.setPosition(railRMin);
                 robot.roll.setPosition(claw180);
                 rails = false;
-                setPathState(01);
-                break;
-
-            case 01:
-                follower.setMaxPower(1);
-                follower.followPath(hangPreload, true);
-                target = slideMaxSpec ;
-                setPathState(03);
-                break;
-
-            case 03:
-                if (follower.atParametricEnd()) {
-                    robot.railR.setPosition(railRMax);
-                    robot.railL.setPosition(railLMax);
-                    rails = true;
-                    setPathState(0305);
-                }
-                break;
-
-            case 0305:
-                if (follower.atParametricEnd()) {
-                    follower.followPath(moveForward);
-                    setPathState(04);
-                }
-                break;
-
-            case 04:
-                if (pathTimer.getElapsedTimeSeconds() > 0.4) {
-                    robot.lilJarret.setPosition(clawOpen);
-                    setPathState(05);
-                }
-                break;
-
-            case 05:
-                if (pathTimer.getElapsedTimeSeconds() > 0.3) {
-                    robot.pitch.setPosition(pitchFOut);
-                    robot.railR.setPosition(railRMin);
-                    robot.railL.setPosition(railLMin);
-                    rails = false;
-                    setPathState(10);
-                }
+                setPathState(10);
                 break;
 
 
@@ -625,18 +586,69 @@ public class specAutoYAY extends OpMode {
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                     rails = false;
-                    setPathState(78);
+                    setPathState(80);
                 }
                 break;
 
-            case 78:
-                if (!rails) {
+
+            case 80:
+                if (follower.atParametricEnd()) {
                     follower.followPath(grab5, true);
-                    setPathState(79);
+                    setPathState(81);
                 }
                 break;
 
-            case 79:
+            case 81:
+                if (follower.atParametricEnd()) {
+                    robot.lilJarret.setPosition(clawClose);
+                    setPathState(82);
+                }
+                break;
+
+            case 82:
+                if (pathTimer.getElapsedTimeSeconds() > 0.3) {
+                    target = slideMaxSpec;
+                    follower.followPath(hang5, true);
+                    setPathState(83);
+                }
+                break;
+
+            case 83:
+                if (follower.getCurrentTValue() > 0.2) {
+                    robot.v4b.setPosition(v4bFUp);
+                    robot.pitch.setPosition(pitchMUp);
+                    robot.roll.setPosition(claw180);
+                    setPathState(84);
+                }
+                break;
+
+            case 84:
+                if (follower.atParametricEnd()) {
+                    robot.railR.setPosition(railRMax);
+                    robot.railL.setPosition(railLMax);
+                    rails = true;
+                    setPathState(86);
+                }
+                break;
+
+            case 86:
+                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
+                    robot.lilJarret.setPosition(clawOpen);
+                    setPathState(87);
+                }
+                break;
+
+            case 87:
+                if (pathTimer.getElapsedTimeSeconds() > 0.3) {
+                    robot.pitch.setPosition(pitchFOut);
+                    robot.railR.setPosition(railRMin);
+                    robot.railL.setPosition(railLMin);
+                    rails = false;
+                    setPathState(90);
+                }
+                break;
+
+            case 90:
                 if (pathTimer.getElapsedTimeSeconds() > 0.8) {
                     target = slideMin;
                 }

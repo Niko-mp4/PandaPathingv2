@@ -85,7 +85,7 @@ public class RobotConstants {
 
 
     // PID Constants
-    public static double p = 0.036, d = 0.9, f = 0.15, l = 0, homingConstant = 0;
+    public static double p = 0.036, d = 0.9, f = 0.15, l = 0;
 
     public static double p1 = 0.02, d1 = 0.7, f1 = 0.15, l1 = 0, homingConstant1 = 0;
 }

@@ -22,14 +22,15 @@ import static pandaPathing.robot.RobotConstants.v4bMUp;
 import static pandaPathing.robot.RobotConstants.v4bFDown;
 import static pandaPathing.robot.RobotConstants.v4bFOut;
 import static pandaPathing.robot.RobotConstants.v4bFUp;
-import static pandaPathing.robot.RobotConstants.yaw0;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -40,18 +41,17 @@ import pandaPathing.constants.LConstants;
 import pandaPathing.robot.Hardware;
 
 @Config
-@TeleOp(name = "speckimen!", group = "tellelelellel")
-public class specTele extends OpMode {
+@TeleOp(name = "BIG Tele", group = "#tellelelellel")
+public class BIGTele extends OpMode {
     private Hardware robot;
     private Follower follower;
-    private Path holdHeading;
 
-    boolean dUpPressed, dDownPressed, dLeftPressed, yPressed, y1Pressed, aPressed, a1Pressed, rBumpPressed, lBumpPressed, backPressed, back2Pressed, xPressed, x1Pressed, bPressed, b1Pressed,
+    boolean dUpPressed, dDownPressed, dLeftPressed, dLeft1Pressed, yPressed, y1Pressed, aPressed, a1Pressed, rBumpPressed, lBumpPressed, backPressed, back2Pressed, xPressed, x1Pressed, bPressed, b1Pressed,
             clawIsOpen = false, extended = false, neckUp = true, slowMode = false, hanging = false, slidesUp = false, slidesDown = false, clawOut = false,
-            depositAction = true, grabAction = false, specRetractAction = true,
-            scoringSpec = false, specMode = false, firstRun = true, headingLock = true, teleRestart = false;
+            depositAction = true, grabAction = false, specRetractAction = true, specScoreRetryAction = true, retractAction = true,
+            scoringSpec = false, specMode = false, autoDriveRunning = true;
     double slideTarget = slideMin, extendPosR = railRMin, extendPosL = railLMin, v4bPos = v4bMUp,
-            depositTime, depositStartTime, grabStartTime, grabTime, specRetractStartTime, specRetractTime,
+            depositTime, depositStartTime, grabStartTime, grabTime, specRetractStartTime, specRetractTime, specScoreRetryStartTime, specScoreRetryTime, retractStartTime, retractTime,
             driveSpeed, slideSpeed, mult = 1;
 
     public void init() {
@@ -68,37 +68,33 @@ public class specTele extends OpMode {
         robot.lilJarret.setPosition(clawClose);
         clawIsOpen = false;
         robot.roll.setPosition(claw0);
-        robot.yaw.setPosition(yaw0);
         robot.railL.setPosition(railLMin);
         robot.railR.setPosition(railRMin);
     }
 
     public void loop() {
-
         follower.setTeleOpMovementVectors(
-                slideSpeed*driveSpeed*-gamepad1.left_stick_y,
-                2*slideSpeed*driveSpeed * (gamepad1.left_trigger > 0 ? gamepad1.left_trigger : (gamepad1.right_trigger > 0 ? -gamepad1.right_trigger : 0)),
-                slideSpeed*driveSpeed * -gamepad1.right_stick_x,
+                slideSpeed * driveSpeed * -gamepad1.left_stick_y,
+                2 * slideSpeed * driveSpeed * (gamepad1.left_trigger > 0 ? gamepad1.left_trigger : (gamepad1.right_trigger > 0 ? -gamepad1.right_trigger : 0)),
+                slideSpeed * driveSpeed * -gamepad1.right_stick_x,
                 true);
-        /*if(clawOut && specMode && !headingLock){
-            Follower.useHeading = true;
-            holdHeading = new Path(new BezierLine(new Point(0,0, Point.CARTESIAN), new Point(1,0, Point.CARTESIAN)));
-            holdHeading.setConstantHeadingInterpolation(0);
-            follower.holdPoint(new Point(follower.getXOffset(), follower.getYOffset()), Math.toRadians(0));
-            teleRestart = false;
-            headingLock = true;
-        } else if(!clawOut){
-            headingLock = false;
-        }
-        if(headingLock && !teleRestart){
-            follower.startTeleopDrive();
-            Follower.useHeading = false;
-            Follower.useTranslational = false;
-            Follower.useCentripetal = false;
-            Follower.useDrive = false;
-            teleRestart = true;
-        }*/
 
+        // auto drive code
+        if(!follower.isBusy() && gamepad1.dpad_left && !dLeft1Pressed){
+            Path toBucket = new Path(new BezierLine(
+                    new Point(follower.getPose().getX(), follower.getPose().getY()),
+                    new Point(10, 16)
+            ));
+            toBucket.setConstantHeadingInterpolation(Math.toRadians(-45));
+            follower.followPath(toBucket);
+            autoDriveRunning = true;
+            dLeft1Pressed = true;
+        } else if(!gamepad1.dpad_left) dLeft1Pressed = false;
+
+        if(autoDriveRunning && !follower.isBusy()){
+            follower.startTeleopDrive();
+            autoDriveRunning = false;
+        }
         follower.update();
 
         robot.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -107,12 +103,12 @@ public class specTele extends OpMode {
         robot.rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // automatic speed control
-        if (extended|| (clawOut && specMode))
+        if (extended || (clawOut && specMode))
             driveSpeed = 0.2;
         else driveSpeed = mult;
 
         slideSpeed = Math.sqrt((robot.rightSlides.getCurrentPosition() - 1510.41666) / -1510.41666);
-        if(scoringSpec) slideSpeed *= 1.2;
+        if (scoringSpec) slideSpeed *= 1.2;
 
         // press 'left bumper' to toggle speed slow/fast (driver 1)
         if (gamepad1.left_bumper && !lBumpPressed) {
@@ -135,7 +131,13 @@ public class specTele extends OpMode {
             dUpPressed = true;
         } else if (!gamepad2.dpad_up) dUpPressed = false;
         if (gamepad2.dpad_down && !dDownPressed) {
-            slideTarget = slideMin; // or slides down all the way
+            if (scoringSpec && extended) {
+                slideTarget = slideMaxSpecTele - 100;
+                specScoreRetryStartTime = System.currentTimeMillis();
+            } else {
+                if (scoringSpec) scoringSpec = false;
+                slideTarget = slideMin;
+            }
             dDownPressed = true;
         } else if (!gamepad2.dpad_down) dDownPressed = false;
         if (gamepad2.dpad_left && !dLeftPressed) {
@@ -143,16 +145,27 @@ public class specTele extends OpMode {
             dLeftPressed = true;
         } else if (!gamepad2.dpad_left) dLeftPressed = false;
         // automatic deposit setup when slides are up
-        if (robot.rightSlides.getCurrentPosition() >= slideMax - 20)
+        if (robot.rightSlides.getCurrentPosition() >= slideMax - 20 && !slidesUp){
             robot.roll.setPosition(claw90);
-        else if (robot.rightSlides.getCurrentPosition() >= slideMax - 50 && !slidesUp) {
+            slidesUp = true;
+        } else if (robot.rightSlides.getCurrentPosition() >= slideMax - 100 && !slidesUp) {
             robot.pitch.setPosition(pitchBOut); // set claw above basket
             v4bPos = v4bBDown;
-            slidesUp = true;
         } else if (robot.rightSlides.getCurrentPosition() <= slideMax - 100) slidesUp = false;
         if (slideTarget <= slideMin)
             slideTarget = slideMin; // reset slide position if out of bounds
         if (slideTarget >= slideMax) slideTarget = slideMax;
+
+        specScoreRetryTime = (System.currentTimeMillis() - specScoreRetryStartTime) / 1000.0;
+        if(specScoreRetryTime > 0.5 && !specScoreRetryAction){
+            slideTarget = slideMaxSpecTele;
+            specScoreRetryAction = true;
+        }
+        else if (specScoreRetryTime > 0.25 && !specScoreRetryAction){
+            extendPosR = railRMin;
+            extendPosL = railLMin;
+        } else if (specScoreRetryTime < 0.25)
+            specScoreRetryAction = false;
 
         //if(!robot.touchSensor.getState() && !slidesDown){
         // automatically reset slide zero point when touch sensor is triggered
@@ -175,6 +188,11 @@ public class specTele extends OpMode {
         } else if (!gamepad2.a) aPressed = false;
         robot.railR.resetDeviceConfigurationForOpMode();
         robot.railL.resetDeviceConfigurationForOpMode();
+        retractTime = (System.currentTimeMillis() - retractStartTime) / 1000.0;
+        if(retractTime > 0.5 && !retractAction){
+            retractAction = true;
+            v4bPos = v4bMUp;
+        } else if(retractTime < 0.5) retractAction = false;
 
         // press 'right bumper' to toggle v4b grabbing up/down (driver 1)
         robot.v4b.setPosition(v4bPos);
@@ -204,7 +222,7 @@ public class specTele extends OpMode {
                 if(!slidesUp) robot.roll.setPosition(claw0);
                 robot.pitch.setPosition(pitchBOut);
                 clawOut = true;
-            } else {
+            } else if(scoringSpec){
                 robot.lilJarret.setPosition(clawClose);
                 clawIsOpen = false;
                 clawOut = false;
@@ -217,19 +235,18 @@ public class specTele extends OpMode {
             if (depositTime > 0.4 && !depositAction) {
                 v4bPos = v4bMUp;
                 robot.pitch.setPosition(pitchFDown);
-                if(firstRun) {specMode = true; firstRun = false;}
                 clawOut = false;
                 depositAction = true;
                 scoringSpec = false;
-            } else if (depositTime > 0.25 && !depositAction) {
+            } else if (depositTime > 0.3 && !depositAction) {
                 v4bPos = v4bBDown;
                 robot.lilJarret.setPosition(clawOpen); // drop
                 clawIsOpen = true;
                 depositAction = specMode;
-            } else if (depositTime < 0.25) depositAction = false;
+                scoringSpec = specMode;
+            } else if (depositTime < 0.3) depositAction = false;
         } else {
             if (depositTime > 0.75 && !depositAction) {
-                scoringSpec = true;
                 v4bPos = v4bFOut;
                 robot.pitch.setPosition(pitchMUp);
                 slideTarget = slideMin;
@@ -292,32 +309,23 @@ public class specTele extends OpMode {
         } else if (!gamepad1.b) b1Pressed = false;
 
         //hanging (driver 1)
-        if (gamepad1.back && !backPressed) {
-            if (!hanging) {
-                robot.hangerL.setTargetPosition(5700);
-                robot.hangerL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.hangerL.setPower(1);
-                robot.hangerR.setTargetPosition(5700);
-                robot.hangerR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.hangerR.setPower(1);
-                hanging = true;
-            } else {
-                robot.hangerL.setTargetPosition(-1000);
-                robot.hangerL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.hangerL.setPower(1);
-                robot.hangerR.setTargetPosition(-5000);
-                robot.hangerR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.hangerR.setPower(1);
-                hanging = false;
-            }
-            backPressed = true;
-        } else if (!gamepad1.back) backPressed = false;
+        if (gamepad1.dpad_up){
+            robot.hangerL.setPower(1);
+            robot.hangerR.setPower(1);
+        } else if(gamepad1.dpad_down){
+            robot.hangerL.setPower(-1);
+            robot.hangerR.setPower(-1);
+        } else {
+            robot.hangerL.setPower(0);
+            robot.hangerR.setPower(0);
+        }
 
         // telemetry
         telemetry.addData("hang pos R, L", robot.hangerR.getCurrentPosition() + ", " + robot.hangerL.getCurrentPosition());
         telemetry.addLine("neck is " + (neckUp ? "UP" : "DOWN") + "!");
         telemetry.addLine("claw is " + (clawIsOpen ? "OPEN" : "CLOSED") + " and " + (clawOut ? "OUT" : "IN"));
         telemetry.addLine("robot is scoring " + (specMode ? "SPECIMEN" : "SAMPLE") + "!");
+        telemetry.addData("grabTime", grabTime);
         telemetry.addData("slide pos", robot.rightSlides.getCurrentPosition());
         telemetry.update();
     }
@@ -347,8 +355,9 @@ public class specTele extends OpMode {
             robot.roll.setPosition(claw0);
             extendPosR = railRMin;
             extendPosL = railLMin;
-            v4bPos = v4bMUp;
-            robot.pitch.setPosition(pitchFDown);
+            v4bPos = v4bFOut;
+            retractStartTime = System.currentTimeMillis();
+            robot.pitch.setPosition(pitchMUp+0.15);
         }
     }
 }

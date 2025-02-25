@@ -6,7 +6,7 @@ public class PDFLController {
 
     private Timer timer = new Timer();
 
-    double slowDown = 0.2;
+    double slowDown = 0.35;
 
     private RingBuffer<Double> timeBuffer = new RingBuffer<Double>(3, 0.0);
     private RingBuffer<Double> errorBuffer = new RingBuffer<Double>(3, 0.0);
@@ -48,7 +48,7 @@ public class PDFLController {
                         + gravityComp()
                         + frictionComp(error);
 
-        if (error <0){
+        if (error < 0){
             response = slowDown * response;
         }
 

@@ -19,7 +19,6 @@ import static pandaPathing.robot.RobotConstants.v4bBDown;
 import static pandaPathing.robot.RobotConstants.v4bFDown;
 import static pandaPathing.robot.RobotConstants.v4bFUp;
 import static pandaPathing.robot.RobotConstants.v4bMUp;
-import static pandaPathing.robot.RobotConstants.yaw0;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
@@ -128,7 +127,6 @@ public class sampleAuto extends OpMode {
                 robot.railL.setPosition(railLMin);
                 robot.railR.setPosition(railRMin);
                 robot.roll.setPosition(claw90);
-                robot.yaw.setPosition(yaw0);
                 rails = false;
                 setPathState(1);
                 break;
@@ -470,7 +468,6 @@ public class sampleAuto extends OpMode {
         robot.railL.setPosition(railLMin);
         robot.railR.setPosition(railRMin);
         robot.roll.setPosition(claw90);
-        robot.yaw.setPosition(yaw0);
         rails = false;
         buildPaths();
     }

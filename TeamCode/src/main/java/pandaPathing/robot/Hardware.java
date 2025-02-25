@@ -23,12 +23,10 @@ public class Hardware {
     public PDFLController slideyController;
 
     public double slidePidPow(double target) {
-        //slideyController.updatePDFLConstants(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
-        if (target > 500) {
-            slideyController.updatePDFLConstants(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
-        } else {
-            slideyController.updatePDFLConstants(RobotConstants.p, RobotConstants.d, RobotConstants.homingConstant, RobotConstants.l);
-        }
+        if (target > 800) slideyController.updatePDFLConstants(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
+        else if(target > 100) slideyController.updatePDFLConstants(RobotConstants.p1, RobotConstants.d1, RobotConstants.f1, RobotConstants.l1);
+        else slideyController.updatePDFLConstants(RobotConstants.p, RobotConstants.d, 0, RobotConstants.l);
+
         int slidePos = rightSlides.getCurrentPosition();
         return slideyController.calculatePow(slidePos, target);
     }

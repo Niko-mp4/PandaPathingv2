@@ -16,7 +16,6 @@ import static pandaPathing.robot.RobotConstants.v4bBUp;
 import static pandaPathing.robot.RobotConstants.v4bMUp;
 import static pandaPathing.robot.RobotConstants.v4bFDown;
 import static pandaPathing.robot.RobotConstants.v4bFUp;
-import static pandaPathing.robot.RobotConstants.yaw0;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -49,7 +48,6 @@ public class UnoConductor extends OpMode {
         robot.pitch.setPosition(pitchFDown);
         robot.lilJarret.setPosition(clawClose);
         robot.roll.setPosition(claw0);
-        robot.yaw.setPosition(yaw0);
         robot.railL.setPosition(railLMin);
         robot.railR.setPosition(railRMin);
     }
@@ -82,7 +80,7 @@ public class UnoConductor extends OpMode {
             rightRearPower /= maxPower;
         }
 
-// Set motor powers directly
+        // Set motor powers directly
         robot.leftFront.setPower(driveSpeed*leftFrontPower);
         robot.rightFront.setPower(driveSpeed*rightFrontPower);
         robot.leftRear.setPower(driveSpeed*leftRearPower);
