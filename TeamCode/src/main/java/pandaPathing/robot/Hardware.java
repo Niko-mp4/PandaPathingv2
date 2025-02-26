@@ -66,12 +66,12 @@ public class Hardware {
     }
 
     private void initializeServos() {
-        railL = initServo("cs4");
-        railR = initServo("cs5");
-        v4b = initServo("es0");
-        lilJarret = initServo("cs0");
-        pitch = initServo("es3");
-        roll = initServo("cs2");
+        railL = initServo("sh2");
+        railR = initServo("sh1");
+        v4b = initServo("sh0");
+        lilJarret = initServo("sh3");
+        pitch = initServo("sh5");
+        roll = initServo("sh4");
         yaw = initServo("cs3");
     }
 
@@ -82,7 +82,7 @@ public class Hardware {
     private void initializeSensors() {
         touchSensor = hardwareMap.get(DigitalChannel.class, "cd0");
         touchSensor.setMode(DigitalChannel.Mode.INPUT);
-        limelight = hardwareMap.get(Limelight3A.class, "Limelight3A");
+        //limelight = hardwareMap.get(Limelight3A.class, "Limelight3A");
 
     }
 
