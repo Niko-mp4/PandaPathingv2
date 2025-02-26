@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import pandaPathing.constants.FConstants;
 import pandaPathing.constants.LConstants;
 import pandaPathing.robot.Hardware;
+import pandaPathing.util.Input;
 
 @Config
 @TeleOp(name = "BIG Tele", group = "#tellelelellel")
@@ -192,7 +193,10 @@ public class BIGTele extends OpMode {
         if(retractTime > 0.5 && !retractAction){
             retractAction = true;
             v4bPos = v4bMUp;
-        } else if(retractTime < 0.5) retractAction = false;
+        } else if(retractTime > 0.25 && !retractAction){
+            extendPosR = railRMin;
+            extendPosL = railLMin;
+        } else if(retractTime < 0.25) retractAction = false;
 
         // press 'right bumper' to toggle v4b grabbing up/down (driver 1)
         robot.v4b.setPosition(v4bPos);
@@ -353,8 +357,6 @@ public class BIGTele extends OpMode {
             clawIsOpen = true;
         } else {
             robot.roll.setPosition(claw0);
-            extendPosR = railRMin;
-            extendPosL = railLMin;
             v4bPos = v4bFOut;
             retractStartTime = System.currentTimeMillis();
             robot.pitch.setPosition(pitchMUp+0.15);
