@@ -81,7 +81,7 @@ public class AsherUato extends OpMode {
     private final Pose hangPose5 = new Pose(28, 11, Math.toRadians(0));
 
 
-    private PathChain hangPreload, moveRight, moveForward, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, finalPush, hang1, strafeGrab2, grab2, hang2, strafeGrab3, grab3, hang3, strafeGrab4, grab4, hang4, grab5, hang5;
+    private PathChain hangPreload, moveRight, moveForward, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, finalPush, hang1, strafeGrab2, grab2, hang2, strafeGrab3, grab3, hang3, strafeGrab4, grab4, hang4, strafeGrab5, grab5, hang5, strafeGrab6;
 
     public void buildPaths() {
 
@@ -194,12 +194,22 @@ public class AsherUato extends OpMode {
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
+        strafeGrab5 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(hangPose4), new Point(strafeGrabPose)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
         grab5 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(hangPose4), new Point(grabPose)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
         hang5 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(grabPose), new Point(hangPose5)))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
+        strafeGrab6 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(hangPose5), new Point(strafeGrabPose)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
     }
@@ -586,71 +596,111 @@ public class AsherUato extends OpMode {
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                     rails = false;
+                    setPathState(78);
+                }
+                break;
+
+            case 78:
+                if (!rails) {
+                    follower.followPath(strafeGrab5, true);
+                    setPathState(79);
+                }
+                break;
+
+            case 79:
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
+                    target = slideMin;
                     setPathState(80);
                 }
                 break;
 
-
             case 80:
+                if (follower.getCurrentTValue() > 0.2) {
+                    robot.v4b.setPosition(v4bBDown);
+                    robot.pitch.setPosition(pitchBOut);
+                    robot.roll.setPosition(claw0);
+                    setPathState(90);
+                }
+                break;
+
+
+            case 90:
                 if (follower.atParametricEnd()) {
                     follower.followPath(grab5, true);
-                    setPathState(81);
+                    setPathState(91);
                 }
                 break;
 
-            case 81:
+            case 91:
                 if (follower.atParametricEnd()) {
                     robot.lilJarret.setPosition(clawClose);
-                    setPathState(82);
+                    setPathState(92);
                 }
                 break;
 
-            case 82:
+            case 92:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
                     target = slideMaxSpec;
                     follower.followPath(hang5, true);
-                    setPathState(83);
+                    setPathState(93);
                 }
                 break;
 
-            case 83:
+            case 93:
                 if (follower.getCurrentTValue() > 0.2) {
                     robot.v4b.setPosition(v4bFUp);
                     robot.pitch.setPosition(pitchMUp);
                     robot.roll.setPosition(claw180);
-                    setPathState(84);
+                    setPathState(94);
                 }
                 break;
 
-            case 84:
+            case 94:
                 if (follower.atParametricEnd()) {
                     robot.railR.setPosition(railRMax);
                     robot.railL.setPosition(railLMax);
                     rails = true;
-                    setPathState(86);
+                    setPathState(96);
                 }
                 break;
 
-            case 86:
+            case 96:
                 if (pathTimer.getElapsedTimeSeconds() > 0.6) {
                     robot.lilJarret.setPosition(clawOpen);
-                    setPathState(87);
+                    setPathState(97);
                 }
                 break;
 
-            case 87:
+            case 97:
                 if (pathTimer.getElapsedTimeSeconds() > 0.3) {
                     robot.pitch.setPosition(pitchFOut);
                     robot.railR.setPosition(railRMin);
                     robot.railL.setPosition(railLMin);
                     rails = false;
-                    setPathState(90);
+                    setPathState(98);
                 }
                 break;
 
-            case 90:
+            case 98:
+                if (!rails) {
+                    follower.followPath(strafeGrab6, true);
+                    setPathState(99);
+                }
+                break;
+
+            case 100:
                 if (pathTimer.getElapsedTimeSeconds() > 0.8) {
                     target = slideMin;
+                    setPathState(101);
+                }
+                break;
+
+            case 101:
+                if (follower.getCurrentTValue() > 0.2) {
+                    robot.v4b.setPosition(v4bBDown);
+                    robot.pitch.setPosition(pitchBOut);
+                    robot.roll.setPosition(claw0);
+                    setPathState(102);
                 }
                 break;
         }
