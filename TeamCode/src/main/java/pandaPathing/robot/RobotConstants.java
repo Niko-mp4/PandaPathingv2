@@ -43,9 +43,9 @@ public class RobotConstants {
 
     v4bspec = 0.377,
 
-    clawOpen = 0.53,
+    clawOpen = 1,
 
-    clawClose = 0,
+    clawClose = 0.4,
 
     claw0 = 0.8,
     //y
@@ -73,9 +73,9 @@ public class RobotConstants {
 
     slideMax = 1450,
 
-    slideMaxSpec = 613,
+    slideMaxSpec = 610,
 
-    slideMaxSpecTele = 615,
+    slideMaxSpecTele = 610,
 
     slideSampleAuto = 490,
 
