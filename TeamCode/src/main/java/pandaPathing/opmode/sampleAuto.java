@@ -50,15 +50,15 @@ public class sampleAuto extends OpMode {
 
     private final Pose scorePose = new Pose(5, 12, Math.toRadians(-45));
 
-    private final Pose firstSamplePose = new Pose(13, 9, Math.toRadians(0));
+    private final Pose firstSamplePose = new Pose(15, 9, Math.toRadians(0));
 
     private final Pose firstScorePose = new Pose(10, 14, Math.toRadians(-45));
 
-    private final Pose secondSamplePose = new Pose(13, 16.1, Math.toRadians(0));
+    private final Pose secondSamplePose = new Pose(15, 16.1, Math.toRadians(0));
 
     private final Pose secondScorePose = new Pose(10, 16, Math.toRadians(-45));
 
-    private final Pose thirdSamplePose = new Pose(15, 18, Math.toRadians(20));
+    private final Pose thirdSamplePose = new Pose(17, 19, Math.toRadians(20));
 
     private final Pose thirdScorePose = new Pose(10, 16, Math.toRadians(-45));
 
