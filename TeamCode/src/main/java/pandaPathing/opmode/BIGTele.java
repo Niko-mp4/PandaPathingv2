@@ -265,6 +265,7 @@ public class BIGTele extends OpMode {
         specRetractTime = (System.currentTimeMillis() - specRetractStartTime) / 1000.0;
         if(specRetractTime > 0.7 && !specRetractAction){
             slideTarget = slideMin;
+            v4bPos = v4bMUp;
             scoringSpec = false;
             specRetractAction = true;
         } else if(specRetractTime > 0.2 && !specRetractAction){
@@ -353,6 +354,7 @@ public class BIGTele extends OpMode {
     public void railRetract() {
         if (scoringSpec) {
             robot.lilJarret.setPosition(clawOpen);
+            v4bPos = v4bFDown;
             specRetractStartTime = System.currentTimeMillis();
             clawIsOpen = true;
         } else {
