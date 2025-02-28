@@ -45,7 +45,7 @@ public class RobotConstants {
 
     clawOpen = 1,
 
-    clawClose = 0.4,
+    clawClose = 0,
 
     claw0 = 0.8,
     //y
