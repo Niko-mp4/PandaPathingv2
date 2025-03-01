@@ -43,9 +43,9 @@ public class RobotConstants {
 
     v4bspec = 0.377,
 
-    clawOpen = 1,
+    clawOpen = 0.9,
 
-    clawClose = 0,
+    clawClose = 0.2,
 
     claw0 = 0.8,
     //y

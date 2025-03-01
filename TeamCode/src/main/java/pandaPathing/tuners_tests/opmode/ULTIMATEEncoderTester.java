@@ -87,6 +87,7 @@ public class ULTIMATEEncoderTester extends LinearOpMode {
             else motor.setPower(0);
 
             Input.back.press(() -> reversed = !reversed);
+            Input.press(gamepad1.back, ()-> reversed = !reversed);
             motor.setDirection(reversed ? DcMotorEx.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
 
             telemetry.addLine("Dpad up/down for 1,\nY/X for 0.75,\nB/A for 0.5");

@@ -21,6 +21,14 @@ public class Input {
         }
         else if(!input) pressing = false;
     }
+    public static void press(boolean input, Runnable body){
+        Input in = new Input(input);
+        if(input && !in.pressing){
+            body.run();
+            in.pressing = true;
+        }
+        else if(!input) in.pressing = false;
+    }
     public void hold(Runnable body, Runnable elif){
         if(input) body.run();
         else if(elif != null) elif.run();

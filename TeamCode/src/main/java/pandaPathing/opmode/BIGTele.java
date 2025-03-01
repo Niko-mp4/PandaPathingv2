@@ -201,22 +201,20 @@ public class BIGTele extends OpMode {
         // press 'right bumper' to toggle v4b grabbing up/down (driver 1)
         robot.v4b.setPosition(v4bPos);
         if (gamepad1.right_bumper && extended && !rBumpPressed) {
-            if (!neckUp) {
-                v4bPos = v4bFUp;
-                grabStartTime = System.currentTimeMillis();
-                neckUp = true;
-            } else {
-                v4bPos = v4bFDown;
-                grabStartTime = System.currentTimeMillis();
-                neckUp = false;
-            }
+            v4bPos = v4bFDown;
+            robot.lilJarret.setPosition(clawOpen);
+            clawIsOpen = true;
+            grabStartTime = System.currentTimeMillis();
+            neckUp = false;
             rBumpPressed = true;
         } else if (!gamepad1.right_bumper) rBumpPressed = false;
         grabTime = (System.currentTimeMillis() - grabStartTime) / 1000.0;
-        if (grabTime > 0.12 && !grabAction) { // timer to open/close claw after v4b moves
-            robot.lilJarret.setPosition(neckUp ? clawOpen : clawClose);
-            clawIsOpen = neckUp;
+        if(grabTime > 0.3 && !grabAction && !gamepad1.right_bumper){
+            v4bPos = v4bFUp;
             grabAction = true;
+        } else if (grabTime > 0.12 && !grabAction) { // close claw after v4b moves
+            robot.lilJarret.setPosition(clawClose);
+            clawIsOpen = false;
         } else if (grabTime < 0.12) grabAction = false;
 
         // press 'b' to deposit sample (driver 2)
@@ -330,9 +328,8 @@ public class BIGTele extends OpMode {
         telemetry.addLine("neck is " + (neckUp ? "UP" : "DOWN") + "!");
         telemetry.addLine("claw is " + (clawIsOpen ? "OPEN" : "CLOSED") + " and " + (clawOut ? "OUT" : "IN"));
         telemetry.addLine("robot is scoring " + (specMode ? "SPECIMEN" : "SAMPLE") + "!");
-        telemetry.addData("grabTime", grabTime);
         telemetry.addData("slide pos", robot.rightSlides.getCurrentPosition());
-        telemetry.update();
+        //telemetry.update();
     }
 
     public void railExtend() {
