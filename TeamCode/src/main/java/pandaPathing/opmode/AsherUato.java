@@ -52,36 +52,38 @@ public class AsherUato extends OpMode {
 
     private final Pose moveForwardPose = new Pose(28, 0, Math.toRadians(0));
 
-    private final Pose pushPositionPose1 = new Pose(52, -39, Math.toRadians(0));
+    private final Pose pushPositionPose1 = new Pose(51, -39, Math.toRadians(0));
 
-    private final Pose pushPositionPose2 = new Pose(53, -45, Math.toRadians(0));
+    private final Pose pushPositionPose2 = new Pose(51, -45, Math.toRadians(0));
 
-    private final Pose pushPositionPose3 = new Pose(53, -51, Math.toRadians(0));
+    private final Pose pushPositionPose3 = new Pose(51, -51, Math.toRadians(0));
 
-    private final Pose pushPose1 = new Pose(8, -39, Math.toRadians(0));
+    private final Pose pushPose1 = new Pose(17, -39, Math.toRadians(0));
 
-    private final Pose pushPose2 = new Pose(8, -51, Math.toRadians(0));
+    private final Pose pushPose2 = new Pose(17, -51, Math.toRadians(0));
 
-    private final Pose pushPose3 = new Pose(6, -55, Math.toRadians(0));
+    private final Pose pushPose3 = new Pose(6.5, -55, Math.toRadians(0));
 
     private final Pose finalPushPose = new Pose(53, -55, Math.toRadians(0));
 
     private final Pose strafeGrabPose = new Pose(15, -25, Math.toRadians(0));
 
-    private final Pose grabPose = new Pose(7.6, -30, Math.toRadians(0));
+    private final Pose grabPose = new Pose(7, -30, Math.toRadians(0));
 
-    private final Pose hangPose1 = new Pose(28, -1, Math.toRadians(0));
+    private final Pose hangPose1 = new Pose(25, -5, Math.toRadians(0));
 
-    private final Pose hangPose2 = new Pose(28, 2, Math.toRadians(0));
+    private final Pose hangPose2 = new Pose(25, -1, Math.toRadians(0));
 
-    private final Pose hangPose3 = new Pose(28, 5, Math.toRadians(0));
+    private final Pose hangPose3 = new Pose(25, 2, Math.toRadians(0));
 
-    private final Pose hangPose4 = new Pose(28, 8, Math.toRadians(0));
+    private final Pose hangPose4 = new Pose(26, 5, Math.toRadians(0));
 
-    private final Pose hangPose5 = new Pose(28, 11, Math.toRadians(0));
+    private final Pose hangPose5 = new Pose(26, 7, Math.toRadians(0));
+
+    private final Pose parkPose = new Pose(10, -30, Math.toRadians(0));
 
 
-    private PathChain hangPreload, moveRight, moveForward, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, finalPush, hang1, strafeGrab2, grab2, hang2, strafeGrab3, grab3, hang3, strafeGrab4, grab4, hang4, strafeGrab5, grab5, hang5, strafeGrab6;
+    private PathChain hangPreload, moveRight, moveForward, pushPosition1, pushPosition2, pushPosition3, push1, push2, push3, finalPush, hang1, strafeGrab2, grab2, hang2, strafeGrab3, grab3, hang3, strafeGrab4, grab4, hang4, strafeGrab5, grab5, hang5, park;
 
     public void buildPaths() {
 
@@ -112,6 +114,7 @@ public class AsherUato extends OpMode {
                 .addPath(new BezierLine(new Point(pushPose1), new Point(pushPositionPose2)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setPathEndTimeoutConstraint(0)
+                .setZeroPowerAccelerationMultiplier(5)
                 .build();
 
 
@@ -119,24 +122,28 @@ public class AsherUato extends OpMode {
                 .addPath(new BezierLine(new Point(pushPose2), new Point(pushPositionPose3)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setPathEndTimeoutConstraint(0)
+                .setZeroPowerAccelerationMultiplier(5)
                 .build();
 
         push1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(pushPositionPose1), new Point(pushPose1)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setPathEndTimeoutConstraint(0)
+                .setZeroPowerAccelerationMultiplier(5)
                 .build();
 
         push2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(pushPositionPose2), new Point(pushPose2)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setPathEndTimeoutConstraint(0)
+                .setZeroPowerAccelerationMultiplier(5)
                 .build();
 
         push3 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(finalPushPose), new Point(pushPose3)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setPathEndTimeoutConstraint(0)
+                .setZeroPowerAccelerationMultiplier(3)
                 .build();
 
         finalPush = follower.pathBuilder()
@@ -147,6 +154,7 @@ public class AsherUato extends OpMode {
         hang1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(pushPose3), new Point(hangPose1)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setZeroPowerAccelerationMultiplier(5.5)
                 .build();
 
         strafeGrab2 = follower.pathBuilder()
@@ -157,11 +165,13 @@ public class AsherUato extends OpMode {
         grab2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(strafeGrabPose), new Point(grabPose)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setZeroPowerAccelerationMultiplier(3)
                 .build();
 
         hang2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(grabPose), new Point(hangPose2)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setZeroPowerAccelerationMultiplier(5.5)
                 .build();
 
         strafeGrab3 = follower.pathBuilder()
@@ -172,11 +182,13 @@ public class AsherUato extends OpMode {
         grab3 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(strafeGrabPose), new Point(grabPose)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setZeroPowerAccelerationMultiplier(3)
                 .build();
 
         hang3 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(grabPose), new Point(hangPose3)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setZeroPowerAccelerationMultiplier(5.5)
                 .build();
 
         strafeGrab4 = follower.pathBuilder()
@@ -187,11 +199,13 @@ public class AsherUato extends OpMode {
         grab4 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(strafeGrabPose), new Point(grabPose)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setZeroPowerAccelerationMultiplier(3)
                 .build();
 
         hang4 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(grabPose), new Point(hangPose4)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setZeroPowerAccelerationMultiplier(5.5)
                 .build();
 
         strafeGrab5 = follower.pathBuilder()
@@ -202,14 +216,17 @@ public class AsherUato extends OpMode {
         grab5 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(hangPose4), new Point(grabPose)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setZeroPowerAccelerationMultiplier(3)
                 .build();
+
         hang5 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(grabPose), new Point(hangPose5)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setZeroPowerAccelerationMultiplier(5.5)
                 .build();
 
-        strafeGrab6 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(hangPose5), new Point(strafeGrabPose)))
+        park = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(hangPose5), new Point(parkPose)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
     }
@@ -683,7 +700,7 @@ public class AsherUato extends OpMode {
 
             case 98:
                 if (!rails) {
-                    follower.followPath(strafeGrab6, true);
+                    follower.followPath(park, true);
                     setPathState(99);
                 }
                 break;

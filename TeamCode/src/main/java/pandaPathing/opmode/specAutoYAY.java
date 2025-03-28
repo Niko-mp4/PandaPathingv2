@@ -52,23 +52,23 @@ public class specAutoYAY extends OpMode {
 
     private final Pose moveForwardPose = new Pose(28, 0, Math.toRadians(0));
 
-    private final Pose pushPositionPose1 = new Pose(52, -39, Math.toRadians(0));
+    private final Pose pushPositionPose1 = new Pose(51, -39, Math.toRadians(0));
 
-    private final Pose pushPositionPose2 = new Pose(53, -45, Math.toRadians(0));
+    private final Pose pushPositionPose2 = new Pose(48, -45, Math.toRadians(0));
 
-    private final Pose pushPositionPose3 = new Pose(53, -51, Math.toRadians(0));
+    private final Pose pushPositionPose3 = new Pose(48, -51, Math.toRadians(0));
 
-    private final Pose pushPose1 = new Pose(8, -39, Math.toRadians(0));
+    private final Pose pushPose1 = new Pose(17, -39, Math.toRadians(0));
 
-    private final Pose pushPose2 = new Pose(8, -51, Math.toRadians(0));
+    private final Pose pushPose2 = new Pose(17, -51, Math.toRadians(0));
 
-    private final Pose pushPose3 = new Pose(6, -55, Math.toRadians(0));
+    private final Pose pushPose3 = new Pose(8, -55, Math.toRadians(0));
 
     private final Pose finalPushPose = new Pose(53, -55, Math.toRadians(0));
 
     private final Pose strafeGrabPose = new Pose(15, -25, Math.toRadians(0));
 
-    private final Pose grabPose = new Pose(7.6, -30, Math.toRadians(0));
+    private final Pose grabPose = new Pose(8.3, -30, Math.toRadians(0));
 
     private final Pose hangPose1 = new Pose(25, -1, Math.toRadians(0)); //28
 
@@ -97,12 +97,14 @@ public class specAutoYAY extends OpMode {
         moveRight = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(moveForwardPose), new Point(moveRightPose)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setZeroPowerAccelerationMultiplier(5)
                 .build();
 
         pushPosition1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(moveRightPose), new Point(pushPositionPose1)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setPathEndTimeoutConstraint(0)
+                .setZeroPowerAccelerationMultiplier(5)
                 .build();
 
 
@@ -110,6 +112,7 @@ public class specAutoYAY extends OpMode {
                 .addPath(new BezierLine(new Point(pushPose1), new Point(pushPositionPose2)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setPathEndTimeoutConstraint(0)
+                .setZeroPowerAccelerationMultiplier(5)
                 .build();
 
 
@@ -117,24 +120,28 @@ public class specAutoYAY extends OpMode {
                 .addPath(new BezierLine(new Point(pushPose2), new Point(pushPositionPose3)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setPathEndTimeoutConstraint(0)
+                .setZeroPowerAccelerationMultiplier(5)
                 .build();
 
         push1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(pushPositionPose1), new Point(pushPose1)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setPathEndTimeoutConstraint(0)
+                .setZeroPowerAccelerationMultiplier(5)
                 .build();
 
         push2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(pushPositionPose2), new Point(pushPose2)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setPathEndTimeoutConstraint(0)
+                .setZeroPowerAccelerationMultiplier(5)
                 .build();
 
         push3 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(finalPushPose), new Point(pushPose3)))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setPathEndTimeoutConstraint(0)
+                .setZeroPowerAccelerationMultiplier(3)
                 .build();
 
         finalPush = follower.pathBuilder()
