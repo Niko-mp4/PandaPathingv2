@@ -57,7 +57,7 @@ public class Hardware {
         slideyController = new PDFLController(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
     }
 
-    private DcMotorEx initMotor(String name, DcMotorEx.Direction direction) {
+    public DcMotorEx initMotor(String name, DcMotorEx.Direction direction) {
         DcMotorEx motor = hardwareMap.get(DcMotorEx.class, name);
         motor.setDirection(direction);
         motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);

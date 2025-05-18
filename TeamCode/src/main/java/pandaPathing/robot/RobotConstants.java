@@ -21,13 +21,13 @@ public class RobotConstants {
 
     pitchBUp = 0.3,
 
-    railRMax = 1,
+    railROut = 1,
 
-    railLMax = 0,
+    railLOut = 0,
 
-    railRMin = 0,
+    railRIn = 0,
 
-    railLMin = 1,
+    railLIn = 1,
 
     v4bFUp = 0.84,
 
@@ -71,17 +71,15 @@ public class RobotConstants {
     // Slide constants
     public static int
 
-    slideMax = 1450,
+    slideHighBasket = 1450,
 
-    slideMaxSpec = 607,
+    slideHighChamber = 607,
 
     slideMaxSpecTele = 607,
 
-    slideSampleAuto = 490,
+    slidePark = 490,
 
-    slideMin = -10,
-
-    CVSmoothing = 1;
+    slideZero = -10;
 
 
     // PID Constants
