@@ -4,5 +4,9 @@ package pandaPathing.subsytem;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 
 //SubsystemBase
-public class WSubsystem extends SubsystemBase {
+public abstract class WSubsystem extends SubsystemBase {
+    abstract public void read();
+    abstract public void loop();
+    abstract public void write();
+
 }
