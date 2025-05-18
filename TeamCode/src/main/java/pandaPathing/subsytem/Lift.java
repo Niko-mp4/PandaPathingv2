@@ -7,8 +7,8 @@ import static pandaPathing.robot.RobotConstants.slideZero;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -17,11 +17,13 @@ import pandaPathing.robot.RobotConstants;
 import pandaPathing.util.CachedMotor;
 import pandaPathing.util.PDFLController;
 
-public class Lift {
+public class Lift extends SubsystemBase {
 
     private Telemetry telemetry;
+
     public CachedMotor rightSlides, leftSlides;
     public PDFLController slideyController;
+
     public int target;
     public int pos;
 

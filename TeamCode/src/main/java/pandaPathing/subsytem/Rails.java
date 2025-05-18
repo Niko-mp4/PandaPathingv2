@@ -7,12 +7,13 @@ import static pandaPathing.robot.RobotConstants.railROut;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class Rails {
+public class Rails extends SubsystemBase {
 
     public enum ExtendState {
         IN, OUT

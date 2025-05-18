@@ -16,7 +16,7 @@ public class Hardware {
     private HardwareMap hardwareMap;
 
     public DcMotorEx leftFront, leftRear, rightFront, rightRear, rightSlides, leftSlides, hangerL, hangerR;
-    public Servo railL, railR, lilJarret, v4b, pitch, roll, yaw;
+    public Servo railL, railR, claw, v4b, pitch, roll, yaw;
     public DigitalChannel touchSensor;
     public Limelight3A limelight;
 
@@ -69,7 +69,7 @@ public class Hardware {
         railL = initServo("sh3");
         railR = initServo("sh2");
         v4b = initServo("sh0");
-        lilJarret = initServo("es1");
+        claw = initServo("es1");
         pitch = initServo("cs0");
         roll = initServo("es3");
         yaw = initServo("cs3");
