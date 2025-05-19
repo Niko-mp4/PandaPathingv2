@@ -13,7 +13,7 @@ public class RobotConstants {
 
     pitchSpecimen = 0.9,
 
-    pitchInRobot = 0.6,
+    pitchDown = 0.6,
 
     pitchDeposit = 0.9,
 
@@ -35,8 +35,6 @@ public class RobotConstants {
     v4bUp = 0.6,
 
     v4bDeposit = 0.5,
-
-    v4bGrabSpecimen = 0.4,
 
     v4bGrabSpec = 0.377,
 
@@ -71,9 +69,10 @@ public class RobotConstants {
     slideScoreHighBasket = 1450,
     slideHighBasket = slideScoreHighBasket - 50,
 
-    slideHighChamber = 607,
+    slideScoreLowBasket = 1450,
+    slideLowBasket = slideScoreHighBasket - 50,
 
-    slideMaxSpecTele = 607,
+    slideHighChamber = 607,
 
     slidePark = 490,
 

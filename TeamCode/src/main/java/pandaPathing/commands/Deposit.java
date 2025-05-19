@@ -4,7 +4,6 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import pandaPathing.subsytem.Claw;
 import pandaPathing.subsytem.Lift;
-import pandaPathing.subsytem.Robot;
 import pandaPathing.util.Timer;
 
 public class Deposit extends CommandBase {
@@ -12,50 +11,52 @@ public class Deposit extends CommandBase {
     private final Claw claw;
 
     private int state = 0;
-    private Timer wait = new Timer();
+    private final Timer timer = new Timer();
 
     public Deposit(Lift lift, Claw claw) {
         this.lift = lift;
         this.claw = claw;
-        addRequirements(lift, claw);
+        addRequirements(this.lift, this.claw);
     }
 
     @Override
-    public void initialize() {
-        state = 1;
-    }
+    public void initialize() {setState(1);}
 
     @Override
     public void execute() {
+        double time = timer.getElapsedTime();
         switch(state) {
             case 1:
-                claw.setGrabState(Claw.GrabState.OPEN);
-                if (wait.waitMs(200)) {
-                    state = 2;
+                if(lift.is(Lift.LiftState.BOTTOM)){
+                    claw.setV4BState(Claw.V4BState.DEPOSIT);
+                    claw.setPitchState(Claw.PitchState.DEPOSIT);
                 }
+                claw.setGrabState(Claw.GrabState.OPEN);
+                if(time > 400) setState(2);
                 break;
 
             case 2:
-                claw.setPitchState(Claw.PitchState.IN_ROBOT);
-                claw.setV4BState(Claw.V4BState.UP_V4B);
+                claw.setPitchState(Claw.PitchState.DOWN);
+                claw.setV4BState(Claw.V4BState.UP);
                 claw.setRollState(Claw.RollState.ZERO);
-                if (Robot.is(Robot.RobotState.HIGH_BASKET_DEPOSIT)) {
-                    if (wait.waitMs(300)) {
-                        state = 3;
-                    }
-                }
+                if (lift.is(Lift.LiftState.HIGH_BASKET) && time > 300)
+                    setState(3);
                 break;
 
             case 3:
-                lift.toZero();
-                Robot.set(Robot.RobotState.POOPSHOOT);
+                lift.setLiftState(Lift.LiftState.BOTTOM);
                 break;
         }
     }
 
     @Override
     public boolean isFinished() {
-        return state == 2 && !Robot.is(Robot.RobotState.HIGH_BASKET_DEPOSIT)
+        return state == 2 && !lift.is(Lift.LiftState.HIGH_BASKET)
                 || state == 3;
+    }
+
+    public void setState(int state){
+        this.state = state;
+        timer.reset();
     }
 }

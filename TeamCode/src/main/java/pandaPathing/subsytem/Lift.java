@@ -4,6 +4,7 @@ import static pandaPathing.robot.RobotConstants.slideHighBasket;
 import static pandaPathing.robot.RobotConstants.slideHighChamber;
 import static pandaPathing.robot.RobotConstants.slidePark;
 import static pandaPathing.robot.RobotConstants.slideScoreHighBasket;
+import static pandaPathing.robot.RobotConstants.slideScoreLowBasket;
 import static pandaPathing.robot.RobotConstants.slideZero;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -20,17 +21,19 @@ import pandaPathing.util.PDFLController;
 
 public class Lift extends SubsystemBase {
 
+    public enum LiftState{
+        HIGH_BASKET, LOW_BASKET, BOTTOM, HIGH_CHAMBER, PARK;
+    }
+    public static Lift.LiftState liftState;
+
     private Telemetry telemetry;
 
     public CachedMotor rightSlides, leftSlides;
-    public PDFLController slideyController;
+    public PDFLController slideController;
 
     public int target;
-    public int pos;
-
 
     public Lift(HardwareMap hardwareMap, Telemetry telemetry) {
-
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         rightSlides = new CachedMotor(hardwareMap.get(DcMotor.class, "em0"));
@@ -43,65 +46,48 @@ public class Lift extends SubsystemBase {
         rightSlides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftSlides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        slideyController = new PDFLController(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
+        slideController = new PDFLController(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
     }
+    public void init() { setLiftState(LiftState.BOTTOM); }
+
+    // State functions
+    public void setLiftState(Lift.LiftState liftState){
+        switch(liftState) {
+            case HIGH_BASKET:
+                setTarget(slideScoreHighBasket);
+            case LOW_BASKET:
+                setTarget(slideScoreLowBasket);
+            case HIGH_CHAMBER:
+                setTarget(slideHighChamber);
+            case BOTTOM:
+                setTarget(slideZero);
+            case PARK:
+                setTarget(slidePark);
+        }
+        Lift.liftState = liftState;
+    }
+    public boolean is(LiftState state) { return liftState == state; }
 
     public void update() {
-        if (target >= 800) {
-            slideyController.updatePDFLConstants(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
-        }
+        if (target >= 800) slideController.updatePDFLConstants(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
+        else slideController.updatePDFLConstants(RobotConstants.p1, RobotConstants.d1, RobotConstants.f1, RobotConstants.l1);
 
-        else {
-            slideyController.updatePDFLConstants(RobotConstants.p1, RobotConstants.d1, RobotConstants.f1, RobotConstants.l1);
-        }
-
-        int slidePos = getPos();
-
-        slideyController.calculatePow(slidePos, target);
+        double power = slideController.calculatePow(getPos(), target);
+        rightSlides.setPower(power);
+        leftSlides.setPower(power);
     }
 
-    public void setTarget(int b) {
-        target = b;
+    public void setTarget(int b) { target = b; }
+
+    public boolean atTargetWithin(int error){
+        return Math.abs(getPos() - target) < error;
     }
 
-    public int getPos() {
-        pos = rightSlides.getCurrentPosition();
-        return rightSlides.getCurrentPosition();
-    }
-
-
-    public void init() {
-        slideyController = new PDFLController(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
-    }
-
-
-    public void start() {
-        target = 0;
-    }
-    public void toZero() {
-        setTarget(slideZero);
-    }
-
-    public void toHighBucket() {
-        setTarget(slideHighBasket);
-    }
-
-    public void toScoreHighBucket() {
-        setTarget(slideScoreHighBasket);
-    }
-
-    public void toChamber() {
-        setTarget(slideHighChamber);
-    }
-
-    public void toPark() {
-        setTarget(slidePark);
-    }
-
+    public int getPos() { return rightSlides.getCurrentPosition(); }
 
     private void telemetry() {
-        telemetry.addData("Lift Pos: ", getPos());
-        telemetry.addData("Lift Target: ", target);
+        telemetry.addData("Lift Pos", getPos());
+        telemetry.addData("Lift Target", target);
     }
 
     @Override

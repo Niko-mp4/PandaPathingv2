@@ -8,8 +8,8 @@ import static pandaPathing.robot.RobotConstants.claw90;
 import static pandaPathing.robot.RobotConstants.clawClose;
 import static pandaPathing.robot.RobotConstants.clawOpen;
 import static pandaPathing.robot.RobotConstants.pitchDeposit;
+import static pandaPathing.robot.RobotConstants.pitchDown;
 import static pandaPathing.robot.RobotConstants.pitchGrab;
-import static pandaPathing.robot.RobotConstants.pitchInRobot;
 import static pandaPathing.robot.RobotConstants.pitchSpecimen;
 import static pandaPathing.robot.RobotConstants.v4bDeposit;
 import static pandaPathing.robot.RobotConstants.v4bExtend;
@@ -36,11 +36,11 @@ public class Claw extends SubsystemBase {
     }
 
     public enum PitchState {
-        IN_ROBOT, EXTEND, DEPOSIT, SPECIMEN
+        DOWN, EXTEND, DEPOSIT, SPECIMEN
     }
 
     public enum V4BState {
-        UP_V4B, EXTEND_V4B, GRAB_V4B, DEPOSIT_V4B, GRAB_SPECIMEN_V4B, SCORE_SPECIMEN_V4B
+        UP, EXTEND, GRAB, DEPOSIT, GRAB_SPECIMEN, SCORE_SPECIMEN
     }
 
     public Servo v4b, claw, pitch, roll;
@@ -59,7 +59,14 @@ public class Claw extends SubsystemBase {
         roll = hardwareMap.get(Servo.class, "es3");
         this.telemetry = telemetry;
     }
+    public void init() {
+        setGrabState(GrabState.CLOSED);
+        setRollState(RollState.ZERO);
+        setPitchState(PitchState.DOWN);
+        setV4BState(V4BState.UP);
+    }
 
+    // State functions
     public void setGrabState(GrabState grabState) {
         switch (grabState) {
             case CLOSED:
@@ -71,6 +78,7 @@ public class Claw extends SubsystemBase {
         }
         Claw.grabState = grabState;
     }
+    public boolean grabIs(GrabState state){ return grabState == state; }
 
     public void setRollState(RollState rollState) {
         switch (rollState) {
@@ -92,11 +100,12 @@ public class Claw extends SubsystemBase {
         }
         Claw.rollState = rollState;
     }
+    public boolean rollIs(RollState state){ return rollState == state; }
 
     public void setPitchState(PitchState pitchState) {
         switch (pitchState) {
-            case IN_ROBOT:
-                pitch.setPosition(pitchInRobot);
+            case DOWN:
+                pitch.setPosition(pitchDown);
                 break;
             case EXTEND:
                 pitch.setPosition(pitchGrab);
@@ -110,43 +119,38 @@ public class Claw extends SubsystemBase {
         }
         Claw.pitchState = pitchState;
     }
+    public boolean pitchIs(PitchState state){ return pitchState == state; }
 
     public void setV4BState(V4BState v4bState) {
         switch (v4bState) {
-            case UP_V4B:
+            case UP:
                 v4b.setPosition(v4bUp);
                 break;
-            case EXTEND_V4B:
+            case EXTEND:
                 v4b.setPosition(v4bExtend);
                 break;
-            case GRAB_V4B:
+            case GRAB:
                 v4b.setPosition(v4bGrab);
                 break;
-            case DEPOSIT_V4B:
+            case DEPOSIT:
                 v4b.setPosition(v4bDeposit);
                 break;
-            case GRAB_SPECIMEN_V4B:
+            case GRAB_SPECIMEN:
                 v4b.setPosition(v4bGrabSpec);
                 break;
-            case SCORE_SPECIMEN_V4B:
+            case SCORE_SPECIMEN:
                 v4b.setPosition(v4bScoreSpec);
                 break;
         }
         Claw.v4bState = v4bState;
     }
-
-    public void init() {
-        setGrabState(GrabState.CLOSED);
-        setRollState(RollState.ZERO);
-        setPitchState(PitchState.IN_ROBOT);
-        setV4BState(V4BState.UP_V4B);
-    }
+    public boolean v4bIs(V4BState state){ return v4bState == state; }
 
     public void telemetry() {
-        telemetry.addData("Claw Grab State: ", grabState);
-        telemetry.addData("Claw Roll State: ", rollState);
-        telemetry.addData("Claw Pitch State: ", pitchState);
-        telemetry.addData("Claw V4B State: ", v4bState);
+        telemetry.addData("Claw Grab State", grabState);
+        telemetry.addData("Claw Roll State", rollState);
+        telemetry.addData("Claw Pitch State", pitchState);
+        telemetry.addData("Claw V4B State", v4bState);
     }
 
     @Override
