@@ -1,5 +1,9 @@
 package pandaPathing.subsytem;
 
+import static pandaPathing.robot.RobotConstants.pitchDeposit;
+import static pandaPathing.robot.RobotConstants.pitchGrab;
+import static pandaPathing.robot.RobotConstants.pitchInRobot;
+import static pandaPathing.robot.RobotConstants.pitchSpecimen;
 import static pandaPathing.robot.RobotConstants.railLIn;
 import static pandaPathing.robot.RobotConstants.railLOut;
 import static pandaPathing.robot.RobotConstants.railRIn;
@@ -15,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Rails extends SubsystemBase {
 
-    public enum ExtendState {
+    public enum RailState {
         IN, OUT
     }
 
@@ -23,7 +27,7 @@ public class Rails extends SubsystemBase {
 
     public Servo railL, railR;
 
-    private ExtendState state = ExtendState.IN;
+    public static Rails.RailState railState;
 
     private double pos = 0;
 
@@ -36,22 +40,22 @@ public class Rails extends SubsystemBase {
 
     }
 
-    public void setTargetIn() {
-        railL.setPosition(railLIn);
-        railR.setPosition(railRIn);
-    }
-    public void setTargetOut() {
-        railL.setPosition(railLOut);
-        railR.setPosition(railROut);
+    public void setRailState(Rails.RailState railState) {
+        switch (railState) {
+            case IN:
+                railL.setPosition(railLIn);
+                railR.setPosition(railRIn);
+                break;
+            case OUT:
+                railL.setPosition(railLOut);
+                railR.setPosition(railROut);
+                break;
+        }
+        Rails.railState = railState;
     }
 
-    public void toIn() {
-        setTargetIn();
-        state = ExtendState.IN;
-    }
-    public void toOut() {
-        setTargetOut();
-        state = ExtendState.OUT;
+    public void init() {
+        setRailState(RailState.IN);
     }
 
     public double getPos() {
@@ -59,8 +63,8 @@ public class Rails extends SubsystemBase {
         return pos;
     }
 
-    public ExtendState getState() {
-        return state;
+    public RailState getState() {
+        return railState;
     }
 
 
@@ -68,6 +72,7 @@ public class Rails extends SubsystemBase {
         telemetry.addData("Extend Pos: (1 = Out)", getPos());
     }
 
+    @Override
     public void periodic() {
         telemetry();
     }

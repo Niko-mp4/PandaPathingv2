@@ -3,6 +3,7 @@ package pandaPathing.subsytem;
 import static pandaPathing.robot.RobotConstants.slideHighBasket;
 import static pandaPathing.robot.RobotConstants.slideHighChamber;
 import static pandaPathing.robot.RobotConstants.slidePark;
+import static pandaPathing.robot.RobotConstants.slideScoreHighBasket;
 import static pandaPathing.robot.RobotConstants.slideZero;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -29,11 +30,11 @@ public class Lift extends SubsystemBase {
 
 
     public Lift(HardwareMap hardwareMap, Telemetry telemetry) {
-        this.telemetry = telemetry;
+
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         rightSlides = new CachedMotor(hardwareMap.get(DcMotor.class, "em0"));
-        leftSlides = new CachedMotor(hardwareMap.get(DcMotor.class, "em0"));
+        leftSlides = new CachedMotor(hardwareMap.get(DcMotor.class, "em1"));
 
         rightSlides.setDirection(DcMotor.Direction.REVERSE);
         leftSlides.setDirection(DcMotor.Direction.FORWARD);
@@ -46,9 +47,13 @@ public class Lift extends SubsystemBase {
     }
 
     public void update() {
-        if (target >= 800) slideyController.updatePDFLConstants(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
+        if (target >= 800) {
+            slideyController.updatePDFLConstants(RobotConstants.p, RobotConstants.d, RobotConstants.f, RobotConstants.l);
+        }
 
-        else slideyController.updatePDFLConstants(RobotConstants.p1, RobotConstants.d1, RobotConstants.f1, RobotConstants.l1);
+        else {
+            slideyController.updatePDFLConstants(RobotConstants.p1, RobotConstants.d1, RobotConstants.f1, RobotConstants.l1);
+        }
 
         int slidePos = getPos();
 
@@ -78,11 +83,11 @@ public class Lift extends SubsystemBase {
     }
 
     public void toHighBucket() {
-        setTarget(slideHighBasket-50);
+        setTarget(slideHighBasket);
     }
 
     public void toScoreHighBucket() {
-        setTarget(slideHighBasket);
+        setTarget(slideScoreHighBasket);
     }
 
     public void toChamber() {
@@ -94,11 +99,12 @@ public class Lift extends SubsystemBase {
     }
 
 
-    public void telemetry() {
+    private void telemetry() {
         telemetry.addData("Lift Pos: ", getPos());
         telemetry.addData("Lift Target: ", target);
     }
 
+    @Override
     public void periodic() {
         update();
         telemetry();

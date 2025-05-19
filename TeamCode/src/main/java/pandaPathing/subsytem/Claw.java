@@ -24,8 +24,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import pandaPathing.robot.RobotConstants;
-import pandaPathing.util.PDFLController;
 
 public class Claw extends SubsystemBase {
 
@@ -34,15 +32,15 @@ public class Claw extends SubsystemBase {
     }
 
     public enum RollState {
-        ZERO, ONE45, TWO45, NINTY, ONEEIGHTY
+        ZERO, ONE_45, TWO_45, NINETY, ONE_EIGHTY
     }
 
     public enum PitchState {
-        INROBOT, EXTEND, DEPOSIT, SPECIMEN
+        IN_ROBOT, EXTEND, DEPOSIT, SPECIMEN
     }
 
     public enum V4BState {
-        UPV4B, EXTENDV4B, GRABV4B, DEPOSITV4B, GRABSPECIMENV4B, SCORESPECIMENV4B
+        UP_V4B, EXTEND_V4B, GRAB_V4B, DEPOSIT_V4B, GRAB_SPECIMEN_V4B, SCORE_SPECIMEN_V4B
     }
 
     public Servo v4b, claw, pitch, roll;
@@ -79,16 +77,16 @@ public class Claw extends SubsystemBase {
             case ZERO:
                 roll.setPosition(claw0);
                 break;
-            case ONE45:
+            case ONE_45:
                 roll.setPosition(claw45);
                 break;
-            case TWO45:
+            case TWO_45:
                 roll.setPosition(claw45_2);
                 break;
-            case NINTY:
+            case NINETY:
                 roll.setPosition(claw90);
                 break;
-            case ONEEIGHTY:
+            case ONE_EIGHTY:
                 roll.setPosition(claw180);
                 break;
         }
@@ -97,7 +95,7 @@ public class Claw extends SubsystemBase {
 
     public void setPitchState(PitchState pitchState) {
         switch (pitchState) {
-            case INROBOT:
+            case IN_ROBOT:
                 pitch.setPosition(pitchInRobot);
                 break;
             case EXTEND:
@@ -115,22 +113,22 @@ public class Claw extends SubsystemBase {
 
     public void setV4BState(V4BState v4bState) {
         switch (v4bState) {
-            case UPV4B:
+            case UP_V4B:
                 v4b.setPosition(v4bUp);
                 break;
-            case EXTENDV4B:
+            case EXTEND_V4B:
                 v4b.setPosition(v4bExtend);
                 break;
-            case GRABV4B:
+            case GRAB_V4B:
                 v4b.setPosition(v4bGrab);
                 break;
-            case DEPOSITV4B:
+            case DEPOSIT_V4B:
                 v4b.setPosition(v4bDeposit);
                 break;
-            case GRABSPECIMENV4B:
+            case GRAB_SPECIMEN_V4B:
                 v4b.setPosition(v4bGrabSpec);
                 break;
-            case SCORESPECIMENV4B:
+            case SCORE_SPECIMEN_V4B:
                 v4b.setPosition(v4bScoreSpec);
                 break;
         }
@@ -140,16 +138,8 @@ public class Claw extends SubsystemBase {
     public void init() {
         setGrabState(GrabState.CLOSED);
         setRollState(RollState.ZERO);
-        setPitchState(PitchState.INROBOT);
-        setV4BState(V4BState.UPV4B);
-    }
-
-
-    public void start() {
-        setGrabState(GrabState.CLOSED);
-        setRollState(RollState.ZERO);
-        setPitchState(PitchState.INROBOT);
-        setV4BState(V4BState.UPV4B);
+        setPitchState(PitchState.IN_ROBOT);
+        setV4BState(V4BState.UP_V4B);
     }
 
     public void telemetry() {

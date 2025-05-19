@@ -1,37 +1,60 @@
 package pandaPathing.util;
 
 public class Timer {
-    private long startTime;
+    private long startTime = 0;
+    private boolean started = false;
 
     /**
-     * This creates a new Timer with the start time set to its creation time.
+     * Creates a new Timer with start time unset (not started yet).
      */
     public Timer() {
-        resetTimer();
+        // startTime is unset, waitMs will start timing on first call
     }
 
     /**
-     * This resets the Timer's start time to the current time using System.currentTimeMillis().
+     * Resets the timer start time to now and marks it as started.
      */
-    public void resetTimer() {
+    public void reset() {
+        started = true;
         startTime = System.currentTimeMillis();
     }
 
     /**
-     * This returns the elapsed time in milliseconds since the start time of the Timer.
-     *
-     * @return this returns the elapsed time in milliseconds.
+     * Returns elapsed time in milliseconds since start.
+     * Returns 0 if timer not started.
      */
     public long getElapsedTime() {
+        if (!started) return 0;
         return System.currentTimeMillis() - startTime;
     }
 
     /**
-     * This returns the elapsed time in seconds since the start time of the Timer.
-     *
-     * @return this returns the elapsed time in seconds.
+     * Returns elapsed time in seconds since start.
      */
     public double getElapsedTimeSeconds() {
-        return (getElapsedTime() / 1000.0);
+        return getElapsedTime() / 1000.0;
+    }
+
+    /**
+     * Returns true if the specified time in milliseconds has elapsed.
+     * Starts counting on first call (auto-start).
+     * Automatically resets when the wait time has passed.
+     *
+     * @param milliseconds time to wait
+     * @return true if wait time has passed
+     */
+    public boolean waitMs(long milliseconds) {
+        if (!started) {
+            started = true;
+            startTime = System.currentTimeMillis();
+            return false;
+        }
+
+        if (System.currentTimeMillis() - startTime >= milliseconds) {
+            started = false; // auto-reset for next use
+            return true;
+        }
+
+        return false;
     }
 }

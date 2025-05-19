@@ -68,7 +68,8 @@ public class RobotConstants {
     // Slide constants
     public static int
 
-    slideHighBasket = 1450,
+    slideScoreHighBasket = 1450,
+    slideHighBasket = slideScoreHighBasket - 50,
 
     slideHighChamber = 607,
 
