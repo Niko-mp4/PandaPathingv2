@@ -1,4 +1,4 @@
-package pandaPathing.opmode;
+/*package pandaPathing.opmode;
 
 import static pandaPathing.robot.RobotConstants.claw0;
 import static pandaPathing.robot.RobotConstants.claw180;
@@ -337,3 +337,4 @@ public class UnoConductor extends OpMode {
         }
     }
 }
+ */

@@ -1,4 +1,4 @@
-package pandaPathing.opmode;
+/*package pandaPathing.opmode;
 
 import static pandaPathing.robot.RobotConstants.claw0;
 import static pandaPathing.robot.RobotConstants.claw45_2;
@@ -558,3 +558,4 @@ public class BIGSMAPLE extends OpMode {
         telemetry.update();
     }
 }
+ */
